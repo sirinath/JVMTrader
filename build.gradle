@@ -1,0 +1,15 @@
+apply plugin: 'maven'
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    jcenter()
+    // maven { url "https://jitpack.io" }
+}
+
+
+dependencies {
+    compile project(':../disruptor-proxy')
+    // compile 'com.github.LMAX-Exchange:disruptor-proxy:2ef4491aa4'
+    compile 'com.googlecode.cqengine:cqengine:2.0.3'
+}
