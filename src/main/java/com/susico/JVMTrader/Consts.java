@@ -14,3 +14,13 @@
  * limitations under the License.
  */
 
+package com.susico.JVMTrader;
+
+import uk.co.real_logic.agrona.UnsafeAccess;
+
+/**
+ * Created by sirin_000 on 03/09/2015.
+ */
+public class Consts {
+    public final static long BLOCK_SIZE = UnsafeAccess.UNSAFE.pageSize();
+}

@@ -14,3 +14,13 @@
  * limitations under the License.
  */
 
+package com.susico.JVMTrader;
+
+/**
+ * Created by sirin_000 on 02/09/2015.
+ */
+public interface LongIndexed<T> {
+    public void put(long i, T obj);
+
+    public T get(long i);
+}

@@ -14,3 +14,22 @@
  * limitations under the License.
  */
 
+package com.susico.JVMTrader;
+
+/**
+ * Created by sirin_000 on 03/09/2015.
+ */
+public interface PartitionedBuffer {
+    public final static int PARTITION_SIZE = Integer.MAX_VALUE >> 2;
+    public final static int SEGMENT_BITS = Long.numberOfTrailingZeros(~PARTITION_SIZE);
+
+    public static long segment(long i) {
+        return i >> SEGMENT_BITS;
+    }
+
+    public static long offset(long i) {
+        return PARTITION_SIZE & i;
+    }
+
+    public int getSegments();
+}

@@ -14,3 +14,17 @@
  * limitations under the License.
  */
 
+package com.susico.JVMTrader;
+
+/**
+ * Created by sirin_000 on 02/09/2015.
+ */
+public class Utils {
+    public final static long roundUpTo(long i, long multiple) {
+        return (i + multiple - 1L) & ~(multiple - 1L);
+    }
+
+    public final static int roundUpTo(int i, int multiple) {
+        return (i + multiple - 1) & ~(multiple - 1);
+    }
+}
