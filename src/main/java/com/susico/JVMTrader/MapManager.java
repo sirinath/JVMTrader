@@ -41,10 +41,8 @@ public class MapManager implements PartitionedBuffer, SlicedBuffer {
 
     protected final int slices;
 
-    protected final FileChannel fileChannel;
-
     public MapManager(final boolean checked, final File file, final long size) throws IOException {
-        final long aligned = Utils.roundUpTo(size, Consts.BLOCK_SIZE);
+        final long aligned = BitUtils.roundUpTo(size, Consts.BLOCK_SIZE);
 
         RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
         randomAccessFile.setLength(aligned);
