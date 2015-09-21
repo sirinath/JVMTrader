@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.susico.JVMTrader;
+package com.susico.utils.offheap;
 
 /**
  * Created by sirin_000 on 03/09/2015.
  */
-public interface SlicedBuffer {
-    public final static int SLICE_SIZE = 2 * 1024 * 1024 - 1;
-    public final static int SEGMENT_BITS = Long.numberOfTrailingZeros(~SLICE_SIZE);
+public interface PartitionedBuffer {
+    int PARTITION_SIZE = Integer.MAX_VALUE >> 2;
+    int SEGMENT_BITS = Long.numberOfTrailingZeros(~PARTITION_SIZE);
 
-    public static long slice(long i) {
+    static long segment(long i) {
         return i >> SEGMENT_BITS;
     }
 
-    public static long offset(long i) {
-        return SLICE_SIZE & i;
+    static long offset(long i) {
+        return PARTITION_SIZE & i;
     }
 
-    public int getSlices();
+    int getSegments();
 }

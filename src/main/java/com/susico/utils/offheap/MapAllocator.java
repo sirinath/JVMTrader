@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.susico.JVMTrader;
+package com.susico.utils.offheap;
+
+import com.susico.utils.Utils;
 
 import java.nio.MappedByteBuffer;
 
@@ -24,31 +26,28 @@ import java.nio.MappedByteBuffer;
 public class MapAllocator {
     public final static long INVALID_OFFSET = -1L;
 
-    protected final long position;
+    protected final long LBPosition;
     protected final long increment;
     protected final long size;
 
     protected final SharedMappedResource sharedMappedResource;
 
     protected final long total;
-
-    private final MappedByteBuffer[] mappedByteBuffers;
-
     protected final boolean checked;
-    protected final JVMTraderUtils.ArrayUtils.ArrayAccess arrayUtils;
-
+    protected final Utils.ArrayUtils.ArrayAccess arrayUtils;
+    private final MappedByteBuffer[] mappedByteBuffers;
     protected final LongIndexed<MappedByteBuffer> PAGE_ACCESS = new LongIndexed<MappedByteBuffer>() {
-        public final MappedByteBuffer get(long i) {
-            return (MappedByteBuffer) arrayUtils.getFromArray(mappedByteBuffers, i);
+        public final void put(long i, MappedByteBuffer buff) {
+            arrayUtils.put(mappedByteBuffers, i, buff);
         }
 
-        public final void put(long i, MappedByteBuffer buff) {
-            arrayUtils.putFromArray(mappedByteBuffers, i, buff);
+        public final MappedByteBuffer get(long i) {
+            return arrayUtils.get(mappedByteBuffers, i);
         }
     };
 
     public MapAllocator(final boolean checked, final int slots, final long startPosition, final long increment, final long size, final SharedMappedResource sharedMappedResource) {
-        this.position = startPosition;
+        this.LBPosition = startPosition;
         this.increment = increment;
         this.size = size;
         this.sharedMappedResource = sharedMappedResource;
@@ -58,10 +57,10 @@ public class MapAllocator {
         mappedByteBuffers = new MappedByteBuffer[slots];
 
         this.checked = checked;
-        this.arrayUtils = JVMTraderUtils.ArrayUtils.ArrayAccess.checked(checked);
+        this.arrayUtils = Utils.ArrayUtils.ArrayAccess.checked(checked);
 
-        for (long i = 0; i < slots; i++) {
-            MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(i * increment, size);
+        for (long i = 0, poss = startPosition; i < slots; i++, poss += increment) {
+            MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(poss, size);
 
             PAGE_ACCESS.put(i, mappedByteBuffer);
         }

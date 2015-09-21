@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.JVMTrader;
+package com.susico.JVMTrader.offheap;
 
 import sun.misc.Unsafe;
 import uk.co.real_logic.agrona.UnsafeAccess;
@@ -23,7 +23,7 @@ import uk.co.real_logic.agrona.UnsafeAccess;
  * Created by sirin_000 on 02/09/2015.
  */
 
-public final class  JVMTraderUtils {
+public final class OffheapUtils {
     public final static class ArrayUtils {
         public final static class ArrayAccess {
             public final static ArrayAccess CHECKED = new ArrayAccess(true);

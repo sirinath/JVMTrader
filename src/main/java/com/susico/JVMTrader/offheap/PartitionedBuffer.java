@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.JVMTrader;
+package com.susico.JVMTrader.offheap;
 
 /**
  * Created by sirin_000 on 03/09/2015.

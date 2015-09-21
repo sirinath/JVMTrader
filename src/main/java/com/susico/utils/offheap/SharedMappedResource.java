@@ -14,35 +14,33 @@
  * limitations under the License.
  */
 
-package com.susico.JVMTrader;
+package com.susico.utils.offheap;
 
-import uk.co.real_logic.agrona.IoUtil;
-
+import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by sirin_000 on 09/09/2015.
  */
-public class SharedMappedResource {
-    protected final File theFile;
-    protected final FileChannel fileChannel;
-
-    protected final FileChannel.MapMode mapMode;
-
+public class SharedMappedResource implements Closeable {
     private static final ConcurrentHashMap<File, SharedMappedResource> items = new ConcurrentHashMap<>();
 
-    private SharedMappedResource(final File file){
+    protected final File theFile;
+    protected final FileChannel fileChannel;
+    protected final MapMode mapMode;
+
+    private SharedMappedResource(final File file) {
         try {
             theFile = file;
 
             boolean rw = file.canWrite();
-            mapMode = rw ? FileChannel.MapMode.READ_WRITE : FileChannel.MapMode.READ_ONLY;
+            mapMode = rw ? MapMode.READ_WRITE : MapMode.READ_ONLY;
 
             RandomAccessFile randomAccessFile = new RandomAccessFile(file, rw ? "rw" : "r");
 
@@ -52,7 +50,7 @@ public class SharedMappedResource {
         }
     }
 
-    public static SharedMappedResource get(final File file) {
+    public static SharedMappedResource getInstance(final File file) {
         try {
             File theFile = file.getCanonicalFile();
 
@@ -77,34 +75,8 @@ public class SharedMappedResource {
         }
     }
 
-    public final static void saveAndUnmap(final MappedByteBuffer buff) {
-        Throwable suppressedException = null;
-        try {
-            buff.force();
-        } catch (Throwable t) {
-            suppressedException = t;
-        } finally {
-            try {
-                IoUtil.unmap(buff);
-            } catch (Throwable t){
-                RuntimeException exception;
-                if (suppressedException != null) {
-                    exception = new RuntimeException("Error in saving and un-mapping", t);
-                    exception.addSuppressed(t);
-                } else {
-                    exception = new RuntimeException("Error in un-mapping", t);
-                }
-
-                throw exception;
-            }
-        }
-    }
-
-    public final static void discardAndUnmap(final MappedByteBuffer buff) {
-        try {
-            IoUtil.unmap(buff);
-        } catch (Throwable t){
-            throw new RuntimeException("Error in un-mapping", t);
-        }
+    @Override
+    public final void close() throws IOException {
+        fileChannel.close();
     }
 }
