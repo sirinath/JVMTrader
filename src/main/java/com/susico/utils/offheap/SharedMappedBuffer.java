@@ -195,6 +195,41 @@ public class SharedMappedBuffer implements Closeable {
         return release(position, size, true);
     }
 
+    public final boolean unmap(final long position, final long size, final boolean save) {
+        Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
+
+        if (positionMap == null)
+            return false;
+
+        try {
+            while (!guard.compareAndSet(false, true))
+                LockSupport.parkNanos(1);
+
+            RefCounts refCounts = positionMap.remove(size);
+
+            if (refCounts == null)
+                return false;
+
+            MappedByteBuffer mappedByteBuffer = refCounts.getMappedByteBuffer();
+
+            if (save)
+                Utils.IOUtils.saveAndUnmap(mappedByteBuffer);
+            else
+                Utils.IOUtils.discardAndUnmap(mappedByteBuffer);
+        } catch (Throwable t) {
+            return false;
+        } finally {
+            guard.set(false);
+        }
+
+        return true;
+    }
+
+    public final boolean unmap(final long position, final long size) {
+        return unmap(position, size, true);
+    }
+
+
     @Override
     public final void close() throws IOException {
         sharedMappedResource.close();
