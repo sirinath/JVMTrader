@@ -22,11 +22,8 @@ import uk.co.real_logic.agrona.collections.Long2ObjectHashMap;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
-import java.sql.Ref;
-import java.util.AbstractList;
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -68,35 +65,51 @@ public class SharedMappedBuffer implements Closeable {
                     else
                         Utils.IOUtils.discardAndUnmap(mappedByteBuffer);
                 } finally {
-                    mappedByteBuffer = null;
-                    refs = 0;
-                    save = true;
-                    returnToPool(this);
+                    release();
                 }
             }
 
             return refs;
         }
 
-        public MappedByteBuffer getMappedByteBuffer() {
+        public final MappedByteBuffer getMappedByteBuffer() {
             return mappedByteBuffer;
         }
 
-        public RefCounts setMappedByteBuffer(final MappedByteBuffer mappedByteBuffer) {
+        public final RefCounts setMappedByteBuffer(final MappedByteBuffer mappedByteBuffer) {
             this.mappedByteBuffer = mappedByteBuffer;
             refCount = 1;
 
             return this;
         }
 
-        public boolean isSave() {
+        public final boolean isSave() {
             return save;
         }
 
-        public RefCounts setSave(final boolean save) {
+        public final RefCounts setSave(final boolean save) {
             this.save = save;
 
             return this;
+        }
+
+        public final void release() {
+            mappedByteBuffer = null;
+            refCount = 0;
+            save = true;
+            returnToPool(this);
+        }
+
+        public final MappedByteBuffer reference() {
+            try {
+                return getMappedByteBuffer();
+            } finally {
+                increment();
+            }
+        }
+
+        public final int dereference() {
+            return decrement();
         }
     }
 
@@ -155,10 +168,10 @@ public class SharedMappedBuffer implements Closeable {
             }
         }
 
-        return refCounts.getMappedByteBuffer();
+        return refCounts.reference();
     }
 
-    public final boolean release(final long position, final long size, final boolean save) {
+    public final boolean dereference(final long position, final long size, final boolean save) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null)
@@ -176,7 +189,7 @@ public class SharedMappedBuffer implements Closeable {
 
             refCounts.setSave(save);
 
-            refs = refCounts.decrement();
+            refs = refCounts.dereference();
         } catch (Throwable t) {
             return false;
         } finally {
@@ -191,8 +204,8 @@ public class SharedMappedBuffer implements Closeable {
         return true;
     }
 
-    public final boolean release(final long position, final long size) {
-        return release(position, size, true);
+    public final boolean dereference(final long position, final long size) {
+        return dereference(position, size, true);
     }
 
     public final boolean unmap(final long position, final long size, final boolean save) {
@@ -211,6 +224,7 @@ public class SharedMappedBuffer implements Closeable {
                 return false;
 
             MappedByteBuffer mappedByteBuffer = refCounts.getMappedByteBuffer();
+            refCounts.release();
 
             if (save)
                 Utils.IOUtils.saveAndUnmap(mappedByteBuffer);
