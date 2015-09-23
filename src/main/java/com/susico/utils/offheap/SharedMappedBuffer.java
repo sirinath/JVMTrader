@@ -22,16 +22,89 @@ import uk.co.real_logic.agrona.collections.Long2ObjectHashMap;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
+import java.sql.Ref;
+import java.util.AbstractList;
+import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.LockSupport;
 
 /**
  * Created by sirin_000 on 17/09/2015.
  */
 public class SharedMappedBuffer implements Closeable {
+    private static final class RefCounts { // Not thread safe!!!
+        private MappedByteBuffer mappedByteBuffer;
+        private int refCount = 0;
+        private boolean save = true;
+
+        public static final int POOL_SIZE = 1000;
+        private static final ArrayDeque<RefCounts> pool = new ArrayDeque<>(POOL_SIZE);
+
+        private RefCounts() {
+            pool.addLast(this);
+        }
+
+        public static RefCounts getInstance() {
+            RefCounts obj = pool.removeFirst();
+            return obj == null ? new RefCounts() : obj;
+        }
+
+        protected static void returnToPool(RefCounts refCounts) {
+            pool.addLast(refCounts);
+        }
+
+        public final int increment() {
+            return ++refCount;
+        }
+
+        public final int decrement() {
+            int refs = --refCount;
+
+            if(refs == 0) {
+                try {
+                    if (save)
+                        Utils.IOUtils.saveAndUnmap(mappedByteBuffer);
+                    else
+                        Utils.IOUtils.discardAndUnmap(mappedByteBuffer);
+                } finally {
+                    mappedByteBuffer = null;
+                    refs = 0;
+                    save = true;
+                    returnToPool(this);
+                }
+            }
+
+            return refs;
+        }
+
+        public MappedByteBuffer getMappedByteBuffer() {
+            return mappedByteBuffer;
+        }
+
+        public RefCounts setMappedByteBuffer(final MappedByteBuffer mappedByteBuffer) {
+            this.mappedByteBuffer = mappedByteBuffer;
+            refCount = 1;
+
+            return this;
+        }
+
+        public boolean isSave() {
+            return save;
+        }
+
+        public RefCounts setSave(final boolean save) {
+            this.save = save;
+
+            return this;
+        }
+    }
+
+
+
     protected final SharedMappedResource sharedMappedResource;
 
-    protected final Long2ObjectHashMap<Long2ObjectHashMap<MappedByteBuffer>> bufferMapping = new Long2ObjectHashMap<>();
+    private final Long2ObjectHashMap<Long2ObjectHashMap<RefCounts>> bufferMapping = new Long2ObjectHashMap<>();
 
     public SharedMappedBuffer(final SharedMappedResource sharedMappedResource) {
         this.sharedMappedResource = sharedMappedResource;
@@ -40,7 +113,7 @@ public class SharedMappedBuffer implements Closeable {
     private final AtomicBoolean guard = new AtomicBoolean(false);
 
     public final MappedByteBuffer map(final long position, final long size) {
-        Long2ObjectHashMap<MappedByteBuffer> positionMap = bufferMapping.get(position);
+        Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null) {
             try {
@@ -51,7 +124,9 @@ public class SharedMappedBuffer implements Closeable {
 
                 MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(position, size);
 
-                positionMap.put(size, mappedByteBuffer);
+                RefCounts refCounts = RefCounts.getInstance().setMappedByteBuffer(mappedByteBuffer);
+
+                positionMap.put(size, refCounts);
 
                 bufferMapping.put(position, positionMap);
 
@@ -61,16 +136,18 @@ public class SharedMappedBuffer implements Closeable {
             }
         }
 
-        MappedByteBuffer mappedByteBuffer = positionMap.get(size);
+        RefCounts refCounts = positionMap.get(size);
 
-        if (mappedByteBuffer == null) {
+        if (refCounts == null) {
             try {
                 while (!guard.compareAndSet(false, true))
                     LockSupport.parkNanos(1);
 
-                mappedByteBuffer = sharedMappedResource.map(position, size);
+                MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(position, size);
 
-                positionMap.put(size, mappedByteBuffer);
+                refCounts = RefCounts.getInstance().setMappedByteBuffer(mappedByteBuffer);
+
+                positionMap.put(size, refCounts);
 
                 return mappedByteBuffer;
             } finally {
@@ -78,34 +155,44 @@ public class SharedMappedBuffer implements Closeable {
             }
         }
 
-        return mappedByteBuffer;
+        return refCounts.getMappedByteBuffer();
     }
 
-    public final boolean unmap(final long position, final long size, final boolean save) {
-        Long2ObjectHashMap<MappedByteBuffer> positionMap = bufferMapping.get(position);
+    public final boolean release(final long position, final long size, final boolean save) {
+        Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null)
             return false;
 
-        MappedByteBuffer mappedByteBuffer = positionMap.get(size);
+        RefCounts refCounts = positionMap.get(size);
 
-        if (mappedByteBuffer == null)
+        if (refCounts == null)
             return false;
 
+        int refs = -1;
         try {
-            if (save)
-                Utils.IOUtils.saveAndUnmap(mappedByteBuffer);
-            else
-                Utils.IOUtils.discardAndUnmap(mappedByteBuffer);
+            while (!guard.compareAndSet(false, true))
+                LockSupport.parkNanos(1);
+
+            refCounts.setSave(save);
+
+            refs = refCounts.decrement();
         } catch (Throwable t) {
             return false;
+        } finally {
+            try {
+                if (refs == 0)
+                    positionMap.remove(size);
+            } finally {
+                guard.set(false);
+            }
         }
 
         return true;
     }
 
-    public final boolean unmap(final long position, final long size) {
-        return unmap(position, size, true);
+    public final boolean release(final long position, final long size) {
+        return release(position, size, true);
     }
 
     @Override

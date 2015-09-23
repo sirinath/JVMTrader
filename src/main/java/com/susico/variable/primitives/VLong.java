@@ -27,7 +27,7 @@ public class VLong extends Number implements BoxOnce<VLong> {
 	/**
 	 * Value
 	 */
-	public long	value;
+	private long	value;
 	
 	/**
 	 * @param i
@@ -75,5 +75,13 @@ public class VLong extends Number implements BoxOnce<VLong> {
 	@Override
 	public double doubleValue() {
 		return value;
+	}
+
+	public long getValue() {
+		return value;
+	}
+
+	public void setValue(final long value) {
+		this.value = value;
 	}
 }

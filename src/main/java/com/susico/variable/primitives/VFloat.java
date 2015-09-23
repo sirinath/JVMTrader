@@ -27,7 +27,7 @@ public class VFloat extends Number implements BoxOnce<VFloat> {
 	/**
 	 * Value
 	 */
-	public float	value;
+	private float	value;
 	
 	/**
 	 * @param i
@@ -75,5 +75,13 @@ public class VFloat extends Number implements BoxOnce<VFloat> {
 	@Override
 	public double doubleValue() {
 		return value;
+	}
+
+	public float getValue() {
+		return value;
+	}
+
+	public void setValue(final float value) {
+		this.value = value;
 	}
 }

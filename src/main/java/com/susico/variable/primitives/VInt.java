@@ -16,8 +16,6 @@
 
 package com.susico.variable.primitives;
 
-import com.sakrio.boxonce.BoxOnceMaker;
-
 /**
  * Wrapper class
  * 
@@ -29,7 +27,7 @@ public class VInt extends Number implements BoxOnce<VInt> {
 	/**
 	 * Value
 	 */
-	public int	value;
+	private int	value;
 	
 	/**
 	 * @param i
@@ -78,4 +76,12 @@ public class VInt extends Number implements BoxOnce<VInt> {
 	public double doubleValue() {
 		return value;
 	}
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(final int value) {
+        this.value = value;
+    }
 }

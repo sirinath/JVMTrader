@@ -28,7 +28,7 @@ public class VDouble extends Number implements BoxOnce<VDouble> {
 	/**
 	 * Value
 	 */
-	public double	value;
+	private double	value;
 	
 	/**
 	 * @param i
@@ -76,5 +76,13 @@ public class VDouble extends Number implements BoxOnce<VDouble> {
 	@Override
 	public double doubleValue() {
 		return value;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(final double value) {
+		this.value = value;
 	}
 }

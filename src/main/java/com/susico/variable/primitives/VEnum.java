@@ -30,7 +30,7 @@ public class VEnum<T extends Enum<T>> extends Number implements
 	/**
 	 * Value
 	 */
-	public T	value;
+	private T	value;
 	
 	/**
 	 * @param i
@@ -79,4 +79,12 @@ public class VEnum<T extends Enum<T>> extends Number implements
 	public double doubleValue() {
 		return value.ordinal();
 	}
+
+    public T getValue() {
+        return value;
+    }
+
+    public void setValue(final T value) {
+        this.value = value;
+    }
 }

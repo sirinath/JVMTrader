@@ -16,8 +16,6 @@
 
 package com.susico.variable.primitives;
 
-import com.susico.boxonce.BoxOnce;
-
 /**
  * Wrapper class
  * 
@@ -25,11 +23,11 @@ import com.susico.boxonce.BoxOnce;
  * 
  */
 @SuppressWarnings("serial")
-public class VBool extends Number implements BoxOnce<VBool> {
+public final class VBool extends Number implements BoxOnce<VBool> {
 	/**
 	 * Value
 	 */
-	public boolean	value;
+	private boolean	value;
 	
 	/**
 	 * @param i
@@ -78,4 +76,12 @@ public class VBool extends Number implements BoxOnce<VBool> {
 	public double doubleValue() {
 		return value ? 1 : 0;
 	}
+
+	public boolean getValue() {
+        return value;
+    }
+
+    public void setValue(final boolean value) {
+        this.value = value;
+    }
 }

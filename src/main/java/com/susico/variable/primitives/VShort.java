@@ -16,8 +16,6 @@
 
 package com.susico.variable.primitives;
 
-import com.sakrio.boxonce.BoxOnceMaker;
-
 /**
  * Wrapper class
  * 
@@ -29,7 +27,7 @@ public class VShort extends Number implements BoxOnce<VShort> {
 	/**
 	 * Value
 	 */
-	public short	value;
+	private short	value;
 	
 	/**
 	 * @param i
@@ -82,5 +80,13 @@ public class VShort extends Number implements BoxOnce<VShort> {
 	@Override
 	public short shortValue() {
 		return value;
+	}
+
+	public short getValue() {
+		return value;
+	}
+
+	public void setValue(final short value) {
+		this.value = value;
 	}
 }

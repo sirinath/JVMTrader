@@ -29,7 +29,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VBool VNBox(final boolean v) {
+	public static VBool VBox(final boolean v) {
 		return new VBool(v);
 	}
 	
@@ -38,7 +38,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VByte VNBox(final byte v) {
+	public static VByte VBox(final byte v) {
 		return new VByte(v);
 	}
 	
@@ -47,7 +47,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VChar VNBox(final char v) {
+	public static VChar VBox(final char v) {
 		return new VChar(v);
 	}
 	
@@ -56,7 +56,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VDouble VNBox(final double v) {
+	public static VDouble VBox(final double v) {
 		return new VDouble(v);
 	}
 	
@@ -65,7 +65,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VFloat VNBox(final float v) {
+	public static VFloat VBox(final float v) {
 		return new VFloat(v);
 	}
 	
@@ -74,7 +74,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VInt VNBox(final int v) {
+	public static VInt VBox(final int v) {
 		return new VInt(v);
 	}
 	
@@ -83,7 +83,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VLong VNBox(final long v) {
+	public static VLong VBox(final long v) {
 		return new VLong(v);
 	}
 	
@@ -92,7 +92,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static VShort VNBox(final short v) {
+	public static VShort VBox(final short v) {
 		return new VShort(v);
 	}
 	
@@ -103,7 +103,7 @@ public class VUtils {
 	 *           value to be boxed
 	 * @return boxed value
 	 */
-	public static <T extends Enum<T>> VEnum<T> VNBox(final T v) {
+	public static <T extends Enum<T>> VEnum<T> VBox(final T v) {
 		return new VEnum<T>(v);
 	}
 }

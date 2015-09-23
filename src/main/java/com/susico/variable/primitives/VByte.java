@@ -16,8 +16,6 @@
 
 package com.susico.variable.primitives;
 
-import com.susico.boxonce.BoxOnce;
-
 /**
  * Wrapper class
  * 
@@ -29,7 +27,7 @@ public class VByte extends Number implements BoxOnce<VByte> {
 	/**
 	 * Value
 	 */
-	public byte	value;
+	private byte	value;
 	
 	/**
 	 * @param i
@@ -83,4 +81,12 @@ public class VByte extends Number implements BoxOnce<VByte> {
 	public byte byteValue() {
 		return value;
 	}
+
+	public byte getValue() {
+		return value;
+	}
+
+    public void setValue(final byte value) {
+        this.value = value;
+    }
 }

@@ -16,8 +16,6 @@
 
 package com.susico.variable.primitives;
 
-import com.sakrio.boxonce.BoxOnceMaker;
-
 /**
  * Wrapper class
  * 
@@ -29,7 +27,7 @@ public class VChar extends Number implements BoxOnce<VChar> {
 	/**
 	 * Value
 	 */
-	public char	value;
+	private char	value;
 	
 	/**
 	 * @param i
@@ -77,5 +75,13 @@ public class VChar extends Number implements BoxOnce<VChar> {
 	@Override
 	public double doubleValue() {
 		return value;
+	}
+
+	public char getValue() {
+		return value;
+	}
+
+	public void setValue(final char value) {
+		this.value = value;
 	}
 }
