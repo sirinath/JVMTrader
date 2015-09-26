@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
@@ -23,28 +23,28 @@ package com.susico.variable.primitives;
  * 
  */
 @SuppressWarnings("serial")
-public class VFloat extends Number implements BoxOnce<VFloat> {
+public class VShort extends Number implements BoxOnce<VShort> {
 	/**
 	 * Value
 	 */
-	private float	value;
+	private short	value;
 	
 	/**
 	 * @param i
 	 *           Parameter
 	 */
-	public VFloat(final float i) {
+	public VShort(final short i) {
 		value = i;
 	}
 	
 	@Override
 	public int hashCode() {
-		return Float.floatToIntBits(value);
+		return value;
 	}
 	
 	@Override
-	public VFloat clone() throws CloneNotSupportedException {
-		return new VFloat(value);
+	public VShort clone() throws CloneNotSupportedException {
+		return new VShort(value);
 	}
 	
 	@Override
@@ -53,18 +53,18 @@ public class VFloat extends Number implements BoxOnce<VFloat> {
 	}
 	
 	@Override
-	public int compareTo(final VFloat o) {
+	public int compareTo(final VShort o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
 	public int intValue() {
-		return 0;
+		return value;
 	}
 	
 	@Override
 	public long longValue() {
-		return (long) value;
+		return value;
 	}
 	
 	@Override
@@ -76,12 +76,17 @@ public class VFloat extends Number implements BoxOnce<VFloat> {
 	public double doubleValue() {
 		return value;
 	}
-
-	public float getValue() {
+	
+	@Override
+	public short shortValue() {
 		return value;
 	}
 
-	public void setValue(final float value) {
+	public short getValue() {
+		return value;
+	}
+
+	public void setValue(final short value) {
 		this.value = value;
 	}
 }

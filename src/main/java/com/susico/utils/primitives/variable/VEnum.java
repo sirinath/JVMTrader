@@ -14,37 +14,40 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
  * 
  * @author sirinath
+ * @param <T>
+ *           Enum type
  * 
  */
 @SuppressWarnings("serial")
-public class VInt extends Number implements BoxOnce<VInt> {
+public class VEnum<T extends Enum<T>> extends Number implements
+		BoxOnce<VEnum<T>> {
 	/**
 	 * Value
 	 */
-	private int	value;
+	private T	value;
 	
 	/**
 	 * @param i
 	 *           Parameter
 	 */
-	public VInt(final int i) {
+	public VEnum(final T i) {
 		value = i;
 	}
 	
 	@Override
 	public int hashCode() {
-		return value;
+		return value.hashCode();
 	}
 	
 	@Override
-	public VInt clone() throws CloneNotSupportedException {
-		return new VInt(value);
+	public VEnum<T> clone() throws CloneNotSupportedException {
+		return new VEnum<T>(value);
 	}
 	
 	@Override
@@ -53,35 +56,35 @@ public class VInt extends Number implements BoxOnce<VInt> {
 	}
 	
 	@Override
-	public int compareTo(final VInt o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
+	public int compareTo(final VEnum<T> o) {
+		return value.compareTo(o.value);
 	}
 	
 	@Override
 	public int intValue() {
-		return value;
+		return value.ordinal();
 	}
 	
 	@Override
 	public long longValue() {
-		return value;
+		return value.ordinal();
 	}
 	
 	@Override
 	public float floatValue() {
-		return value;
+		return value.ordinal();
 	}
 	
 	@Override
 	public double doubleValue() {
-		return value;
+		return value.ordinal();
 	}
 
-    public int getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(final int value) {
+    public void setValue(final T value) {
         this.value = value;
     }
 }

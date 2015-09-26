@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
+
 
 /**
  * Wrapper class
@@ -23,28 +24,28 @@ package com.susico.variable.primitives;
  * 
  */
 @SuppressWarnings("serial")
-public class VByte extends Number implements BoxOnce<VByte> {
+public class VDouble extends Number implements BoxOnce<VDouble> {
 	/**
 	 * Value
 	 */
-	private byte	value;
+	private double	value;
 	
 	/**
 	 * @param i
 	 *           Parameter
 	 */
-	public VByte(final byte i) {
+	public VDouble(final double i) {
 		value = i;
 	}
 	
 	@Override
 	public int hashCode() {
-		return value;
+		return (int) Double.doubleToLongBits(value);
 	}
 	
 	@Override
-	public VByte clone() throws CloneNotSupportedException {
-		return new VByte(value);
+	public VDouble clone() throws CloneNotSupportedException {
+		return new VDouble(value);
 	}
 	
 	@Override
@@ -53,40 +54,35 @@ public class VByte extends Number implements BoxOnce<VByte> {
 	}
 	
 	@Override
-	public int compareTo(final VByte o) {
+	public int compareTo(final VDouble o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
 	public int intValue() {
-		return value;
+		return (int) value;
 	}
 	
 	@Override
 	public long longValue() {
-		return value;
+		return (long) value;
 	}
 	
 	@Override
 	public float floatValue() {
-		return value;
+		return (float) value;
 	}
 	
 	@Override
 	public double doubleValue() {
 		return value;
 	}
-	
-	@Override
-	public byte byteValue() {
+
+	public double getValue() {
 		return value;
 	}
 
-	public byte getValue() {
-		return value;
+	public void setValue(final double value) {
+		this.value = value;
 	}
-
-    public void setValue(final byte value) {
-        this.value = value;
-    }
 }

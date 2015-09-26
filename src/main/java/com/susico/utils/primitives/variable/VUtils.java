@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
 
 
 /**

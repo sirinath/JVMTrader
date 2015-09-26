@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
@@ -23,17 +23,17 @@ package com.susico.variable.primitives;
  * 
  */
 @SuppressWarnings("serial")
-public class VChar extends Number implements BoxOnce<VChar> {
+public class VByte extends Number implements BoxOnce<VByte> {
 	/**
 	 * Value
 	 */
-	private char	value;
+	private byte	value;
 	
 	/**
 	 * @param i
 	 *           Parameter
 	 */
-	public VChar(final char i) {
+	public VByte(final byte i) {
 		value = i;
 	}
 	
@@ -43,8 +43,8 @@ public class VChar extends Number implements BoxOnce<VChar> {
 	}
 	
 	@Override
-	public VChar clone() throws CloneNotSupportedException {
-		return new VChar(value);
+	public VByte clone() throws CloneNotSupportedException {
+		return new VByte(value);
 	}
 	
 	@Override
@@ -53,7 +53,7 @@ public class VChar extends Number implements BoxOnce<VChar> {
 	}
 	
 	@Override
-	public int compareTo(final VChar o) {
+	public int compareTo(final VByte o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
@@ -76,12 +76,17 @@ public class VChar extends Number implements BoxOnce<VChar> {
 	public double doubleValue() {
 		return value;
 	}
-
-	public char getValue() {
+	
+	@Override
+	public byte byteValue() {
 		return value;
 	}
 
-	public void setValue(final char value) {
-		this.value = value;
+	public byte getValue() {
+		return value;
 	}
+
+    public void setValue(final byte value) {
+        this.value = value;
+    }
 }

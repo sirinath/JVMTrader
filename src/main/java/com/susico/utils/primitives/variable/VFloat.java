@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
@@ -23,28 +23,28 @@ package com.susico.variable.primitives;
  * 
  */
 @SuppressWarnings("serial")
-public final class VBool extends Number implements BoxOnce<VBool> {
+public class VFloat extends Number implements BoxOnce<VFloat> {
 	/**
 	 * Value
 	 */
-	private boolean	value;
+	private float	value;
 	
 	/**
 	 * @param i
 	 *           Parameter
 	 */
-	public VBool(final boolean i) {
+	public VFloat(final float i) {
 		value = i;
 	}
 	
 	@Override
 	public int hashCode() {
-		return value ? 1 : 0;
+		return Float.floatToIntBits(value);
 	}
 	
 	@Override
-	public VBool clone() throws CloneNotSupportedException {
-		return new VBool(value);
+	public VFloat clone() throws CloneNotSupportedException {
+		return new VFloat(value);
 	}
 	
 	@Override
@@ -53,35 +53,35 @@ public final class VBool extends Number implements BoxOnce<VBool> {
 	}
 	
 	@Override
-	public int compareTo(final VBool o) {
-		return value == o.value ? 0 : (o.value ? -1 : 1);
+	public int compareTo(final VFloat o) {
+		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
 	public int intValue() {
-		return value ? 1 : 0;
+		return 0;
 	}
 	
 	@Override
 	public long longValue() {
-		return value ? 1 : 0;
+		return (long) value;
 	}
 	
 	@Override
 	public float floatValue() {
-		return value ? 1 : 0;
+		return value;
 	}
 	
 	@Override
 	public double doubleValue() {
-		return value ? 1 : 0;
+		return value;
 	}
 
-	public boolean getValue() {
-        return value;
-    }
+	public float getValue() {
+		return value;
+	}
 
-    public void setValue(final boolean value) {
-        this.value = value;
-    }
+	public void setValue(final float value) {
+		this.value = value;
+	}
 }

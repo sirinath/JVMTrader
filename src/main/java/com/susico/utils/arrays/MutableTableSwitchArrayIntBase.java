@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
-
-import java.io.Serializable;
+package com.susico.utils.arrays;
 
 /**
- * Box Once market interface
- * 
- * @author sirinath
- * @param <T>
- *           Type
- * 
+ * Created by sirin_000 on 25/09/2015.
  */
-public interface BoxOnce<T> extends Comparable<T>, Cloneable, Serializable {
+public abstract class MutableTableSwitchArrayIntBase extends ImmMutableTableSwitchArrayIntBase {
+    protected MutableTableSwitchArrayIntBase(final boolean checked, final int definedAsValues, final int length) {
+        super(checked, definedAsValues, length);
+    }
+
+    public abstract void put(int index, int value);
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
@@ -23,28 +23,28 @@ package com.susico.variable.primitives;
  * 
  */
 @SuppressWarnings("serial")
-public class VLong extends Number implements BoxOnce<VLong> {
+public final class VBool extends Number implements BoxOnce<VBool> {
 	/**
 	 * Value
 	 */
-	private long	value;
+	private boolean	value;
 	
 	/**
 	 * @param i
 	 *           Parameter
 	 */
-	public VLong(final long i) {
+	public VBool(final boolean i) {
 		value = i;
 	}
 	
 	@Override
 	public int hashCode() {
-		return (int) (value + (value >> Integer.SIZE));
+		return value ? 1 : 0;
 	}
 	
 	@Override
-	public VLong clone() throws CloneNotSupportedException {
-		return new VLong(value);
+	public VBool clone() throws CloneNotSupportedException {
+		return new VBool(value);
 	}
 	
 	@Override
@@ -53,35 +53,35 @@ public class VLong extends Number implements BoxOnce<VLong> {
 	}
 	
 	@Override
-	public int compareTo(final VLong o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
+	public int compareTo(final VBool o) {
+		return value == o.value ? 0 : (o.value ? -1 : 1);
 	}
 	
 	@Override
 	public int intValue() {
-		return (int) value;
+		return value ? 1 : 0;
 	}
 	
 	@Override
 	public long longValue() {
-		return value;
+		return value ? 1 : 0;
 	}
 	
 	@Override
 	public float floatValue() {
-		return value;
+		return value ? 1 : 0;
 	}
 	
 	@Override
 	public double doubleValue() {
-		return value;
+		return value ? 1 : 0;
 	}
 
-	public long getValue() {
-		return value;
-	}
+	public boolean getValue() {
+        return value;
+    }
 
-	public void setValue(final long value) {
-		this.value = value;
-	}
+    public void setValue(final boolean value) {
+        this.value = value;
+    }
 }

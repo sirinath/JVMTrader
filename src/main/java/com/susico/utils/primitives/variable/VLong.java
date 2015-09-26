@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.variable.primitives;
+package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
@@ -23,28 +23,28 @@ package com.susico.variable.primitives;
  * 
  */
 @SuppressWarnings("serial")
-public class VShort extends Number implements BoxOnce<VShort> {
+public class VLong extends Number implements BoxOnce<VLong> {
 	/**
 	 * Value
 	 */
-	private short	value;
+	private long	value;
 	
 	/**
 	 * @param i
 	 *           Parameter
 	 */
-	public VShort(final short i) {
+	public VLong(final long i) {
 		value = i;
 	}
 	
 	@Override
 	public int hashCode() {
-		return value;
+		return (int) (value + (value >> Integer.SIZE));
 	}
 	
 	@Override
-	public VShort clone() throws CloneNotSupportedException {
-		return new VShort(value);
+	public VLong clone() throws CloneNotSupportedException {
+		return new VLong(value);
 	}
 	
 	@Override
@@ -53,13 +53,13 @@ public class VShort extends Number implements BoxOnce<VShort> {
 	}
 	
 	@Override
-	public int compareTo(final VShort o) {
+	public int compareTo(final VLong o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
 	public int intValue() {
-		return value;
+		return (int) value;
 	}
 	
 	@Override
@@ -76,17 +76,12 @@ public class VShort extends Number implements BoxOnce<VShort> {
 	public double doubleValue() {
 		return value;
 	}
-	
-	@Override
-	public short shortValue() {
+
+	public long getValue() {
 		return value;
 	}
 
-	public short getValue() {
-		return value;
-	}
-
-	public void setValue(final short value) {
+	public void setValue(final long value) {
 		this.value = value;
 	}
 }
