@@ -23,7 +23,7 @@ package com.susico.utils.primitives.variable;
  * 
  */
 @SuppressWarnings("serial")
-public class VInt extends Number implements BoxOnce<VInt> {
+public final class VInt extends Number implements BoxOnce<VInt> {
 	/**
 	 * Value
 	 */
@@ -38,50 +38,50 @@ public class VInt extends Number implements BoxOnce<VInt> {
 	}
 	
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return value;
 	}
 	
 	@Override
-	public VInt clone() throws CloneNotSupportedException {
+	public final VInt clone() throws CloneNotSupportedException {
 		return new VInt(value);
 	}
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(value);
 	}
 	
 	@Override
-	public int compareTo(final VInt o) {
+	public final int compareTo(final VInt o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
-	public int intValue() {
+	public final int intValue() {
 		return value;
 	}
 	
 	@Override
-	public long longValue() {
+	public final long longValue() {
 		return value;
 	}
 	
 	@Override
-	public float floatValue() {
+	public final float floatValue() {
 		return value;
 	}
 	
 	@Override
-	public double doubleValue() {
+	public final double doubleValue() {
 		return value;
 	}
 
-    public int getValue() {
+    public final int getValue() {
         return value;
     }
 
-    public void setValue(final int value) {
+    public final void setValue(final int value) {
         this.value = value;
     }
 }

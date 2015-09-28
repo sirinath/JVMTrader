@@ -20,9 +20,9 @@ package com.susico.jvmtrader.book;
  * Created by sirin_000 on 12/09/2015.
  */
 public class OrderBook {
-    public final static OrderBook INSTANCE = new OrderBook();
+    public static final OrderBook INSTANCE = new OrderBook();
 
-    public final static long MAX_ENTRIES = 16;
+    public static final long MAX_ENTRIES = 16;
 
     protected OrderBook() {
     }

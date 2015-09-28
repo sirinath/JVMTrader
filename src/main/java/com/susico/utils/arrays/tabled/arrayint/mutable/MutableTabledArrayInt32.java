@@ -21,15 +21,15 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt16 {
-    protected int value16;
-    protected int value17;
-    protected int value18;
-    protected int value19;
-    protected int value20;
-    protected int value21;
-    protected int value22;
-    protected int value23;
+public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt24 {
+    protected int value24;
+    protected int value25;
+    protected int value26;
+    protected int value27;
+    protected int value28;
+    protected int value29;
+    protected int value30;
+    protected int value31;
 
     protected MutableTabledArrayInt32(final boolean checked, final int... values) {
         this(checked, 0, values);
@@ -40,94 +40,102 @@ public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt16 {
 
         switch (values.length) {
             default:
+            case 32:
+                this.value31 = ArrayAccess.UNCHECKED.get(values, 31);
+                this.value30 = ArrayAccess.UNCHECKED.get(values, 30);
+                this.value29 = ArrayAccess.UNCHECKED.get(values, 29);
+                this.value28 = ArrayAccess.UNCHECKED.get(values, 28);
+                this.value27 = ArrayAccess.UNCHECKED.get(values, 27);
+                this.value26 = ArrayAccess.UNCHECKED.get(values, 26);
+                this.value25 = ArrayAccess.UNCHECKED.get(values, 25);
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
+            case 31:
+                this.value31 = 0;
+                this.value30 = ArrayAccess.UNCHECKED.get(values, 30);
+                this.value29 = ArrayAccess.UNCHECKED.get(values, 29);
+                this.value28 = ArrayAccess.UNCHECKED.get(values, 28);
+                this.value27 = ArrayAccess.UNCHECKED.get(values, 27);
+                this.value26 = ArrayAccess.UNCHECKED.get(values, 26);
+                this.value25 = ArrayAccess.UNCHECKED.get(values, 25);
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
+            case 30:
+                this.value31 = 0;
+                this.value30 = 0;
+                this.value29 = ArrayAccess.UNCHECKED.get(values, 29);
+                this.value28 = ArrayAccess.UNCHECKED.get(values, 28);
+                this.value27 = ArrayAccess.UNCHECKED.get(values, 27);
+                this.value26 = ArrayAccess.UNCHECKED.get(values, 26);
+                this.value25 = ArrayAccess.UNCHECKED.get(values, 25);
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
+            case 29:
+                this.value31 = 0;
+                this.value30 = 0;
+                this.value29 = 0;
+                this.value28 = ArrayAccess.UNCHECKED.get(values, 28);
+                this.value27 = ArrayAccess.UNCHECKED.get(values, 27);
+                this.value26 = ArrayAccess.UNCHECKED.get(values, 26);
+                this.value25 = ArrayAccess.UNCHECKED.get(values, 25);
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
+            case 28:
+                this.value31 = 0;
+                this.value30 = 0;
+                this.value29 = 0;
+                this.value28 = 0;
+                this.value27 = ArrayAccess.UNCHECKED.get(values, 27);
+                this.value26 = ArrayAccess.UNCHECKED.get(values, 26);
+                this.value25 = ArrayAccess.UNCHECKED.get(values, 25);
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
+            case 27:
+                this.value31 = 0;
+                this.value30 = 0;
+                this.value29 = 0;
+                this.value28 = 0;
+                this.value27 = 0;
+                this.value26 = ArrayAccess.UNCHECKED.get(values, 26);
+                this.value25 = ArrayAccess.UNCHECKED.get(values, 25);
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
+            case 26:
+                this.value31 = 0;
+                this.value30 = 0;
+                this.value29 = 0;
+                this.value28 = 0;
+                this.value27 = 0;
+                this.value26 = 0;
+                this.value25 = ArrayAccess.UNCHECKED.get(values, 25);
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
+            case 25:
+                this.value31 = 0;
+                this.value30 = 0;
+                this.value29 = 0;
+                this.value28 = 0;
+                this.value27 = 0;
+                this.value26 = 0;
+                this.value25 = 0;
+                this.value24 = ArrayAccess.UNCHECKED.get(values, 24);
+                break;
+
             case 24:
-                this.value23 = ArrayAccess.UNCHECKED.get(values, 23);
-                this.value22 = ArrayAccess.UNCHECKED.get(values, 22);
-                this.value21 = ArrayAccess.UNCHECKED.get(values, 21);
-                this.value20 = ArrayAccess.UNCHECKED.get(values, 20);
-                this.value19 = ArrayAccess.UNCHECKED.get(values, 19);
-                this.value18 = ArrayAccess.UNCHECKED.get(values, 18);
-                this.value17 = ArrayAccess.UNCHECKED.get(values, 17);
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 23:
-                this.value23 = 0;
-                this.value22 = ArrayAccess.UNCHECKED.get(values, 22);
-                this.value21 = ArrayAccess.UNCHECKED.get(values, 21);
-                this.value20 = ArrayAccess.UNCHECKED.get(values, 20);
-                this.value19 = ArrayAccess.UNCHECKED.get(values, 19);
-                this.value18 = ArrayAccess.UNCHECKED.get(values, 18);
-                this.value17 = ArrayAccess.UNCHECKED.get(values, 17);
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 22:
-                this.value23 = 0;
-                this.value22 = 0;
-                this.value21 = ArrayAccess.UNCHECKED.get(values, 21);
-                this.value20 = ArrayAccess.UNCHECKED.get(values, 20);
-                this.value19 = ArrayAccess.UNCHECKED.get(values, 19);
-                this.value18 = ArrayAccess.UNCHECKED.get(values, 18);
-                this.value17 = ArrayAccess.UNCHECKED.get(values, 17);
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 21:
-                this.value23 = 0;
-                this.value22 = 0;
-                this.value21 = 0;
-                this.value20 = ArrayAccess.UNCHECKED.get(values, 20);
-                this.value19 = ArrayAccess.UNCHECKED.get(values, 19);
-                this.value18 = ArrayAccess.UNCHECKED.get(values, 18);
-                this.value17 = ArrayAccess.UNCHECKED.get(values, 17);
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 20:
-                this.value23 = 0;
-                this.value22 = 0;
-                this.value21 = 0;
-                this.value20 = 0;
-                this.value19 = ArrayAccess.UNCHECKED.get(values, 19);
-                this.value18 = ArrayAccess.UNCHECKED.get(values, 18);
-                this.value17 = ArrayAccess.UNCHECKED.get(values, 17);
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 19:
-                this.value23 = 0;
-                this.value22 = 0;
-                this.value21 = 0;
-                this.value20 = 0;
-                this.value19 = 0;
-                this.value18 = ArrayAccess.UNCHECKED.get(values, 18);
-                this.value17 = ArrayAccess.UNCHECKED.get(values, 17);
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 18:
-                this.value23 = 0;
-                this.value22 = 0;
-                this.value21 = 0;
-                this.value20 = 0;
-                this.value19 = 0;
-                this.value18 = 0;
-                this.value17 = ArrayAccess.UNCHECKED.get(values, 17);
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 17:
-                this.value23 = 0;
-                this.value22 = 0;
-                this.value21 = 0;
-                this.value20 = 0;
-                this.value19 = 0;
-                this.value18 = 0;
-                this.value17 = 0;
-                this.value16 = ArrayAccess.UNCHECKED.get(values, 16);
-                break;
-
             case 16:
             case 15:
             case 14:
@@ -145,14 +153,14 @@ public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt16 {
             case 2:
             case 1:
             case 0:
-                this.value23 = 0;
-                this.value22 = 0;
-                this.value21 = 0;
-                this.value20 = 0;
-                this.value19 = 0;
-                this.value18 = 0;
-                this.value17 = 0;
-                this.value16 = 0;
+                this.value31 = 0;
+                this.value30 = 0;
+                this.value29 = 0;
+                this.value28 = 0;
+                this.value27 = 0;
+                this.value26 = 0;
+                this.value25 = 0;
+                this.value24 = 0;
                 break;
         }
     }
@@ -160,7 +168,7 @@ public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt16 {
     public static MutableTabledArrayInt32 getInstance(final boolean checked, final int ... values) {
         return new MutableTabledArrayInt32(checked, values) {
             @Override
-            public void put(final int index, final int value) {
+            public final void put(final int index, final int value) {
                 switch (index) {
                     case 0:
                         value00 = value;
@@ -210,6 +218,22 @@ public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt16 {
                         value22 = value;
                     case 23:
                         value23 = value;
+                    case 24:
+                        value24 = value;
+                    case 25:
+                        value25 = value;
+                    case 26:
+                        value26 = value;
+                    case 27:
+                        value27 = value;
+                    case 28:
+                        value28 = value;
+                    case 29:
+                        value29 = value;
+                    case 30:
+                        value30 = value;
+                    case 31:
+                        value31 = value;
                     default:
                         putToRest(index, value);
                 }
@@ -266,6 +290,22 @@ public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt16 {
                         return value22;
                     case 23:
                         return value23;
+                    case 24:
+                        return value24;
+                    case 25:
+                        return value25;
+                    case 26:
+                        return value26;
+                    case 27:
+                        return value27;
+                    case 28:
+                        return value28;
+                    case 29:
+                        return value29;
+                    case 30:
+                        return value30;
+                    case 31:
+                        return value31;
                     default:
                         return getFromRest(index);
                 }
@@ -273,67 +313,67 @@ public abstract class MutableTabledArrayInt32 extends MutableTabledArrayInt16 {
         };
     }
 
-    public final int getValue16() {
-        return value16;
+    public final int getValue24() {
+        return value24;
     }
 
-    public final int getValue17() {
-        return value17;
+    public final int getValue25() {
+        return value25;
     }
 
-    public final int getValue18() {
-        return value18;
+    public final int getValue26() {
+        return value26;
     }
 
-    public final int getValue19() {
-        return value19;
+    public final int getValue27() {
+        return value27;
     }
 
-    public final int getValue20() {
-        return value20;
+    public final int getValue28() {
+        return value28;
     }
 
-    public final int getValue21() {
-        return value21;
+    public final int getValue29() {
+        return value29;
     }
 
-    public final int getValue22() {
-        return value22;
+    public final int getValue30() {
+        return value30;
     }
 
-    public final int getValue23() {
-        return value23;
+    public final int getValue31() {
+        return value31;
     }
 
-    public final void setValue16(final int value16) {
-        this.value16 = value16;
+    public final void setValue24(final int value24) {
+        this.value24 = value24;
     }
 
-    public final void setValue17(final int value17) {
-        this.value17 = value17;
+    public final void setValue25(final int value25) {
+        this.value25 = value25;
     }
 
-    public final void setValue18(final int value18) {
-        this.value18 = value18;
+    public final void setValue26(final int value26) {
+        this.value26 = value26;
     }
 
-    public final void setValue19(final int value19) {
-        this.value19 = value19;
+    public final void setValue27(final int value27) {
+        this.value27 = value27;
     }
 
-    public final void setValue20(final int value20) {
-        this.value20 = value20;
+    public final void setValue28(final int value28) {
+        this.value28 = value28;
     }
 
-    public final void setValue21(final int value21) {
-        this.value21 = value21;
+    public final void setValue29(final int value29) {
+        this.value29 = value29;
     }
 
-    public final void setValue22(final int value22) {
-        this.value22 = value22;
+    public final void setValue30(final int value30) {
+        this.value30 = value30;
     }
 
-    public final void setValue23(final int value23) {
-        this.value23 = value23;
+    public final void setValue31(final int value31) {
+        this.value31 = value31;
     }
 }

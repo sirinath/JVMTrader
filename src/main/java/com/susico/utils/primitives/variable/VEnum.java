@@ -25,7 +25,7 @@ package com.susico.utils.primitives.variable;
  * 
  */
 @SuppressWarnings("serial")
-public class VEnum<T extends Enum<T>> extends Number implements
+public final class VEnum<T extends Enum<T>> extends Number implements
 		BoxOnce<VEnum<T>> {
 	/**
 	 * Value
@@ -41,37 +41,37 @@ public class VEnum<T extends Enum<T>> extends Number implements
 	}
 	
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return value.hashCode();
 	}
 	
 	@Override
-	public VEnum<T> clone() throws CloneNotSupportedException {
+	public final VEnum<T> clone() throws CloneNotSupportedException {
 		return new VEnum<T>(value);
 	}
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(value);
 	}
 	
 	@Override
-	public int compareTo(final VEnum<T> o) {
+	public final int compareTo(final VEnum<T> o) {
 		return value.compareTo(o.value);
 	}
 	
 	@Override
-	public int intValue() {
+	public final int intValue() {
 		return value.ordinal();
 	}
 	
 	@Override
-	public long longValue() {
+	public final long longValue() {
 		return value.ordinal();
 	}
 	
 	@Override
-	public float floatValue() {
+	public final float floatValue() {
 		return value.ordinal();
 	}
 	
@@ -80,11 +80,11 @@ public class VEnum<T extends Enum<T>> extends Number implements
 		return value.ordinal();
 	}
 
-    public T getValue() {
+    public final T getValue() {
         return value;
     }
 
-    public void setValue(final T value) {
+    public final void setValue(final T value) {
         this.value = value;
     }
 }

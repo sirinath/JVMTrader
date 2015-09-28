@@ -23,7 +23,7 @@ package com.susico.utils.primitives.variable;
  * 
  */
 @SuppressWarnings("serial")
-public class VByte extends Number implements BoxOnce<VByte> {
+public final class VByte extends Number implements BoxOnce<VByte> {
 	/**
 	 * Value
 	 */
@@ -38,55 +38,55 @@ public class VByte extends Number implements BoxOnce<VByte> {
 	}
 	
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return value;
 	}
 	
 	@Override
-	public VByte clone() throws CloneNotSupportedException {
+	public final VByte clone() throws CloneNotSupportedException {
 		return new VByte(value);
 	}
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(value);
 	}
 	
 	@Override
-	public int compareTo(final VByte o) {
+	public final int compareTo(final VByte o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
-	public int intValue() {
+	public final int intValue() {
 		return value;
 	}
 	
 	@Override
-	public long longValue() {
+	public final long longValue() {
 		return value;
 	}
 	
 	@Override
-	public float floatValue() {
+	public final float floatValue() {
 		return value;
 	}
 	
 	@Override
-	public double doubleValue() {
+	public final double doubleValue() {
 		return value;
 	}
 	
 	@Override
-	public byte byteValue() {
+	public final byte byteValue() {
 		return value;
 	}
 
-	public byte getValue() {
+	public final byte getValue() {
 		return value;
 	}
 
-    public void setValue(final byte value) {
+    public final void setValue(final byte value) {
         this.value = value;
     }
 }

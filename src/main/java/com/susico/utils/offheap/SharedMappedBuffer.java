@@ -16,7 +16,7 @@
 
 package com.susico.utils.offheap;
 
-import com.susico.utils.Utils;
+import com.susico.utils.io.IOUtils;
 import uk.co.real_logic.agrona.collections.Long2ObjectHashMap;
 
 import java.io.Closeable;
@@ -29,11 +29,11 @@ import java.util.concurrent.locks.LockSupport;
 /**
  * Created by sirin_000 on 17/09/2015.
  */
-public class SharedMappedBuffer implements Closeable {
+public  final class SharedMappedBuffer implements Closeable {
     private static final class RefCounts { // Not thread safe!!!
         private MappedByteBuffer mappedByteBuffer;
         private int refCount = 0;
-        private boolean save = true;
+        private boolean save;
 
         public static final int POOL_SIZE = 1000;
         private static final ArrayDeque<RefCounts> pool = new ArrayDeque<>(POOL_SIZE);
@@ -51,32 +51,7 @@ public class SharedMappedBuffer implements Closeable {
             pool.addLast(refCounts);
         }
 
-        public final int increment() {
-            return ++refCount;
-        }
-
-        public final int decrement() {
-            int refs = --refCount;
-
-            if(refs == 0) {
-                try {
-                    if (save)
-                        Utils.IOUtils.saveAndUnmap(mappedByteBuffer);
-                    else
-                        Utils.IOUtils.discardAndUnmap(mappedByteBuffer);
-                } finally {
-                    release();
-                }
-            }
-
-            return refs;
-        }
-
-        public final MappedByteBuffer getMappedByteBuffer() {
-            return mappedByteBuffer;
-        }
-
-        public final RefCounts setMappedByteBuffer(final MappedByteBuffer mappedByteBuffer) {
+        public final RefCounts initTo(final MappedByteBuffer mappedByteBuffer) {
             this.mappedByteBuffer = mappedByteBuffer;
             refCount = 1;
 
@@ -93,34 +68,54 @@ public class SharedMappedBuffer implements Closeable {
             return this;
         }
 
-        public final void release() {
-            mappedByteBuffer = null;
-            refCount = 0;
-            save = true;
-            returnToPool(this);
-        }
-
-        public final MappedByteBuffer reference() {
+        public final MappedByteBuffer release() {
             try {
-                return getMappedByteBuffer();
+                return mappedByteBuffer;
             } finally {
-                increment();
+                mappedByteBuffer = null;
+                refCount = 0;
+                save = true;
+                returnToPool(this);
             }
         }
 
+        public final MappedByteBuffer reference() {
+            ++refCount;
+
+            return mappedByteBuffer;
+        }
+
         public final int dereference() {
-            return decrement();
+            int refs = --refCount;
+
+            if(refs == 0) {
+                try {
+                    if (save)
+                        IOUtils.saveAndUnmap(mappedByteBuffer);
+                    else
+                        IOUtils.discardAndUnmap(mappedByteBuffer);
+                } finally {
+                    release();
+                }
+            }
+
+            return refs;
         }
     }
 
-
-
     protected final SharedMappedResource sharedMappedResource;
+
+    protected final boolean save;
 
     private final Long2ObjectHashMap<Long2ObjectHashMap<RefCounts>> bufferMapping = new Long2ObjectHashMap<>();
 
-    public SharedMappedBuffer(final SharedMappedResource sharedMappedResource) {
+    public SharedMappedBuffer(final SharedMappedResource sharedMappedResource, final boolean save) {
         this.sharedMappedResource = sharedMappedResource;
+        this.save = save;
+    }
+
+    public SharedMappedBuffer(final SharedMappedResource sharedMappedResource) {
+        this(sharedMappedResource, true);
     }
 
     private final AtomicBoolean guard = new AtomicBoolean(false);
@@ -137,7 +132,7 @@ public class SharedMappedBuffer implements Closeable {
 
                 MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(position, size);
 
-                RefCounts refCounts = RefCounts.getInstance().setMappedByteBuffer(mappedByteBuffer);
+                RefCounts refCounts = RefCounts.getInstance().initTo(mappedByteBuffer).setSave(save);
 
                 positionMap.put(size, refCounts);
 
@@ -158,7 +153,7 @@ public class SharedMappedBuffer implements Closeable {
 
                 MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(position, size);
 
-                refCounts = RefCounts.getInstance().setMappedByteBuffer(mappedByteBuffer);
+                refCounts = RefCounts.getInstance().initTo(mappedByteBuffer).setSave(save);
 
                 positionMap.put(size, refCounts);
 
@@ -171,7 +166,7 @@ public class SharedMappedBuffer implements Closeable {
         return refCounts.reference();
     }
 
-    public final boolean dereference(final long position, final long size, final boolean save) {
+    public final boolean dereference(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null)
@@ -186,8 +181,6 @@ public class SharedMappedBuffer implements Closeable {
         try {
             while (!guard.compareAndSet(false, true))
                 LockSupport.parkNanos(1);
-
-            refCounts.setSave(save);
 
             refs = refCounts.dereference();
         } catch (Throwable t) {
@@ -204,11 +197,8 @@ public class SharedMappedBuffer implements Closeable {
         return true;
     }
 
-    public final boolean dereference(final long position, final long size) {
-        return dereference(position, size, true);
-    }
 
-    public final boolean unmap(final long position, final long size, final boolean save) {
+    public final boolean unmap(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null)
@@ -223,13 +213,12 @@ public class SharedMappedBuffer implements Closeable {
             if (refCounts == null)
                 return false;
 
-            MappedByteBuffer mappedByteBuffer = refCounts.getMappedByteBuffer();
-            refCounts.release();
+            MappedByteBuffer mappedByteBuffer = refCounts.release();
 
             if (save)
-                Utils.IOUtils.saveAndUnmap(mappedByteBuffer);
+                IOUtils.saveAndUnmap(mappedByteBuffer);
             else
-                Utils.IOUtils.discardAndUnmap(mappedByteBuffer);
+                IOUtils.discardAndUnmap(mappedByteBuffer);
         } catch (Throwable t) {
             return false;
         } finally {
@@ -237,10 +226,6 @@ public class SharedMappedBuffer implements Closeable {
         }
 
         return true;
-    }
-
-    public final boolean unmap(final long position, final long size) {
-        return unmap(position, size, true);
     }
 
 

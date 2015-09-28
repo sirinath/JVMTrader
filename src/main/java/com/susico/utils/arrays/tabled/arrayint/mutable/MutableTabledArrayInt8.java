@@ -21,7 +21,7 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class MutableTabledArrayInt8 extends MutableTabledArrayIntBase {
+public abstract class MutableTabledArrayInt8 extends MutableTabledArrayInt0 {
     protected int value00;
     protected int value01;
     protected int value02;
@@ -144,7 +144,7 @@ public abstract class MutableTabledArrayInt8 extends MutableTabledArrayIntBase {
     public static MutableTabledArrayInt8 getInstance(final boolean checked, final int ... values) {
         return new MutableTabledArrayInt8(checked, values) {
             @Override
-            public void put(final int index, final int value) {
+            public final void put(final int index, final int value) {
                 switch (index) {
                     case 0:
                         value00 = value;

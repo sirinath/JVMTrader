@@ -23,7 +23,7 @@ package com.susico.utils.primitives.variable;
  * 
  */
 @SuppressWarnings("serial")
-public class VShort extends Number implements BoxOnce<VShort> {
+public final class VShort extends Number implements BoxOnce<VShort> {
 	/**
 	 * Value
 	 */
@@ -38,55 +38,55 @@ public class VShort extends Number implements BoxOnce<VShort> {
 	}
 	
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return value;
 	}
 	
 	@Override
-	public VShort clone() throws CloneNotSupportedException {
+	public final VShort clone() throws CloneNotSupportedException {
 		return new VShort(value);
 	}
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(value);
 	}
 	
 	@Override
-	public int compareTo(final VShort o) {
+	public final int compareTo(final VShort o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
-	public int intValue() {
+	public final int intValue() {
 		return value;
 	}
 	
 	@Override
-	public long longValue() {
+	public final long longValue() {
 		return value;
 	}
 	
 	@Override
-	public float floatValue() {
+	public final float floatValue() {
 		return value;
 	}
 	
 	@Override
-	public double doubleValue() {
+	public final double doubleValue() {
 		return value;
 	}
 	
 	@Override
-	public short shortValue() {
+	public final short shortValue() {
 		return value;
 	}
 
-	public short getValue() {
+	public final short getValue() {
 		return value;
 	}
 
-	public void setValue(final short value) {
+	public final void setValue(final short value) {
 		this.value = value;
 	}
 }

@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by sirin_000 on 09/09/2015.
  */
-public class SharedMappedResource implements Closeable {
+public  final class SharedMappedResource implements Closeable {
     private static final ConcurrentHashMap<File, SharedMappedResource> items = new ConcurrentHashMap<>();
 
     protected final File theFile;

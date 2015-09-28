@@ -21,7 +21,7 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class ImmutableTabledArrayInt8 extends ImmutableTabledArrayIntBase {
+public abstract class ImmutableTabledArrayInt8 extends ImmutableTabledArrayInt0 {
     protected final int value00;
     protected final int value01;
     protected final int value02;

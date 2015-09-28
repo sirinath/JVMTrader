@@ -16,19 +16,33 @@
 
 package com.susico.utils.arrays.tabled.arrayint.mutable;
 
-import com.susico.utils.arrays.tabled.arrayint.immutable.ImmutableTabledArrayIntBase;
+import com.susico.utils.arrays.tabled.arrayint.immutable.ImmutableTabledArrayInt0;
+import com.susico.utils.arrays.tabled.arrayint.immutable.ImmutableTabledArrayInt8;
 
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class MutableTabledArrayInt0 extends ImmutableTabledArrayIntBase {
+public abstract class MutableTabledArrayInt0 extends MutableTabledArrayIntBase {
+    protected MutableTabledArrayInt0(final boolean checked, final int... values) {
+        this(checked, 0, values);
+    }
+
     protected MutableTabledArrayInt0(final boolean checked, final int definedAsValues, final int... values) {
         super(checked, definedAsValues, values);
     }
 
-    public abstract void put(int index, int value);
+    public static MutableTabledArrayInt8 getInstance(final boolean checked, final int ... values) {
+        return new MutableTabledArrayInt8(checked, values) {
+            @Override
+            public final void put(final int index, final int value) {
+                putToRest(index, value);
+            }
 
-    protected final void putToRest(int index, int value) {
-        ARRAY_ACCESS.put(rest, index - definedAsValues, value);
+            @Override
+            public final int get(final int index) {
+                return getFromRest(index);
+            }
+        };
     }
+
 }

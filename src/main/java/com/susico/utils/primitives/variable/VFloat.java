@@ -23,7 +23,7 @@ package com.susico.utils.primitives.variable;
  * 
  */
 @SuppressWarnings("serial")
-public class VFloat extends Number implements BoxOnce<VFloat> {
+public final class VFloat extends Number implements BoxOnce<VFloat> {
 	/**
 	 * Value
 	 */
@@ -38,50 +38,50 @@ public class VFloat extends Number implements BoxOnce<VFloat> {
 	}
 	
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return Float.floatToIntBits(value);
 	}
 	
 	@Override
-	public VFloat clone() throws CloneNotSupportedException {
+	public final VFloat clone() throws CloneNotSupportedException {
 		return new VFloat(value);
 	}
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(value);
 	}
 	
 	@Override
-	public int compareTo(final VFloat o) {
+	public final int compareTo(final VFloat o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
-	public int intValue() {
+	public final int intValue() {
 		return 0;
 	}
 	
 	@Override
-	public long longValue() {
+	public final long longValue() {
 		return (long) value;
 	}
 	
 	@Override
-	public float floatValue() {
+	public final float floatValue() {
 		return value;
 	}
 	
 	@Override
-	public double doubleValue() {
+	public final double doubleValue() {
 		return value;
 	}
 
-	public float getValue() {
+	public final float getValue() {
 		return value;
 	}
 
-	public void setValue(final float value) {
+	public final void setValue(final float value) {
 		this.value = value;
 	}
 }

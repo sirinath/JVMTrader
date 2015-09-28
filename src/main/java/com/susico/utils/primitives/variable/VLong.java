@@ -23,7 +23,7 @@ package com.susico.utils.primitives.variable;
  * 
  */
 @SuppressWarnings("serial")
-public class VLong extends Number implements BoxOnce<VLong> {
+public final class VLong extends Number implements BoxOnce<VLong> {
 	/**
 	 * Value
 	 */
@@ -38,50 +38,50 @@ public class VLong extends Number implements BoxOnce<VLong> {
 	}
 	
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return (int) (value + (value >> Integer.SIZE));
 	}
 	
 	@Override
-	public VLong clone() throws CloneNotSupportedException {
+	public final VLong clone() throws CloneNotSupportedException {
 		return new VLong(value);
 	}
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(value);
 	}
 	
 	@Override
-	public int compareTo(final VLong o) {
+	public final int compareTo(final VLong o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
-	public int intValue() {
+	public final int intValue() {
 		return (int) value;
 	}
 	
 	@Override
-	public long longValue() {
+	public final long longValue() {
 		return value;
 	}
 	
 	@Override
-	public float floatValue() {
+	public final float floatValue() {
 		return value;
 	}
 	
 	@Override
-	public double doubleValue() {
+	public final double doubleValue() {
 		return value;
 	}
 
-	public long getValue() {
+	public final long getValue() {
 		return value;
 	}
 
-	public void setValue(final long value) {
+	public final void setValue(final long value) {
 		this.value = value;
 	}
 }

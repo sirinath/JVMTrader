@@ -16,15 +16,15 @@
 
 package com.susico.utils.offheap;
 
-import com.susico.utils.Utils;
+import com.susico.utils.arrays.ArrayUtils;
 
 import java.nio.MappedByteBuffer;
 
 /**
  * Created by sirin_000 on 10/09/2015.
  */
-public class MapAllocator {
-    public final static long INVALID_OFFSET = -1L;
+public  final class MapAllocator {
+    public static final long INVALID_OFFSET = -1L;
 
     protected final long LBPosition;
     protected final long increment;
@@ -34,7 +34,7 @@ public class MapAllocator {
 
     protected final long total;
     protected final boolean checked;
-    protected final Utils.ArrayUtils.ArrayAccess arrayUtils;
+    protected final ArrayUtils.ArrayAccess arrayUtils;
     private final MappedByteBuffer[] mappedByteBuffers;
     protected final LongIndexed<MappedByteBuffer> PAGE_ACCESS = new LongIndexed<MappedByteBuffer>() {
         public final void put(long i, MappedByteBuffer buff) {
@@ -57,7 +57,7 @@ public class MapAllocator {
         mappedByteBuffers = new MappedByteBuffer[slots];
 
         this.checked = checked;
-        this.arrayUtils = Utils.ArrayUtils.ArrayAccess.checked(checked);
+        this.arrayUtils = ArrayUtils.ArrayAccess.checked(checked);
 
         for (long i = 0, poss = startPosition; i < slots; i++, poss += increment) {
             MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(poss, size);

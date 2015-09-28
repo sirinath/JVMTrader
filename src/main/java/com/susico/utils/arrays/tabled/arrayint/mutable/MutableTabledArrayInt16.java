@@ -152,7 +152,7 @@ public abstract class MutableTabledArrayInt16 extends MutableTabledArrayInt8 {
     public static MutableTabledArrayInt16 getInstance(final boolean checked, final int ... values) {
         return new MutableTabledArrayInt16(checked, values) {
             @Override
-            public void put(final int index, final int value) {
+            public final void put(final int index, final int value) {
                 switch (index) {
                     case 0:
                         value00 = value;

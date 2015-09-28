@@ -16,25 +16,27 @@
 
 package com.susico.utils.arrays.tabled.arrayint.immutable;
 
-import com.susico.utils.arrays.tabled.arrayint.TabledArrayBase;
+
+import com.susico.utils.arrays.tabled.TabledArrayBase;
 
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class ImmutableTabledArrayInt0 extends TabledArrayBase {
-    protected final int[] rest;
+public abstract class ImmutableTabledArrayInt0 extends ImmutableTabledArrayIntBase {
+    protected ImmutableTabledArrayInt0(final boolean checked, final int... values) {
+        this(checked, 0, values);
+    }
 
     protected ImmutableTabledArrayInt0(final boolean checked, final int definedAsValues, final int... values) {
         super(checked, definedAsValues, values.length);
-        this.rest = new int[length > definedAsValues ? length - definedAsValues : 0];
-
-        if (rest.length > 0)
-            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
     }
 
-    public abstract int get(final int index);
-
-    protected final int getFromRest(int index) {
-        return ARRAY_ACCESS.get(rest, index - definedAsValues);
+    public static ImmutableTabledArrayInt8 getInstance(final boolean checked, final int ... values) {
+        return new ImmutableTabledArrayInt8(checked, values) {
+            @Override
+            public final int get(final int index) {
+                return getFromRest(index);
+            }
+        };
     }
 }

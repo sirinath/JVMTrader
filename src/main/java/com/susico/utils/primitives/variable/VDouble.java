@@ -24,7 +24,7 @@ package com.susico.utils.primitives.variable;
  * 
  */
 @SuppressWarnings("serial")
-public class VDouble extends Number implements BoxOnce<VDouble> {
+public final class VDouble extends Number implements BoxOnce<VDouble> {
 	/**
 	 * Value
 	 */
@@ -39,50 +39,50 @@ public class VDouble extends Number implements BoxOnce<VDouble> {
 	}
 	
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return (int) Double.doubleToLongBits(value);
 	}
 	
 	@Override
-	public VDouble clone() throws CloneNotSupportedException {
+	public final VDouble clone() throws CloneNotSupportedException {
 		return new VDouble(value);
 	}
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(value);
 	}
 	
 	@Override
-	public int compareTo(final VDouble o) {
+	public final int compareTo(final VDouble o) {
 		return value == o.value ? 0 : (value < o.value ? -1 : 1);
 	}
 	
 	@Override
-	public int intValue() {
+	public final int intValue() {
 		return (int) value;
 	}
 	
 	@Override
-	public long longValue() {
+	public final long longValue() {
 		return (long) value;
 	}
 	
 	@Override
-	public float floatValue() {
+	public final float floatValue() {
 		return (float) value;
 	}
 	
 	@Override
-	public double doubleValue() {
+	public final double doubleValue() {
 		return value;
 	}
 
-	public double getValue() {
+	public final double getValue() {
 		return value;
 	}
 
-	public void setValue(final double value) {
+	public final void setValue(final double value) {
 		this.value = value;
 	}
 }
