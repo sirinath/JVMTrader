@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package com.susico.utils.arrays;
+package com.susico.utils.arrays.tabled.arrayint.mutable;
 
 import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class ImmutableTableSwitchArrayInt8 extends MutableTableSwitchArrayIntBase {
-    protected final int value00;
-    protected final int value01;
-    protected final int value02;
-    protected final int value03;
-    protected final int value04;
-    protected final int value05;
-    protected final int value06;
-    protected final int value07;
+public abstract class MutableTabledArrayInt8 extends MutableTabledArrayIntBase {
+    protected int value00;
+    protected int value01;
+    protected int value02;
+    protected int value03;
+    protected int value04;
+    protected int value05;
+    protected int value06;
+    protected int value07;
 
-    protected ImmutableTableSwitchArrayInt8(final boolean checked, final int... values) {
+    protected MutableTabledArrayInt8(final boolean checked, final int... values) {
         this(checked, 0, values);
     }
 
-    protected ImmutableTableSwitchArrayInt8(final boolean checked, final int definedAsValues, final int... values) {
-        super(checked, definedAsValues + 8, values.length);
+    protected MutableTabledArrayInt8(final boolean checked, final int definedAsValues, final int... values) {
+        super(checked, definedAsValues + 8, values);
 
         switch (values.length) {
             default:
-                System.arraycopy(values, 8, rest, 0, rest.length);
             case 8:
                 this.value07 = ArrayAccess.UNCHECKED.get(values, 7);
                 this.value06 = ArrayAccess.UNCHECKED.get(values, 6);
@@ -142,8 +141,32 @@ public abstract class ImmutableTableSwitchArrayInt8 extends MutableTableSwitchAr
         }
     }
 
-    public static ImmutableTableSwitchArrayInt8 getInstance(final boolean checked, final int ... values) {
-        return new ImmutableTableSwitchArrayInt8(checked, values) {
+    public static MutableTabledArrayInt8 getInstance(final boolean checked, final int ... values) {
+        return new MutableTabledArrayInt8(checked, values) {
+            @Override
+            public void put(final int index, final int value) {
+                switch (index) {
+                    case 0:
+                        value00 = value;
+                    case 1:
+                        value01 = value;
+                    case 2:
+                        value02 = value;
+                    case 3:
+                        value03 = value;
+                    case 4:
+                        value04 = value;
+                    case 5:
+                        value05 = value;
+                    case 6:
+                        value06 = value;
+                    case 7:
+                        value07 = value;
+                    default:
+                        putToRest(index, value);
+                }
+            }
+
             @Override
             public final int get(final int index) {
                 switch (index) {
@@ -200,5 +223,37 @@ public abstract class ImmutableTableSwitchArrayInt8 extends MutableTableSwitchAr
 
     public final int getValue07() {
         return value07;
+    }
+
+    public final void setValue00(final int value00) {
+        this.value00 = value00;
+    }
+
+    public final void setValue01(final int value01) {
+        this.value01 = value01;
+    }
+
+    public final void setValue02(final int value02) {
+        this.value02 = value02;
+    }
+
+    public final void setValue03(final int value03) {
+        this.value03 = value03;
+    }
+
+    public final void setValue04(final int value04) {
+        this.value04 = value04;
+    }
+
+    public final void setValue05(final int value05) {
+        this.value05 = value05;
+    }
+
+    public final void setValue06(final int value06) {
+        this.value06 = value06;
+    }
+
+    public final void setValue07(final int value07) {
+        this.value07 = value07;
     }
 }

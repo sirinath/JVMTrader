@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.susico.utils.arrays;
+package com.susico.utils.arrays.tabled.arrayint.mutable;
+
+import com.susico.utils.arrays.tabled.arrayint.immutable.ImmutableTabledArrayInt0;
 
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class ImmutableTableSwitchArrayIntBase extends TableSwitchArrayBase {
-    protected final int[] rest;
-
-    protected ImmutableTableSwitchArrayIntBase(final boolean checked, final int definedAsValues, final int length) {
-        super(checked, definedAsValues, length);
-        this.rest = new int[length > definedAsValues ? length - definedAsValues : 0];
+public abstract class MutableTabledArrayIntBase extends ImmutableTabledArrayInt0 {
+    protected MutableTabledArrayIntBase(final boolean checked, final int definedAsValues, final int... values) {
+        super(checked, definedAsValues, values);
     }
 
-    public abstract int get(int index);
+    public abstract void put(int index, int value);
 
-    protected int getFromRest(int index) {
-        return ARRAY_ACCESS.get(rest, index - definedAsValues);
+    protected final void putToRest(int index, int value) {
+        ARRAY_ACCESS.put(rest, index - definedAsValues, value);
     }
 }
