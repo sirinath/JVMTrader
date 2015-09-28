@@ -53,10 +53,14 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
     ${
         def tmp = ""
         def str = ""
-        def finalMod = mutable ? "" : "final "
-        for (int i; i < inc; i++) {
-            str = """
-    protected $finalMod$typeName value%04d;"""
+
+        for (int i = start; i < start + inc; i++) {
+            if (mutable)
+                str = """
+    protected $typeName value%04d;"""
+            else
+                str = """
+    protected final $typeName value%04d;"""
 
             tmp += String.format(str, i)
         }
@@ -64,9 +68,9 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
         tmp += """
         """
 
-        for (int i; i < inc; i++) {
+        for (int i = start; i < start + inc; i++) {
                 str = """
-    public final int getValue%04d() {
+    public final $typeName getValue%04d() {
         return value%04d;
     }
     """
@@ -75,9 +79,9 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
 
 
         if (mutable) {
-            for (int i; i < inc; i++) {
+            for (int i = start; i < start + inc; i++) {
                 str = """
-    public final void setValue%04d(final int value%04d) {
+    public final void setValue%04d(final $typeName value%04d) {
         this.value%04d = value%04d;
     }
     """
@@ -87,70 +91,79 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
 
         return tmp
     }
-    protected ${mutability}TabledArray$end$typeSuffix(final boolean checked, final int... values) {
+    protected ${mutability}TabledArray$end$typeSuffix(final boolean checked, final $typeName ... values) {
         this(checked, 0, values);
     }
 
-    protected ${mutability}TabledArray$end$typeSuffix(final boolean checked, final int definedAsValues, final int... values) {
+    protected ${mutability}TabledArray$end$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
         super(checked, definedAsValues + $inc, values);
 
         switch (values.length) {
             default:
             ${
-        def tmp = ""
-        for (int i = start + inc; i > start; i--) {
-            tmp += String.format("""
+                def tmp = ""
+                for (int i = start + inc; i > start; i--) {
+                    tmp += String.format("""
             case %d:""", i)
 
-            for (int j = start + inc; j > i; j--)
-                tmp += String.format("""
+                    for (int j = start + inc; j > i; j--)
+                        tmp += String.format("""
                 this.value%04d = 0;""", j - 1)
 
-            for (int j = i; j > start; j--)
-                tmp += String.format("""
+                    for (int j = i; j > start; j--)
+                        tmp += String.format("""
                 this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);""", j - 1, j - 1)
-        }
 
-        for (int i = start; i >= 0; i--)
-            tmp += String.format("""
-            case %d:""", i)
+                    tmp += """
+                break;
+                    """
+                }
 
-        for (int i = start + inc; i > start; i--)
-            tmp += String.format("""
+                for (int i = start; i >= 0; i--)
+                    tmp += String.format("""
+                case %d:""", i)
+
+                for (int i = start + inc; i > start; i--)
+                    tmp += String.format("""
                 this.value%04d = 0;""", i - 1)
 
-        return tmp
-    }
+                return tmp
+            }
         }
     }
 
-    public static ${mutability}TabledArray$end$typeSuffix getInstance(final boolean checked, final int ... values) {
+    public static ${mutability}TabledArray$end$typeSuffix getInstance(final boolean checked, final $typeName ... values) {
         return new ${mutability}TabledArray$end$typeSuffix(checked, values) {
             ${
-        return mutable ?
-                """
+                def put = ""
+                if (mutable) {
+                    put += """
             @Override
-            public final void put(final int index, final int value) {
+            public final void put(final int index, final $typeName value) {
                 switch (index) {
-                ${
-                    def tmp = ""
-                    for (int i = 0; i < start + inc; i++)
-                        tmp += String.format("""
+                    ${
+                        def tmp = ""
+                        for (int i = 0; i < start + inc; i++)
+                            tmp += String.format("""
                     case %d:
                         value%04d = value;
+                        break;
                     """, i, i)
 
-                    return tmp
-                }
+                        return tmp
+                    }
                     default:
                         putToRest(index, value);
                 }
             }
-            """ : ""
-    }
+            """
+                }
+
+                return put
+            }
 
             @Override
-            public final int get(final int index) {
+            public final $typeName get(final int index) {
                 switch (index) {
                 ${
                     def tmp = ""
@@ -172,4 +185,4 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
 """
 }
 
-print tabledArray(true, Integer.TYPE, 0, 8)
+print tabledArray(true, Integer.TYPE, 8, 8)
