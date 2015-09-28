@@ -22,6 +22,9 @@ repositories {
     mavenCentral()
     jcenter()
     // maven { url "https://jitpack.io" }
+    maven {
+        url "http://dl.bintray.com/jtwig/maven/"
+    }
 }
 
 
@@ -31,6 +34,7 @@ dependencies {
     compile 'com.googlecode.cqengine:cqengine:2.0.3'
     compile 'com.googlecode.concurrent-trees:concurrent-trees:2.4.0'
     compile 'it.unimi.dsi:fastutil:7.0.7'
+    compile "org.jtwig:jtwig-core:4.0.0-beta-20150214120258"
 }
 
 task wrapper(type: Wrapper) {

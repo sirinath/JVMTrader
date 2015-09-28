@@ -4,8 +4,6 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/uk.co.real-logic/Agrona/0.4.2/fe1ed695ad67d9061aa400eb1c8d3ef3a192c29c/Agrona-0.4.2.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/uk.co.real-logic/Agrona/0.4.2/b2374fc4c21d4f00aeef5481d95f4fd7d392ca93/Agrona-0.4.2-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

@@ -52,22 +52,37 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutability}TabledArray$start$typeSuffix {
     ${
         def tmp = ""
-        def finalMod = mutable ? " " : "final"
+        def str = ""
+        def finalMod = mutable ? "" : "final "
         for (int i; i < inc; i++) {
-            tmp += String.format("""\\
+            str = """
+    protected $finalMod$typeName value%04d;"""
 
-    protected finalMod $typeName value%04d;
+            tmp += String.format(str, i)
+        }
 
+        tmp += """
+        """
+
+        for (int i; i < inc; i++) {
+                str = """
     public final int getValue%04d() {
-        return value%0d;
+        return value%04d;
     }
-    """, i)
+    """
+            tmp += String.format(str, i, i)
+        }
 
-            tmp += mutable ? String.format("""\\
+
+        if (mutable) {
+            for (int i; i < inc; i++) {
+                str = """
     public final void setValue%04d(final int value%04d) {
         this.value%04d = value%04d;
     }
-    """, i) : ""
+    """
+                tmp += String.format(str, i, i, i, i)
+            }
         }
 
         return tmp
@@ -83,31 +98,26 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
             default:
             ${
         def tmp = ""
-        for (int i = start + length; i > start; i--) {
-            tmp += String.format("""\\
-            case %d:
-                """, i)
+        for (int i = start + inc; i > start; i--) {
+            tmp += String.format("""
+            case %d:""", i)
 
-            for (int j = start + length; j > i; j--)
-                tmp += String.format("""\\
-                this.value%04d = 0;
-                        """, j - 1)
+            for (int j = start + inc; j > i; j--)
+                tmp += String.format("""
+                this.value%04d = 0;""", j - 1)
 
             for (int j = i; j > start; j--)
-                tmp += String.format("""\\
-                this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);
-                        """, j - 1)
+                tmp += String.format("""
+                this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);""", j - 1, j - 1)
         }
 
-        for (int i = start; i > 0; i--)
-            tmp += String.format("""\\
-            case %d:
-                """, i)
+        for (int i = start; i >= 0; i--)
+            tmp += String.format("""
+            case %d:""", i)
 
-        for (int i = start + length; i > start; i--)
-            tmp += String.format("""\\
-                this.value%04d = 0;
-                """, i - 1)
+        for (int i = start + inc; i > start; i--)
+            tmp += String.format("""
+                this.value%04d = 0;""", i - 1)
 
         return tmp
     }
@@ -118,17 +128,17 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
         return new ${mutability}TabledArray$end$typeSuffix(checked, values) {
             ${
         return mutable ?
-                """\\
+                """
             @Override
             public final void put(final int index, final int value) {
                 switch (index) {
                 ${
                     def tmp = ""
-                    for (int i = 0; i < start + length; i++)
-                        tmp += """\\
+                    for (int i = 0; i < start + inc; i++)
+                        tmp += String.format("""
                     case %d:
                         value%04d = value;
-                    """
+                    """, i, i)
 
                     return tmp
                 }
@@ -143,15 +153,15 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
             public final int get(final int index) {
                 switch (index) {
                 ${
-        def tmp = ""
-        for (int i = 0; i < start + length; i++)
-            tmp += """\\\\
-                                case %d:
-                                    return value%04d;
-                                """
+                    def tmp = ""
+                    for (int i = 0; i < start + inc; i++)
+                        tmp += String.format("""
+                    case %d:
+                        return value%04d;
+                                """, i, i)
 
-        return tmp
-    }
+                    return tmp
+                }
                     default:
                         return getFromRest(index);
                 }
@@ -162,4 +172,4 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
 """
 }
 
-tabledArray(true, Integer.TYPE, 0, 8)
+print tabledArray(true, Integer.TYPE, 0, 8)
