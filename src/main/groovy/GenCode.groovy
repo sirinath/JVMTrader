@@ -196,7 +196,14 @@ void tabledArrayGenAll() {
     for(boolean m : mutable)
         for(Class<?> type : types)
             for (int i = 0; i < limit; i++) {
-                File f = new File(".\\..\\java\\com\\susico\\utils\\arrays\\tabled\\array${type}\\${m ? "mutable" : "immutable"}")
+                String mutability = mutable ? "Mutable" : "Immutable"
+                String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+                String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+                int start = i * inc
+                int end = start + inc
+
+                File f = new File(".\\..\\java\\com\\susico\\utils\\arrays\\tabled\\array${type}\\${m ? "mutable" : "immutable"}\\${mutability}TabledArray$end${typeSuffix}.java")
+                f.createNewFile()
                 PrintWriter pw = f.newPrintWriter()
                 pw.print(tabledArray(m, type, i * inc, inc))
                 pw.flush()
@@ -207,3 +214,4 @@ void tabledArrayGenAll() {
 String tableArrayFactories(int limit) {
 }
 
+tabledArrayGenAll()
