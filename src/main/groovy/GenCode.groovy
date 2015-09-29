@@ -18,14 +18,15 @@
  * Created by sirin_000 on 28/09/2015.
  */
 
-private static String upcase1st(String str) {
+String upcase1st(String str) {
     return str.substring(0, 1).toUpperCase() + str.substring(1)
 }
 
-public static String tabledArray(boolean mutable, Class<?> type, int start, int inc) {
+String tabledArray(boolean mutable, Class<?> type, int start, int inc) {
     String mutability = mutable ? "Mutable" : "Immutable"
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "<T>"
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String generic = type.isPrimitive() ? "" : "<T>"
     int end = start + inc
 
     return """\\
@@ -49,7 +50,7 @@ package com.susico.utils.arrays.tabled.array${type}.${mutability.toLowerCase()};
 
 import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 
-public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutability}TabledArray$start$typeSuffix {
+public abstract class ${mutability}TabledArray$end$typeSuffix$generic extends ${mutability}TabledArray$start$typeSuffix$generic {
     ${
         def tmp = ""
         def str = ""
@@ -185,4 +186,19 @@ public abstract class ${mutability}TabledArray$end$typeSuffix extends ${mutabili
 """
 }
 
-print tabledArray(true, Integer.TYPE, 8, 8)
+
+void tabledArrayGenAll() {
+    boolean[] mutable = [true, false]
+    Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
+    int limit = 1024
+    int inc = 8
+
+    for(boolean m : mutable)
+        for(Class<?> type : types)
+            for (int i = 0; i < limit; i++)
+                new File(".\\..\\java\\com\\susico\\utils\\arrays\\tabled\\array${type}\\${m ? "mutable" : "immutable"}").newPrintWriter().print(tabledArray(m, type, i * inc, inc))
+}
+
+String tableArrayFactories(int limit) {
+}
+

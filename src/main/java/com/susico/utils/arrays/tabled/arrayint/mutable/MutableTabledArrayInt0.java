@@ -16,13 +16,10 @@
 
 package com.susico.utils.arrays.tabled.arrayint.mutable;
 
-import com.susico.utils.arrays.tabled.arrayint.immutable.ImmutableTabledArrayInt0;
-import com.susico.utils.arrays.tabled.arrayint.immutable.ImmutableTabledArrayInt8;
-
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class MutableTabledArrayInt0 extends MutableTabledArrayIntBase {
+public abstract class MutableTabledArrayInt0 extends MutableTabledArrayInt {
     protected MutableTabledArrayInt0(final boolean checked, final int... values) {
         this(checked, 0, values);
     }

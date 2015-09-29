@@ -18,17 +18,15 @@ package com.susico.utils.arrays.tabled;
 
 import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 
-import java.util.Arrays;
-
 /**
  * Created by sirin_000 on 24/09/2015.
  */
-public abstract class TabledArrayBase {
+public abstract class TabledArray {
     protected final ArrayAccess ARRAY_ACCESS;
     protected final int length;
     protected final int definedAsValues;
 
-    protected TabledArrayBase(final boolean checked, final int definedAsValues, final int length) {
+    protected TabledArray(final boolean checked, final int definedAsValues, final int length) {
         this.ARRAY_ACCESS = ArrayAccess.checked(checked);
         this.length = length;
         this.definedAsValues = definedAsValues;

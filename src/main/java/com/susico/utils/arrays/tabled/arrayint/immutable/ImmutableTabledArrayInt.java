@@ -17,15 +17,15 @@
 package com.susico.utils.arrays.tabled.arrayint.immutable;
 
 
-import com.susico.utils.arrays.tabled.TabledArrayBase;
+import com.susico.utils.arrays.tabled.TabledArray;
 
 /**
  * Created by sirin_000 on 25/09/2015.
  */
-public abstract class ImmutableTabledArrayIntBase extends TabledArrayBase {
+public abstract class ImmutableTabledArrayInt extends TabledArray {
     protected final int[] rest;
 
-    protected ImmutableTabledArrayIntBase(final boolean checked, final int definedAsValues, final int... values) {
+    protected ImmutableTabledArrayInt(final boolean checked, final int definedAsValues, final int... values) {
         super(checked, definedAsValues, values.length);
         this.rest = new int[length > definedAsValues ? length - definedAsValues : 0];
 
