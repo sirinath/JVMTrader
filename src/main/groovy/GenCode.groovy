@@ -1,5 +1,3 @@
-import java.nio.file.Path
-
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -14,10 +12,6 @@ import java.nio.file.Path
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
-/**
- * Created by sirin_000 on 28/09/2015.
  */
 
 String upcase1st(String str) {
@@ -27,345 +21,7 @@ String upcase1st(String str) {
     return str.substring(0, 1).toUpperCase() + str.substring(1)
 }
 
-
-String tabledArrayBase(boolean mutable, Class<?> type) {
-    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
-    String generic = type.isPrimitive() ? "" : "<T>"
-
-    if (mutable)
-        return """
-/*
- * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.mutable;
-
-import com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable.ImmutableTabledArray$typeSuffix;
-
-public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTabledArray$typeSuffix$generic {
-    protected MutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
-        super(checked, definedAsValues, values);
-    }
-
-
-    public abstract void put(int index, $typeName value);
-
-    protected final void putToRest(int index, $typeName value) {
-        ARRAY_ACCESS.put(rest, index - definedAsValues, value);
-    }
-}
-"""
-    else
-        return """
-/*
- * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable;
-
-import com.susico.utils.arrays.tabled.TabledArray;
-
-public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArray {
-    protected final $typeName[] rest;
-
-    protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
-        super(checked, definedAsValues, values.length);
-        this.rest = new $typeName[length > definedAsValues ? length - definedAsValues : 0];
-
-        if (rest.length > 0)
-            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
-    }
-
-    public abstract $typeName get(final int index);
-
-    protected final $typeName getFromRest(int index) {
-        return ARRAY_ACCESS.get(rest, index - definedAsValues);
-    }
-}
-"""
-}
-
-String tabledArray0(boolean mutable, Class<?> type) {
-    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
-    String generic = type.isPrimitive() ? "" : "<T>"
-
-    if (mutable)
-        return """
-/*
- * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.mutable;
-
-public abstract class MutableTabledArray${typeSuffix}0000${generic} extends MutableTabledArray${typeSuffix}${generic} {
-    protected MutableTabledArray${typeSuffix}0000(final boolean checked, final $typeName ... values) {
-        this(checked, 0, values);
-    }
-
-    protected MutableTabledArray${typeSuffix}0000(final boolean checked, final int definedAsValues, final $typeName ... values) {
-        super(checked, definedAsValues, values);
-    }
-
-    public static MutableTabledArray${typeSuffix}0000${generic} getInstance(final boolean checked, final $typeName ... values) {
-        return new MutableTabledArray${typeSuffix}0000${generic}(checked, values) {
-            @Override
-            public final void put(final int index, final $typeName value) {
-                putToRest(index, value);
-            }
-
-            @Override
-            public final $typeName get(final int index) {
-                return getFromRest(index);
-            }
-        };
-    }
-}
-"""
-    else
-        return """
-/*
- * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable;
-
-public abstract class ImmutableTabledArray${typeSuffix}0000${generic} extends ImmutableTabledArray${typeSuffix}${generic} {
-    protected ImmutableTabledArray${typeSuffix}0000(final boolean checked, final $typeName ... values) {
-        this(checked, 0, values);
-    }
-
-    protected ImmutableTabledArray${typeSuffix}0000(final boolean checked, final int definedAsValues, final $typeName ... values) {
-        super(checked, definedAsValues, values.length);
-    }
-
-    public static ImmutableTabledArray${typeSuffix}0000${generic} getInstance(final boolean checked, final $typeName ... values) {
-        return new ImmutableTabledArray${typeSuffix}0000${generic}(checked, values) {
-            @Override
-            public final $typeName get(final int index) {
-                return getFromRest(index);
-            }
-        };
-    }
-}
-
-"""
-}
-
-String tabledArray(boolean mutable, Class<?> type, int start, int inc) {
-    String mutability = mutable ? "Mutable" : "Immutable"
-    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
-    String generic = type.isPrimitive() ? "" : "<T>"
-    int end = start + inc
-
-    return """
-/*
- * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.${mutability.toLowerCase()};
-
-import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
-
-public abstract class ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix$generic extends ${mutability}TabledArray${String.format("%04d", start)}$typeSuffix$generic {
-    ${
-        def tmp = ""
-        def str = ""
-
-        for (int i = start; i < start + inc; i++) {
-            if (mutable)
-                str = """
-    protected $typeName value%04d;"""
-            else
-                str = """
-    protected final $typeName value%04d;"""
-
-            tmp += String.format(str, i)
-        }
-
-        tmp += """
-        """
-
-        for (int i = start; i < start + inc; i++) {
-                str = """
-    public final $typeName getValue%04d() {
-        return value%04d;
-    }
-    """
-            tmp += String.format(str, i, i)
-        }
-
-
-        if (mutable) {
-            for (int i = start; i < start + inc; i++) {
-                str = """
-    public final void setValue%04d(final $typeName value%04d) {
-        this.value%04d = value%04d;
-    }
-    """
-                tmp += String.format(str, i, i, i, i)
-            }
-        }
-
-        return tmp
-    }
-    protected ${mutability}TabledArray$end$typeSuffix(final boolean checked, final $typeName ... values) {
-        this(checked, 0, values);
-    }
-
-    protected ${mutability}TabledArray$end$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
-        super(checked, definedAsValues + $inc, values);
-
-        switch (values.length) {
-            default:
-            ${
-                def tmp = ""
-                for (int i = start + inc; i > start; i--) {
-                    tmp += String.format("""
-            case %d:""", i)
-
-                    for (int j = start + inc; j > i; j--)
-                        tmp += String.format("""
-                this.value%04d = 0;""", j - 1)
-
-                    for (int j = i; j > start; j--)
-                        tmp += String.format("""
-                this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);""", j - 1, j - 1)
-
-                    tmp += """
-                break;
-                    """
-                }
-
-                for (int i = start; i >= 0; i--)
-                    tmp += String.format("""
-                case %d:""", i)
-
-                for (int i = start + inc; i > start; i--)
-                    tmp += String.format("""
-                this.value%04d = 0;""", i - 1)
-
-                return tmp
-            }
-        }
-    }
-
-    public static ${mutability}TabledArray$end$typeSuffix getInstance(final boolean checked, final $typeName ... values) {
-        return new ${mutability}TabledArray$end$typeSuffix$generic(checked, values) {
-            ${
-                def put = ""
-                if (mutable) {
-                    put += """
-            @Override
-            public final void put(final int index, final $typeName value) {
-                switch (index) {
-                    ${
-                        def tmp = ""
-                        for (int i = 0; i < start + inc; i++)
-                            tmp += String.format("""
-                    case %d:
-                        value%04d = value;
-                        break;
-                    """, i, i)
-
-                        return tmp
-                    }
-                    default:
-                        putToRest(index, value);
-                }
-            }
-            """
-                }
-
-                return put
-            }
-
-            @Override
-            public final $typeName get(final int index) {
-                switch (index) {
-                ${
-                    def tmp = ""
-                    for (int i = 0; i < start + inc; i++)
-                        tmp += String.format("""
-                    case %d:
-                        return value%04d;
-                                """, i, i)
-
-                    return tmp
-                }
-                    default:
-                        return getFromRest(index);
-                }
-            }
-        };
-    }
-}
-"""
-}
-
-String tableArrayFactories() {
+String tableArrayBase() {
     StringBuffer tmp = new StringBuffer("""
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
@@ -409,11 +65,9 @@ public abstract class TabledArray {
 
     boolean[] mutable = [true, false]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
-    int limit = 1024
-    int inc = 8
 
     for(boolean m : mutable) {
-        String mutability = mutable ? "Mutable" : "Immutable"
+        String mutability = m ? "Mutable" : "Immutable"
 
         for (Class<?> type : types) {
             String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
@@ -421,37 +75,9 @@ public abstract class TabledArray {
             String generic = type.isPrimitive() ? "" : "<T>"
 
             tmp.append("""
-        public static $generic ${mutable}TabledArray${typeSuffix}$generic get${typeSuffix}Array(final boolean checked, final int length, final $typeName ... values) {
-            switch (index) {
-                case 0:
-                    return ${mutable}TabledArray0000${typeSuffix}.getInstance(checked, values);
-
-"""
-            )
-
-            for (int i = 0; i < limit; i++) {
-                int start = i * inc
-                int end = start + inc
-
-                for (int j = start + 1; j <= end; j++) {
-                    tmp.append("""
-                case $j:
-"""
-                    )
-                }
-
-                tmp.append("""
-                    return ${mutable}TabledArray${String.format("%04d", end)}${typeSuffix}.getInstance(checked, values);
-
-"""
-                )
-            }
-
-            tmp.append("""
-                default:
-                    return ${mutable}TabledArray${String.format("%04d", limit * inc)}${typeSuffix}.getInstance(checked, values);
-            }
-        }
+    public static $generic ${mutability}TabledArray${typeSuffix}$generic get${mutability}${typeSuffix}Array(final boolean checked, final int length, final $typeName ... values) {
+        return ${mutability}TabledArray${typeSuffix}.${generic}getInstance(checked, length, values);
+    }
 """
             )
         }
@@ -460,11 +86,396 @@ public abstract class TabledArray {
     return tmp.append("}").toString()
 }
 
+String tabledArrayBase(boolean mutable, Class<?> type) {
+    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String generic = type.isPrimitive() ? "" : "<T>"
+    StringBuffer str = new StringBuffer()
+    int limit = 13
+
+    if (mutable)
+        str.append("""
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.mutable;
+
+import com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable.ImmutableTabledArray$typeSuffix;
+
+public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTabledArray$typeSuffix$generic {
+    protected MutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
+        super(checked, definedAsValues, values);
+    }
+
+
+    public abstract void put(int index, $typeName value);
+
+    protected final void putToRest(int index, $typeName value) {
+        ARRAY_ACCESS.put(rest, index - definedAsValues, value);
+    }
+""")
+    else
+        str.append("""
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable;
+
+import com.susico.utils.arrays.tabled.TabledArray;
+
+public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArray {
+    protected final $typeName[] rest;
+
+    protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
+        super(checked, definedAsValues, values.length);
+        this.rest = new $typeName[length > definedAsValues ? length - definedAsValues : 0];
+
+        if (rest.length > 0)
+            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
+    }
+
+    public abstract $typeName get(final int index);
+
+    protected final $typeName getFromRest(int index) {
+        return ARRAY_ACCESS.get(rest, index - definedAsValues);
+    }
+""")
+
+    String mutability = mutable ? "Mutable" : "Immutable"
+
+    str.append("""
+    public static $generic ${mutability}TabledArray${typeSuffix}$generic getInstance(final boolean checked, final int length, final $typeName ... values) {
+        switch (index) {
+            case 0:
+                return ${mutability}TabledArray0000${typeSuffix}.getInstance(checked, values);
+"""
+    )
+
+    for (int i = 0; i < limit; i++) {
+        int start = 2 ** i
+        int end = 2 * start
+
+        str.append("                ")
+
+        for (int j = start; j <= end; j++) {
+            if (j % 16 == 0) {
+                str.append("\n                ").append("case $j: ")
+            } else {
+                str.append("case $j: ")
+            }
+        }
+
+        str.append("""
+                return ${mutability}TabledArray${String.format("%04d", end)}${typeSuffix}.getInstance(checked, values);
+
+"""
+        )
+    }
+
+    str.append("""
+            default:
+                return ${mutability}TabledArray${String.format("%04d", 2 ** limit)}${typeSuffix}.getInstance(checked, values);
+        }
+    }
+""")
+
+    return str.append("}").toString()
+}
+
+String tabledArray0(boolean mutable, Class<?> type) {
+    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String generic = type.isPrimitive() ? "" : "<T>"
+
+    if (mutable)
+        return """
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.mutable;
+
+public abstract class MutableTabledArray0000${typeSuffix}${generic} extends MutableTabledArray${typeSuffix}${generic} {
+    protected MutableTabledArray0000${typeSuffix}(final boolean checked, final $typeName ... values) {
+        this(checked, 0, values);
+    }
+
+    protected MutableTabledArray0000${typeSuffix}(final boolean checked, final int definedAsValues, final $typeName ... values) {
+        super(checked, definedAsValues, values);
+    }
+
+    public static ${generic} MutableTabledArray0000${typeSuffix}${generic} getInstance(final boolean checked, final $typeName ... values) {
+        return new MutableTabledArray0000${typeSuffix}${generic}(checked, values) {
+            @Override
+            public final void put(final int index, final $typeName value) {
+                putToRest(index, value);
+            }
+
+            @Override
+            public final $typeName get(final int index) {
+                return getFromRest(index);
+            }
+        };
+    }
+}
+"""
+    else
+        return """
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable;
+
+public abstract class ImmutableTabledArray0000${typeSuffix}${generic} extends ImmutableTabledArray${typeSuffix}${generic} {
+    protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final $typeName ... values) {
+        this(checked, 0, values);
+    }
+
+    protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final int definedAsValues, final $typeName ... values) {
+        super(checked, definedAsValues, values.length);
+    }
+
+    public static ${generic} ImmutableTabledArray0000${typeSuffix}${generic} getInstance(final boolean checked, final $typeName ... values) {
+        return new ImmutableTabledArray0000${typeSuffix}${generic}(checked, values) {
+            @Override
+            public final $typeName get(final int index) {
+                return getFromRest(index);
+            }
+        };
+    }
+}
+
+"""
+}
+
+String tabledArray(boolean mutable, Class<?> type, int start) {
+    String mutability = mutable ? "Mutable" : "Immutable"
+    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String generic = type.isPrimitive() ? "" : "<T>"
+    int end = Math.max(2 * start, 1)
+    String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
+
+    return """
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.${mutability.toLowerCase()};
+
+import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
+
+public abstract class ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix$generic extends ${mutability}TabledArray${String.format("%04d", start)}$typeSuffix$generic {
+    ${
+        StringBuilder tmp = new StringBuilder()
+        StringBuilder str
+
+        for (int i = start; i < end; i++) {
+            if (mutable) {
+                str = new StringBuilder("""
+    protected $typeName value%04d;""")
+            } else {
+                str = new StringBuilder("""
+    protected final $typeName value%04d;""")
+            }
+
+            tmp.append(String.format(str.toString(), i))
+        }
+
+        tmp.append("""
+        """)
+
+        for (int i = start; i < end; i++) {
+            str = new StringBuilder("""
+    public final $typeName getValue%04d() {
+        return value%04d;
+    }
+    """)
+            tmp.append(String.format(str.toString(), i, i))
+        }
+
+
+        if (mutable) {
+            for (int i = start; i < end; i++) {
+                str = new StringBuilder("""
+    public final void setValue%04d(final $typeName value%04d) {
+        this.value%04d = value%04d;
+    }
+    """)
+                tmp.append(String.format(str.toString(), i, i, i, i))
+            }
+        }
+
+        return tmp.toString()
+    }
+    protected ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix(final boolean checked, final $typeName ... values) {
+        this(checked, 0, values);
+    }
+
+    protected ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
+        super(checked, definedAsValues + ${end - start}, values);
+
+        switch (values.length) {
+            default:
+            ${
+                StringBuilder tmp = new StringBuilder()
+                for (int i = end; i > start; i--) {
+                    tmp.append(String.format("""
+            case %d:""", i))
+
+                    for (int j = end; j > i; j--) {
+                        tmp.append(String.format("""
+                this.value%04d = ${defaultValue};""", j - 1))
+                    }
+
+                    for (int j = i; j > start; j--) {
+                        tmp.append(String.format("""
+                this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);""", j - 1, j - 1))
+                    }
+
+                    tmp.append("""
+                break;
+                    """)
+                }
+
+                for (int i = start; i >= 0; i--) {
+                    tmp.append(String.format("""
+                case %d:""", i))
+                }
+
+                for (int i = end; i > start; i--) {
+                    tmp.append(String.format("""
+                this.value%04d = ${defaultValue};""", i - 1))
+                }
+
+                return tmp.toString()
+            }
+        }
+    }
+
+    public static ${generic} ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix getInstance(final boolean checked, final $typeName ... values) {
+        return new ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix$generic(checked, values) {
+            ${
+                StringBuilder put = new StringBuilder()
+                if (mutable) {
+                    put.append("""
+            @Override
+            public final void put(final int index, final $typeName value) {
+                switch (index) {
+                    ${
+                        StringBuilder tmp = new StringBuilder()
+                        for (int i = 0; i < end; i++)
+                            tmp.append(String.format("""
+                    case %d:
+                        value%04d = value;
+                        break;
+                    """, i, i)
+                            )
+
+                        return tmp.toString()
+                    }
+                    default:
+                        putToRest(index, value);
+                }
+            }
+            """
+                    )
+                }
+
+                return put.toString()
+            }
+
+            @Override
+            public final $typeName get(final int index) {
+                switch (index) {
+                ${
+                    StringBuilder tmp = new StringBuilder()
+                    for (int i = 0; i < end; i++)
+                        tmp.append(String.format("""
+                    case %d:
+                        return value%04d;
+                                """, i, i)
+                        )
+
+                    return tmp.toString()
+                }
+                    default:
+                        return getFromRest(index);
+                }
+            }
+        };
+    }
+}
+"""
+}
+
 void tabledArrayGenAll() {
     boolean[] mutable = [true, false]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
-    int limit = 1024
-    int inc = 8
+    int limit = 13
 
     File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\tabled\\")
     p.mkdirs()
@@ -473,7 +484,7 @@ void tabledArrayGenAll() {
     f.createNewFile()
 
     PrintWriter pw = f.newPrintWriter()
-    pw.print(tableArrayFactories())
+    pw.print(tableArrayBase())
     pw.flush()
     pw.close()
 
@@ -502,15 +513,23 @@ void tabledArrayGenAll() {
             pw.flush()
             pw.close()
 
+            f = new File(p, "${mutability}TabledArray0001${typeSuffix}.java")
+            f.createNewFile()
+
+            pw = f.newPrintWriter()
+            pw.print(tabledArray(m, type, 0))
+            pw.flush()
+            pw.close()
+
             for (int i = 0; i < limit; i++) {
-                int start = i * inc
-                int end = start + inc
+                int start = 2 ** i
+                int end = 2 * start
 
                 f = new File(p, "${mutability}TabledArray${String.format("%04d", end)}${typeSuffix}.java")
                 f.createNewFile()
 
                 pw = f.newPrintWriter()
-                pw.print(tabledArray(m, type, i * inc, inc))
+                pw.print(tabledArray(m, type, start))
                 pw.flush()
                 pw.close()
             }
