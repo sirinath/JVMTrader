@@ -43,7 +43,10 @@ package com.susico.utils.arrays.tabled;
 
 import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 
-public abstract class TabledArray {
+""")
+
+    StringBuffer theImports = new StringBuffer()
+    StringBuffer str = new StringBuffer("""public abstract class TabledArray {
     protected final ArrayAccess ARRAY_ACCESS;
     protected final int length;
     protected final int definedAsValues;
@@ -71,17 +74,23 @@ public abstract class TabledArray {
 
         for (Class<?> type : types) {
             String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+            String packageName = type.isPrimitive() ? type.getSimpleName() : ""
             String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
             String generic = type.isPrimitive() ? "" : "<T>"
 
-            tmp.append("""
+            theImports.append("import com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerCase()}.${mutability}TabledArray${typeSuffix};\n")
+
+            str.append("""
     public static $generic ${mutability}TabledArray${typeSuffix}$generic get${mutability}${typeSuffix}Array(final boolean checked, final int length, final $typeName ... values) {
         return ${mutability}TabledArray${typeSuffix}.${generic}getInstance(checked, length, values);
     }
-"""
-            )
+""")
         }
+
+        theImports.append("\n")
     }
+
+    tmp.append(theImports).append("\n").append(str)
 
     return tmp.append("}").toString()
 }
