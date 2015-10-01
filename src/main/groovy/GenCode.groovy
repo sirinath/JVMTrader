@@ -299,12 +299,164 @@ public abstract class ImmutableTabledArray0000${typeSuffix}${generic} extends Im
 """
 }
 
+String tabledArray1(boolean mutable, Class<?> type) {
+    String mutability = mutable ? "Mutable" : "Immutable"
+    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String generic = type.isPrimitive() ? "" : "<T>"
+    String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
+
+    return """
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.${mutability.toLowerCase()};
+
+import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
+
+public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${mutability}TabledArray0000$typeSuffix$generic {
+    ${
+        StringBuilder tmp = new StringBuilder()
+        StringBuilder str
+
+        if (mutable) {
+            str = new StringBuilder("""
+    protected $typeName value0000;""")
+        } else {
+            str = new StringBuilder("""
+    protected final $typeName value0000;""")
+        }
+
+
+        str = new StringBuilder("""
+    public final $typeName getValue0000() {
+        return value0000;
+    }
+    """)
+
+
+        if (mutable) {
+            str = new StringBuilder("""
+    public final void setValue0000(final $typeName value0000) {
+        this.value0000 = value0000;
+    }
+    """)
+        }
+
+        return tmp.toString()
+    }
+    protected ${mutability}TabledArray0001$typeSuffix(final boolean checked, final $typeName ... values) {
+        this(checked, 0, values);
+    }
+
+    protected ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
+        super(checked, definedAsValues + 1, values);
+        final int len = values.length;
+
+        switch (len) {
+            default:
+                if (len <= 1)
+                    break;
+    ${
+        StringBuilder tmp = new StringBuilder()
+
+        tmp.append("""
+            case 1:
+                this.value0000 = ArrayAccess.UNCHECKED.get(values, 0);
+            """)
+
+        return tmp.toString()
+    }
+        }
+
+        switch (len) {
+            default:
+                if (len > 1)
+                    break;
+    ${
+        StringBuilder tmp = new StringBuilder()
+
+        tmp.append("""
+                case 0:
+                    this.value0000 = ${defaultValue};
+                    """)
+
+        return tmp.toString()
+    }
+        }
+    }
+
+    public static ${generic} ${mutability}TabledArray0001$typeSuffix getInstance(final boolean checked, final $typeName ... values) {
+        return new ${mutability}TabledArray0001$typeSuffix$generic(checked, values) {
+            ${
+                StringBuilder put = new StringBuilder()
+                if (mutable) {
+                   put.append("""
+            @Override
+            public final void put(final int index, final $typeName value) {
+                switch (index) {
+                ${
+                    StringBuilder tmp = new StringBuilder()
+                    tmp.append("""
+                    case 0:
+                        value0000 = value;
+                        break;
+                    """
+                    )
+
+                    return tmp.toString()
+                }
+                    default:
+                        putToRest(index, value);
+                }
+            }
+            """)
+                }
+
+                return put.toString()
+            }
+
+            @Override
+            public final $typeName get(final int index) {
+                switch (index) {
+                ${
+                    StringBuilder tmp = new StringBuilder()
+                    tmp.append("""
+                    case 0:
+                        return value0000;
+                                """)
+
+                    return tmp.toString()
+                }
+                    default:
+                        return getFromRest(index);
+                }
+            }
+        };
+    }
+}
+"""
+}
+
 String tabledArray(boolean mutable, Class<?> type, int start) {
     String mutability = mutable ? "Mutable" : "Immutable"
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
     String generic = type.isPrimitive() ? "" : "<T>"
-    int end = Math.max(2 * start, 1)
+    int end = 2 * start
     String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
 
     return """
@@ -517,7 +669,7 @@ void tabledArrayGenAll() {
             f.createNewFile()
 
             pw = f.newPrintWriter()
-            pw.print(tabledArray(m, type, 0))
+            pw.print(tabledArray1(m, type))
             pw.flush()
             pw.close()
 
