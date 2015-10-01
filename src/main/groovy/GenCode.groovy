@@ -22,7 +22,7 @@ String upcase1st(String str) {
 }
 
 String tableArrayBase() {
-    StringBuffer tmp = new StringBuffer("""
+    StringBuffer tmp = new StringBuffer("""// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -88,13 +88,14 @@ public abstract class TabledArray {
 
 String tabledArrayBase(boolean mutable, Class<?> type) {
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String packageName = type.isPrimitive() ? type.getSimpleName() : ""
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
     String generic = type.isPrimitive() ? "" : "<T>"
     StringBuffer str = new StringBuffer()
     int limit = 13
 
     if (mutable)
-        str.append("""
+        str.append("""// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -111,9 +112,9 @@ String tabledArrayBase(boolean mutable, Class<?> type) {
  * limitations under the License.
  */
 
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.mutable;
+package com.susico.utils.arrays.tabled.array${packageName}.mutable;
 
-import com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable.ImmutableTabledArray$typeSuffix;
+import com.susico.utils.arrays.tabled.array${packageName}.immutable.ImmutableTabledArray$typeSuffix;
 
 public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTabledArray$typeSuffix$generic {
     protected MutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
@@ -128,7 +129,7 @@ public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTab
     }
 """)
     else
-        str.append("""
+        str.append("""// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -145,7 +146,7 @@ public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTab
  * limitations under the License.
  */
 
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable;
+package com.susico.utils.arrays.tabled.array${packageName}.immutable;
 
 import com.susico.utils.arrays.tabled.TabledArray;
 
@@ -210,11 +211,12 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
 
 String tabledArray0(boolean mutable, Class<?> type) {
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String packageName = type.isPrimitive() ? type.getSimpleName() : ""
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
     String generic = type.isPrimitive() ? "" : "<T>"
 
     if (mutable)
-        return """
+        return """// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -231,7 +233,7 @@ String tabledArray0(boolean mutable, Class<?> type) {
  * limitations under the License.
  */
 
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.mutable;
+package com.susico.utils.arrays.tabled.array${packageName}.mutable;
 
 public abstract class MutableTabledArray0000${typeSuffix}${generic} extends MutableTabledArray${typeSuffix}${generic} {
     protected MutableTabledArray0000${typeSuffix}(final boolean checked, final $typeName ... values) {
@@ -258,7 +260,7 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
 }
 """
     else
-        return """
+        return """// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -275,7 +277,7 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
  * limitations under the License.
  */
 
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.immutable;
+package com.susico.utils.arrays.tabled.array${packageName}.immutable;
 
 public abstract class ImmutableTabledArray0000${typeSuffix}${generic} extends ImmutableTabledArray${typeSuffix}${generic} {
     protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final $typeName ... values) {
@@ -302,11 +304,12 @@ public abstract class ImmutableTabledArray0000${typeSuffix}${generic} extends Im
 String tabledArray1(boolean mutable, Class<?> type) {
     String mutability = mutable ? "Mutable" : "Immutable"
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String packageName = type.isPrimitive() ? type.getSimpleName() : ""
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
     String generic = type.isPrimitive() ? "" : "<T>"
     String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
 
-    return """
+    return """// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -323,7 +326,7 @@ String tabledArray1(boolean mutable, Class<?> type) {
  * limitations under the License.
  */
 
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.${mutability.toLowerCase()};
+package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerCase()};
 
 import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 
@@ -445,12 +448,13 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
 String tabledArray(boolean mutable, Class<?> type, int start) {
     String mutability = mutable ? "Mutable" : "Immutable"
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String packageName = type.isPrimitive() ? type.getSimpleName() : ""
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
     String generic = type.isPrimitive() ? "" : "<T>"
     int end = 2 * start
     String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
 
-    return """
+    return """ // Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -467,7 +471,7 @@ String tabledArray(boolean mutable, Class<?> type, int start) {
  * limitations under the License.
  */
 
-package com.susico.utils.arrays.tabled.array${type.getSimpleName()}.${mutability.toLowerCase()};
+package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerCase()};
 
 import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 
