@@ -377,38 +377,55 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
 
     protected ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
         super(checked, definedAsValues + ${end - start}, values);
+        final int len = values.length;
 
-        switch (values.length) {
+        switch (len) {
             default:
+                if (len <= $start)
+                    break;
             ${
                 StringBuilder tmp = new StringBuilder()
                 for (int i = end; i > start; i--) {
                     tmp.append(String.format("""
-            case %d:""", i))
-
-                    for (int j = end; j > i; j--) {
-                        tmp.append(String.format("""
-                this.value%04d = ${defaultValue};""", j - 1))
-                    }
-
-                    for (int j = i; j > start; j--) {
-                        tmp.append(String.format("""
-                this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);""", j - 1, j - 1))
-                    }
-
-                    tmp.append("""
-                break;
-                    """)
+            case %d:
+                this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);
+            """, i, i - 1, i - 1))
                 }
 
                 for (int i = start; i >= 0; i--) {
-                    tmp.append(String.format("""
-                case %d:""", i))
+                    if (i % 16 == 0) {
+                        tmp.append(String.format("""
+                case %d: """, i))
+                    } else {
+                        tmp.append(String.format("""case %d: """, i))
+                    }
                 }
 
-                for (int i = end; i > start; i--) {
+                return tmp.toString()
+            }
+        }
+
+        switch (len) {
+            default:
+                if (len > $end)
+                    break;
+            ${
+                StringBuilder tmp = new StringBuilder()
+
+                for (int i = 0; i < start; i++) {
+                    if (i % 16 == 0) {
+                        tmp.append(String.format("""
+                case %d: """, i))
+                    } else {
+                        tmp.append(String.format("""case %d: """, i))
+                    }
+                }
+
+                for (int i = start; i <= end; i++) {
                     tmp.append(String.format("""
-                this.value%04d = ${defaultValue};""", i - 1))
+                case %d:
+                    this.value%04d = ${defaultValue};
+                    """, i, i - 1))
                 }
 
                 return tmp.toString()
