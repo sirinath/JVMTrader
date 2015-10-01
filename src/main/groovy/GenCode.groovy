@@ -548,13 +548,14 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
                 switch (index) {
                     ${
                         StringBuilder tmp = new StringBuilder()
-                        for (int i = 0; i < end; i++)
+
+                        for (int i = 0; i < end; i++) {
                             tmp.append(String.format("""
                     case %d:
                         value%04d = value;
                         break;
-                    """, i, i)
-                            )
+                    """, i, i))
+                        }
 
                         return tmp.toString()
                     }
@@ -654,6 +655,8 @@ void tabledArrayGenAll() {
                 pw.print(tabledArray(m, type, start))
                 pw.flush()
                 pw.close()
+
+                System.gc()
             }
         }
     }
