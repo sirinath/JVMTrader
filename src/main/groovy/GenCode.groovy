@@ -63,7 +63,7 @@ public abstract class TabledArray {
     }
 """);
 
-    boolean[] mutable = [true, false]
+    boolean[] mutable = [false, true]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
 
     for(boolean m : mutable) {
@@ -330,18 +330,17 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
 public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${mutability}TabledArray0000$typeSuffix$generic {
     ${
         StringBuilder tmp = new StringBuilder()
-        StringBuilder str
 
         if (mutable) {
-            str = new StringBuilder("""
+            tmp.append("""
     protected $typeName value0000;""")
         } else {
-            str = new StringBuilder("""
+            tmp.append("""
     protected final $typeName value0000;""")
         }
 
 
-        str = new StringBuilder("""
+        tmp.append("""
     public final $typeName getValue0000() {
         return value0000;
     }
@@ -349,7 +348,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
 
 
         if (mutable) {
-            str = new StringBuilder("""
+            tmp.append("""
     public final void setValue0000(final $typeName value0000) {
         this.value0000 = value0000;
     }
@@ -362,13 +361,13 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
         this(checked, 0, values);
     }
 
-    protected ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
+    protected ${mutability}TabledArray0001$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
         super(checked, definedAsValues + 1, values);
         final int len = values.length;
 
         switch (len) {
             default:
-                if (len <= 1)
+                if (len < 1)
                     break;
     ${
         StringBuilder tmp = new StringBuilder()
@@ -386,16 +385,8 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
             default:
                 if (len > 1)
                     break;
-    ${
-        StringBuilder tmp = new StringBuilder()
-
-        tmp.append("""
-                case 0:
-                    this.value0000 = ${defaultValue};
-                    """)
-
-        return tmp.toString()
-    }
+            case 0:
+                this.value0000 = ${defaultValue};
         }
     }
 
@@ -533,7 +524,7 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
 
         switch (len) {
             default:
-                if (len <= $start)
+                if (len < ${start + 1})
                     break;
             ${
                 StringBuilder tmp = new StringBuilder()
@@ -551,16 +542,16 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
 
         switch (len) {
             default:
-                if (len > $end)
+                if (len > ${end - 1})
                     break;
             ${
                 StringBuilder tmp = new StringBuilder()
 
-                for (int i = start; i <= end; i++) {
+                for (int i = start; i < end; i++) {
                     tmp.append(String.format("""
                 case %d:
                     this.value%04d = ${defaultValue};
-                    """, i, i - 1))
+                    """, i, i))
                 }
 
                 return tmp.toString()
@@ -625,7 +616,7 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
 }
 
 void tabledArrayGenAll() {
-    boolean[] mutable = [true, false]
+    boolean[] mutable = [false, true]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
     int limit = 13
 
