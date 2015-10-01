@@ -164,7 +164,7 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
     protected final $erasedType[] rest;
 
     protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final $typeName ... values) {
-        super(checked, definedAsValues, values);
+        super(checked, definedAsValues, values.length);
         this.rest = new $erasedType[length > definedAsValues ? length - definedAsValues : 0];
 
         if (rest.length > 0)
