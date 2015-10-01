@@ -385,20 +385,12 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
                     break;
             ${
                 StringBuilder tmp = new StringBuilder()
+
                 for (int i = end; i > start; i--) {
                     tmp.append(String.format("""
             case %d:
                 this.value%04d = ArrayAccess.UNCHECKED.get(values, %d);
             """, i, i - 1, i - 1))
-                }
-
-                for (int i = start; i >= 0; i--) {
-                    if (i % 16 == 0) {
-                        tmp.append(String.format("""
-                case %d: """, i))
-                    } else {
-                        tmp.append(String.format("""case %d: """, i))
-                    }
                 }
 
                 return tmp.toString()
@@ -411,15 +403,6 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
                     break;
             ${
                 StringBuilder tmp = new StringBuilder()
-
-                for (int i = 0; i < start; i++) {
-                    if (i % 16 == 0) {
-                        tmp.append(String.format("""
-                case %d: """, i))
-                    } else {
-                        tmp.append(String.format("""case %d: """, i))
-                    }
-                }
 
                 for (int i = start; i <= end; i++) {
                     tmp.append(String.format("""
