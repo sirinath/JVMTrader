@@ -546,25 +546,22 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
             @Override
             public final void put(final int index, final $typeName value) {
                 switch (index) {
-                    ${
-                        StringBuilder tmp = new StringBuilder()
+                    """)
 
-                        for (int i = 0; i < end; i++) {
-                            tmp.append(String.format("""
+                    for (int i = 0; i < end; i++) {
+                        put.append(String.format("""
                     case %d:
                         value%04d = value;
                         break;
                     """, i, i))
-                        }
-
-                        return tmp.toString()
                     }
+
+                    put.append("""
                     default:
                         putToRest(index, value);
                 }
             }
-            """
-                    )
+            """)
                 }
 
                 return put.toString()
