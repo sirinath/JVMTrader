@@ -44,7 +44,7 @@ public abstract class ImmutableTabledArray0002<T> extends ImmutableTabledArray00
             
     }
 
-    public static <T> ImmutableTabledArray0002 getInstance(final boolean checked, final T ... values) {
+    public static <T> ImmutableTabledArray0002<T> getInstance(final boolean checked, final T ... values) {
         return new ImmutableTabledArray0002<T>(checked, values) {
             
 

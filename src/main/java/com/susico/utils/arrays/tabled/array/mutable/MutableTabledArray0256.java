@@ -1953,7 +1953,7 @@ public abstract class MutableTabledArray0256<T> extends MutableTabledArray0128<T
             
     }
 
-    public static <T> MutableTabledArray0256 getInstance(final boolean checked, final T ... values) {
+    public static <T> MutableTabledArray0256<T> getInstance(final boolean checked, final T ... values) {
         return new MutableTabledArray0256<T>(checked, values) {
             
             @Override

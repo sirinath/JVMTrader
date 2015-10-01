@@ -102,7 +102,7 @@ String tabledArrayBase(boolean mutable, Class<?> type) {
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
     String generic = type.isPrimitive() ? "" : "<T>"
     StringBuffer str = new StringBuffer()
-    int limit = 13
+    int limit = 10
 
     if (mutable)
         str.append("""// Auto generated. Do not edit directly!
@@ -184,9 +184,9 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
     public static $generic ${mutability}TabledArray${typeSuffix}$generic getInstance(final boolean checked, final int length, final $typeName ... values) {
         switch (length) {
             case 0:
-                return ${mutability}TabledArray0000${typeSuffix}.getInstance(checked, values);
+                return ${mutability}TabledArray0000${typeSuffix}.${generic}getInstance(checked, values);
             case 1:
-                return ${mutability}TabledArray0001${typeSuffix}.getInstance(checked, values);
+                return ${mutability}TabledArray0001${typeSuffix}.${generic}getInstance(checked, values);
 """
     )
 
@@ -205,7 +205,7 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
         }
 
         str.append("""
-                return ${mutability}TabledArray${String.format("%04d", end)}${typeSuffix}.getInstance(checked, values);
+                return ${mutability}TabledArray${String.format("%04d", end)}${typeSuffix}.${generic}getInstance(checked, values);
 
 """
         )
@@ -537,7 +537,7 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
         }
     }
 
-    public static ${generic} ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix getInstance(final boolean checked, final $typeName ... values) {
+    public static ${generic} ${mutability}TabledArray${String.format("%04d", end)}${typeSuffix}${generic} getInstance(final boolean checked, final $typeName ... values) {
         return new ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix$generic(checked, values) {
             ${
                 StringBuilder put = new StringBuilder()
@@ -594,7 +594,7 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
 void tabledArrayGenAll() {
     boolean[] mutable = [false, true]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
-    int limit = 13
+    int limit = 10
 
     File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\tabled\\")
     p.mkdirs()
