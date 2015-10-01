@@ -632,7 +632,7 @@ void tabledArrayGenAll() {
     pw.close()
 
     for(boolean m : mutable) {
-        String mutability = mutable ? "Mutable" : "Immutable"
+        String mutability = m ? "Mutable" : "Immutable"
 
         for (Class<?> type : types) {
             String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
