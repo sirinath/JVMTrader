@@ -21,7 +21,7 @@ import com.susico.utils.arrays.tabled.TabledArray;
 
 public abstract class ImmutableTabledArrayFloat extends TabledArray {
     protected final float[] rest;
-    protected final int totalLength;
+    protected final int actualLength;
 
     protected ImmutableTabledArrayFloat(final boolean checked, final int definedAsValues, final int length, final float ... values) {
         super(checked, definedAsValues, length);
@@ -33,7 +33,7 @@ public abstract class ImmutableTabledArrayFloat extends TabledArray {
         if (copyLength > 0)
             System.arraycopy(values, definedAsValues, rest, 0, copyLength);
 
-        totalLength = definedAsValues + rest.length;
+        actualLength = definedAsValues + rest.length;
     }
 
     public abstract float get(final int index);
@@ -42,8 +42,9 @@ public abstract class ImmutableTabledArrayFloat extends TabledArray {
         return (float) ARRAY_ACCESS.get(rest, index - definedAsValues);
     }
 
-    public final int getTotalLength() {
-        return totalLength;
+    @Override
+    public final int getActualLength() {
+        return actualLength;
     }
 
     public static  ImmutableTabledArrayFloat getInstance(final boolean checked, final int length, final float ... values) {

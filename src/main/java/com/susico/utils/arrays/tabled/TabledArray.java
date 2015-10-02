@@ -42,12 +42,12 @@ import com.susico.utils.arrays.tabled.array.mutable.MutableTabledArray;
 
 public abstract class TabledArray {
     protected final ArrayAccess ARRAY_ACCESS;
-    protected final int length;
+    protected final int targetLength;
     protected final int definedAsValues;
 
     protected TabledArray(final boolean checked, final int definedAsValues, final int length) {
         this.ARRAY_ACCESS = ArrayAccess.checked(checked);
-        this.length = length;
+        this.targetLength = length;
         this.definedAsValues = definedAsValues;
     }
 
@@ -55,11 +55,11 @@ public abstract class TabledArray {
         return definedAsValues;
     }
 
-    public final int getLength() {
-        return length;
+    public final int getTargetLength() {
+        return targetLength;
     }
 
-    public abstract int getTotalLength();
+    public abstract int getActualLength();
 
     public static  ImmutableTabledArrayBoolean getImmutableBooleanArray(final boolean checked, final int length, final boolean ... values) {
         return ImmutableTabledArrayBoolean.getInstance(checked, length, values);

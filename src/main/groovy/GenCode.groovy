@@ -48,12 +48,12 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
     StringBuffer theImports = new StringBuffer()
     StringBuffer str = new StringBuffer("""public abstract class TabledArray {
     protected final ArrayAccess ARRAY_ACCESS;
-    protected final int length;
+    protected final int targetLength;
     protected final int definedAsValues;
 
     protected TabledArray(final boolean checked, final int definedAsValues, final int length) {
         this.ARRAY_ACCESS = ArrayAccess.checked(checked);
-        this.length = length;
+        this.targetLength = length;
         this.definedAsValues = definedAsValues;
     }
 
@@ -61,11 +61,11 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
         return definedAsValues;
     }
 
-    public final int getLength() {
-        return length;
+    public final int getTargetLength() {
+        return targetLength;
     }
 
-    public abstract int getTotalLength();
+    public abstract int getActualLength();
 """);
 
     boolean[] mutable = [false, true]
@@ -164,7 +164,7 @@ import com.susico.utils.arrays.tabled.TabledArray;
 
 public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArray {
     protected final $erasedType[] rest;
-    protected final int totalLength;
+    protected final int actualLength;
 
     protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues, length);
@@ -176,7 +176,7 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
         if (copyLength > 0)
             System.arraycopy(values, definedAsValues, rest, 0, copyLength);
 
-        totalLength = definedAsValues + rest.length;
+        actualLength = definedAsValues + rest.length;
     }
 
     public abstract $typeName get(final int index);
@@ -185,8 +185,9 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
         return ($typeName) ARRAY_ACCESS.get(rest, index - definedAsValues);
     }
 
-    public final int getTotalLength() {
-        return totalLength;
+    @Override
+    public final int getActualLength() {
+        return actualLength;
     }
 """)
 
