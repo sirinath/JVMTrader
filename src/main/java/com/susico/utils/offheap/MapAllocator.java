@@ -37,12 +37,12 @@ public  final class MapAllocator {
     protected final ArrayUtils.ArrayAccess arrayUtils;
     private final MappedByteBuffer[] mappedByteBuffers;
     protected final LongIndexed<MappedByteBuffer> PAGE_ACCESS = new LongIndexed<MappedByteBuffer>() {
-        public final void put(long i, MappedByteBuffer buff) {
-            arrayUtils.put(mappedByteBuffers, i, buff);
+        public final void put(long index, MappedByteBuffer buff) {
+            arrayUtils.put(mappedByteBuffers, index, buff);
         }
 
-        public final MappedByteBuffer get(long i) {
-            return arrayUtils.get(mappedByteBuffers, i);
+        public final MappedByteBuffer get(long index) {
+            return arrayUtils.get(mappedByteBuffers, index);
         }
     };
 

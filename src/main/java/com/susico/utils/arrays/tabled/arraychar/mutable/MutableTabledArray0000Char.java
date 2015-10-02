@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arraychar.mutable;
 
 public abstract class MutableTabledArray0000Char extends MutableTabledArrayChar {
-    protected MutableTabledArray0000Char(final boolean checked, final char ... values) {
-        this(checked, 0, values);
+    protected MutableTabledArray0000Char(final boolean checked, final int length, final char ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected MutableTabledArray0000Char(final boolean checked, final int definedAsValues, final char ... values) {
-        super(checked, definedAsValues, values);
+    protected MutableTabledArray0000Char(final boolean checked, final int definedAsValues, final int length, final char ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  MutableTabledArray0000Char getInstance(final boolean checked, final char ... values) {
-        return new MutableTabledArray0000Char(checked, values) {
+    public static  MutableTabledArray0000Char getInstance(final boolean checked, final int length, final char ... values) {
+        return new MutableTabledArray0000Char(checked, length, values) {
             @Override
             public final void put(final int index, final char value) {
                 putToRest(index, value);

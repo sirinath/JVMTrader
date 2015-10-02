@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arrayboolean.immutable;
 
 public abstract class ImmutableTabledArray0000Boolean extends ImmutableTabledArrayBoolean {
-    protected ImmutableTabledArray0000Boolean(final boolean checked, final boolean ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0000Boolean(final boolean checked, final int length, final boolean ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0000Boolean(final boolean checked, final int definedAsValues, final boolean ... values) {
-        super(checked, definedAsValues, values);
+    protected ImmutableTabledArray0000Boolean(final boolean checked, final int definedAsValues, final int length, final boolean ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  ImmutableTabledArray0000Boolean getInstance(final boolean checked, final boolean ... values) {
-        return new ImmutableTabledArray0000Boolean(checked, values) {
+    public static  ImmutableTabledArray0000Boolean getInstance(final boolean checked, final int length, final boolean ... values) {
+        return new ImmutableTabledArray0000Boolean(checked, length, values) {
             @Override
             public final boolean get(final int index) {
                 return getFromRest(index);

@@ -30,7 +30,7 @@ import java.util.concurrent.locks.LockSupport;
  * Created by sirin_000 on 17/09/2015.
  */
 public  final class SharedMappedBuffer implements Closeable {
-    private static final class RefCounts { // Not thread safe!!!
+    private static final class RefCounts { // Not thread safe!!! Do not use outside. Hence private.
         private MappedByteBuffer mappedByteBuffer;
         private int refCount = 0;
         private boolean save;
@@ -198,7 +198,7 @@ public  final class SharedMappedBuffer implements Closeable {
     }
 
 
-    public final boolean unmap(final long position, final long size) {
+    public final boolean forceUnmap(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null)

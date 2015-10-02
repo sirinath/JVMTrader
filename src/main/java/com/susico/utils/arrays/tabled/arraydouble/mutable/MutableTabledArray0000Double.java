@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arraydouble.mutable;
 
 public abstract class MutableTabledArray0000Double extends MutableTabledArrayDouble {
-    protected MutableTabledArray0000Double(final boolean checked, final double ... values) {
-        this(checked, 0, values);
+    protected MutableTabledArray0000Double(final boolean checked, final int length, final double ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected MutableTabledArray0000Double(final boolean checked, final int definedAsValues, final double ... values) {
-        super(checked, definedAsValues, values);
+    protected MutableTabledArray0000Double(final boolean checked, final int definedAsValues, final int length, final double ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  MutableTabledArray0000Double getInstance(final boolean checked, final double ... values) {
-        return new MutableTabledArray0000Double(checked, values) {
+    public static  MutableTabledArray0000Double getInstance(final boolean checked, final int length, final double ... values) {
+        return new MutableTabledArray0000Double(checked, length, values) {
             @Override
             public final void put(final int index, final double value) {
                 putToRest(index, value);

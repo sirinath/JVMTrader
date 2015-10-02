@@ -2582,12 +2582,12 @@ public abstract class ImmutableTabledArray1024Float extends ImmutableTabledArray
         return value1023;
     }
     
-    protected ImmutableTabledArray1024Float(final boolean checked, final float ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray1024Float(final boolean checked, final int length, final float ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray1024Float(final boolean checked, final int definedAsValues, final float ... values) {
-        super(checked, definedAsValues + 512, values);
+    protected ImmutableTabledArray1024Float(final boolean checked, final int definedAsValues, final int length, final float ... values) {
+        super(checked, definedAsValues + 512, length, values);
         final int len = values.length;
 
         
@@ -5665,8 +5665,8 @@ public abstract class ImmutableTabledArray1024Float extends ImmutableTabledArray
             
     }
 
-    public static  ImmutableTabledArray1024Float getInstance(final boolean checked, final float ... values) {
-        return new ImmutableTabledArray1024Float(checked, values) {
+    public static  ImmutableTabledArray1024Float getInstance(final boolean checked, final int length, final float ... values) {
+        return new ImmutableTabledArray1024Float(checked, length, values) {
             
 
             @Override

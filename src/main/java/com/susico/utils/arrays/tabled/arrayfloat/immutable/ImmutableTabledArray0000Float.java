@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arrayfloat.immutable;
 
 public abstract class ImmutableTabledArray0000Float extends ImmutableTabledArrayFloat {
-    protected ImmutableTabledArray0000Float(final boolean checked, final float ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0000Float(final boolean checked, final int length, final float ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0000Float(final boolean checked, final int definedAsValues, final float ... values) {
-        super(checked, definedAsValues, values);
+    protected ImmutableTabledArray0000Float(final boolean checked, final int definedAsValues, final int length, final float ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  ImmutableTabledArray0000Float getInstance(final boolean checked, final float ... values) {
-        return new ImmutableTabledArray0000Float(checked, values) {
+    public static  ImmutableTabledArray0000Float getInstance(final boolean checked, final int length, final float ... values) {
+        return new ImmutableTabledArray0000Float(checked, length, values) {
             @Override
             public final float get(final int index) {
                 return getFromRest(index);

@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arrayboolean.mutable;
 
 public abstract class MutableTabledArray0000Boolean extends MutableTabledArrayBoolean {
-    protected MutableTabledArray0000Boolean(final boolean checked, final boolean ... values) {
-        this(checked, 0, values);
+    protected MutableTabledArray0000Boolean(final boolean checked, final int length, final boolean ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected MutableTabledArray0000Boolean(final boolean checked, final int definedAsValues, final boolean ... values) {
-        super(checked, definedAsValues, values);
+    protected MutableTabledArray0000Boolean(final boolean checked, final int definedAsValues, final int length, final boolean ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  MutableTabledArray0000Boolean getInstance(final boolean checked, final boolean ... values) {
-        return new MutableTabledArray0000Boolean(checked, values) {
+    public static  MutableTabledArray0000Boolean getInstance(final boolean checked, final int length, final boolean ... values) {
+        return new MutableTabledArray0000Boolean(checked, length, values) {
             @Override
             public final void put(final int index, final boolean value) {
                 putToRest(index, value);

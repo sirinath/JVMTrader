@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arrayshort.immutable;
 
 public abstract class ImmutableTabledArray0000Short extends ImmutableTabledArrayShort {
-    protected ImmutableTabledArray0000Short(final boolean checked, final short ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0000Short(final boolean checked, final int length, final short ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0000Short(final boolean checked, final int definedAsValues, final short ... values) {
-        super(checked, definedAsValues, values);
+    protected ImmutableTabledArray0000Short(final boolean checked, final int definedAsValues, final int length, final short ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  ImmutableTabledArray0000Short getInstance(final boolean checked, final short ... values) {
-        return new ImmutableTabledArray0000Short(checked, values) {
+    public static  ImmutableTabledArray0000Short getInstance(final boolean checked, final int length, final short ... values) {
+        return new ImmutableTabledArray0000Short(checked, length, values) {
             @Override
             public final short get(final int index) {
                 return getFromRest(index);

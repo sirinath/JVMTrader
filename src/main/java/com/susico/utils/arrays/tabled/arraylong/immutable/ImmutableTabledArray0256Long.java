@@ -662,12 +662,12 @@ public abstract class ImmutableTabledArray0256Long extends ImmutableTabledArray0
         return value0255;
     }
     
-    protected ImmutableTabledArray0256Long(final boolean checked, final long ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0256Long(final boolean checked, final int length, final long ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0256Long(final boolean checked, final int definedAsValues, final long ... values) {
-        super(checked, definedAsValues + 128, values);
+    protected ImmutableTabledArray0256Long(final boolean checked, final int definedAsValues, final int length, final long ... values) {
+        super(checked, definedAsValues + 128, length, values);
         final int len = values.length;
 
         
@@ -1441,8 +1441,8 @@ public abstract class ImmutableTabledArray0256Long extends ImmutableTabledArray0
             
     }
 
-    public static  ImmutableTabledArray0256Long getInstance(final boolean checked, final long ... values) {
-        return new ImmutableTabledArray0256Long(checked, values) {
+    public static  ImmutableTabledArray0256Long getInstance(final boolean checked, final int length, final long ... values) {
+        return new ImmutableTabledArray0256Long(checked, length, values) {
             
 
             @Override

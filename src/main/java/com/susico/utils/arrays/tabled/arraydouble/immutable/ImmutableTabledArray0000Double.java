@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arraydouble.immutable;
 
 public abstract class ImmutableTabledArray0000Double extends ImmutableTabledArrayDouble {
-    protected ImmutableTabledArray0000Double(final boolean checked, final double ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0000Double(final boolean checked, final int length, final double ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0000Double(final boolean checked, final int definedAsValues, final double ... values) {
-        super(checked, definedAsValues, values);
+    protected ImmutableTabledArray0000Double(final boolean checked, final int definedAsValues, final int length, final double ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  ImmutableTabledArray0000Double getInstance(final boolean checked, final double ... values) {
-        return new ImmutableTabledArray0000Double(checked, values) {
+    public static  ImmutableTabledArray0000Double getInstance(final boolean checked, final int length, final double ... values) {
+        return new ImmutableTabledArray0000Double(checked, length, values) {
             @Override
             public final double get(final int index) {
                 return getFromRest(index);

@@ -31,12 +31,12 @@ public abstract class MutableTabledArray0002Char extends MutableTabledArray0001C
         this.value0001 = value0001;
     }
     
-    protected MutableTabledArray0002Char(final boolean checked, final char ... values) {
-        this(checked, 0, values);
+    protected MutableTabledArray0002Char(final boolean checked, final int length, final char ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected MutableTabledArray0002Char(final boolean checked, final int definedAsValues, final char ... values) {
-        super(checked, definedAsValues + 1, values);
+    protected MutableTabledArray0002Char(final boolean checked, final int definedAsValues, final int length, final char ... values) {
+        super(checked, definedAsValues + 1, length, values);
         final int len = values.length;
 
         
@@ -48,8 +48,8 @@ public abstract class MutableTabledArray0002Char extends MutableTabledArray0001C
             
     }
 
-    public static  MutableTabledArray0002Char getInstance(final boolean checked, final char ... values) {
-        return new MutableTabledArray0002Char(checked, values) {
+    public static  MutableTabledArray0002Char getInstance(final boolean checked, final int length, final char ... values) {
+        return new MutableTabledArray0002Char(checked, length, values) {
             
             @Override
             public final void put(final int index, final char value) {

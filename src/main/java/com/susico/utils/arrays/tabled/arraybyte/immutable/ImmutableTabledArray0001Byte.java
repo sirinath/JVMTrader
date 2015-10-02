@@ -26,12 +26,12 @@ public abstract class ImmutableTabledArray0001Byte extends ImmutableTabledArray0
         return value0000;
     }
     
-    protected ImmutableTabledArray0001Byte(final boolean checked, final byte ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0001Byte(final boolean checked, final int length, final byte ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0001Byte(final boolean checked, final int definedAsValues, final byte ... values) {
-        super(checked, definedAsValues + 1, values);
+    protected ImmutableTabledArray0001Byte(final boolean checked, final int definedAsValues, final int length, final byte ... values) {
+        super(checked, definedAsValues + 1, length, values);
 
         if (values.length >= 1) {
             this.value0000 = ArrayAccess.UNCHECKED.get(values, 0);
@@ -41,8 +41,8 @@ public abstract class ImmutableTabledArray0001Byte extends ImmutableTabledArray0
 
     }
 
-    public static  ImmutableTabledArray0001Byte getInstance(final boolean checked, final byte ... values) {
-        return new ImmutableTabledArray0001Byte(checked, values) {
+    public static  ImmutableTabledArray0001Byte getInstance(final boolean checked, final int length, final byte ... values) {
+        return new ImmutableTabledArray0001Byte(checked, length, values) {
             
 
             @Override

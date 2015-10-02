@@ -30,12 +30,12 @@ public abstract class MutableTabledArray0001<T> extends MutableTabledArray0000<T
         this.value0000 = value0000;
     }
     
-    protected MutableTabledArray0001(final boolean checked, final T ... values) {
-        this(checked, 0, values);
+    protected MutableTabledArray0001(final boolean checked, final int length, final T ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected MutableTabledArray0001(final boolean checked, final int definedAsValues, final T ... values) {
-        super(checked, definedAsValues + 1, values);
+    protected MutableTabledArray0001(final boolean checked, final int definedAsValues, final int length, final T ... values) {
+        super(checked, definedAsValues + 1, length, values);
 
         if (values.length >= 1) {
             this.value0000 = ArrayAccess.UNCHECKED.get(values, 0);
@@ -45,8 +45,8 @@ public abstract class MutableTabledArray0001<T> extends MutableTabledArray0000<T
 
     }
 
-    public static <T> MutableTabledArray0001 getInstance(final boolean checked, final T ... values) {
-        return new MutableTabledArray0001<T>(checked, values) {
+    public static <T> MutableTabledArray0001 getInstance(final boolean checked, final int length, final T ... values) {
+        return new MutableTabledArray0001<T>(checked, length, values) {
             
             @Override
             public final void put(final int index, final T value) {

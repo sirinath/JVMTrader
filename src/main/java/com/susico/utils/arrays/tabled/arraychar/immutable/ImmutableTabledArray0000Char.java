@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arraychar.immutable;
 
 public abstract class ImmutableTabledArray0000Char extends ImmutableTabledArrayChar {
-    protected ImmutableTabledArray0000Char(final boolean checked, final char ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0000Char(final boolean checked, final int length, final char ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0000Char(final boolean checked, final int definedAsValues, final char ... values) {
-        super(checked, definedAsValues, values);
+    protected ImmutableTabledArray0000Char(final boolean checked, final int definedAsValues, final int length, final char ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  ImmutableTabledArray0000Char getInstance(final boolean checked, final char ... values) {
-        return new ImmutableTabledArray0000Char(checked, values) {
+    public static  ImmutableTabledArray0000Char getInstance(final boolean checked, final int length, final char ... values) {
+        return new ImmutableTabledArray0000Char(checked, length, values) {
             @Override
             public final char get(final int index) {
                 return getFromRest(index);

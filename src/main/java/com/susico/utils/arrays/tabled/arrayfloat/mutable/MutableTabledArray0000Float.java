@@ -18,16 +18,16 @@
 package com.susico.utils.arrays.tabled.arrayfloat.mutable;
 
 public abstract class MutableTabledArray0000Float extends MutableTabledArrayFloat {
-    protected MutableTabledArray0000Float(final boolean checked, final float ... values) {
-        this(checked, 0, values);
+    protected MutableTabledArray0000Float(final boolean checked, final int length, final float ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected MutableTabledArray0000Float(final boolean checked, final int definedAsValues, final float ... values) {
-        super(checked, definedAsValues, values);
+    protected MutableTabledArray0000Float(final boolean checked, final int definedAsValues, final int length, final float ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
-    public static  MutableTabledArray0000Float getInstance(final boolean checked, final float ... values) {
-        return new MutableTabledArray0000Float(checked, values) {
+    public static  MutableTabledArray0000Float getInstance(final boolean checked, final int length, final float ... values) {
+        return new MutableTabledArray0000Float(checked, length, values) {
             @Override
             public final void put(final int index, final float value) {
                 putToRest(index, value);

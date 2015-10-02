@@ -20,51 +20,51 @@ package com.susico.utils.arrays.tabled.arrayfloat.mutable;
 import com.susico.utils.arrays.tabled.arrayfloat.immutable.ImmutableTabledArrayFloat;
 
 public abstract class MutableTabledArrayFloat extends ImmutableTabledArrayFloat {
-    protected MutableTabledArrayFloat(final boolean checked, final int definedAsValues, final float ... values) {
-        super(checked, definedAsValues, values);
+    protected MutableTabledArrayFloat(final boolean checked, final int definedAsValues, final int length, final float ... values) {
+        super(checked, definedAsValues, length, values);
     }
 
 
-    public abstract void put(int index, float value);
+    public abstract void put(final int index, final float value);
 
-    protected final void putToRest(int index, float value) {
+    protected final void putToRest(final int index, final float value) {
         ARRAY_ACCESS.put(rest, index - definedAsValues, value);
     }
 
     public static  MutableTabledArrayFloat getInstance(final boolean checked, final int length, final float ... values) {
         switch (length) {
             case 0:
-                return MutableTabledArray0000Float.getInstance(checked, values);
+                return MutableTabledArray0000Float.getInstance(checked, length, values);
             case 1:
-                return MutableTabledArray0001Float.getInstance(checked, values);
+                return MutableTabledArray0001Float.getInstance(checked, length, values);
             case 2: 
-                return MutableTabledArray0002Float.getInstance(checked, values);
+                return MutableTabledArray0002Float.getInstance(checked, length, values);
 
             case 3: case 4: 
-                return MutableTabledArray0004Float.getInstance(checked, values);
+                return MutableTabledArray0004Float.getInstance(checked, length, values);
 
             case 5: case 6: case 7: case 8: 
-                return MutableTabledArray0008Float.getInstance(checked, values);
+                return MutableTabledArray0008Float.getInstance(checked, length, values);
 
             case 9: case 10: case 11: case 12: case 13: case 14: case 15: 
             case 16: 
-                return MutableTabledArray0016Float.getInstance(checked, values);
+                return MutableTabledArray0016Float.getInstance(checked, length, values);
 
             case 17: case 18: case 19: case 20: case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29: case 30: case 31: 
             case 32: 
-                return MutableTabledArray0032Float.getInstance(checked, values);
+                return MutableTabledArray0032Float.getInstance(checked, length, values);
 
             case 33: case 34: case 35: case 36: case 37: case 38: case 39: case 40: case 41: case 42: case 43: case 44: case 45: case 46: case 47: 
             case 48: case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56: case 57: case 58: case 59: case 60: case 61: case 62: case 63: 
             case 64: 
-                return MutableTabledArray0064Float.getInstance(checked, values);
+                return MutableTabledArray0064Float.getInstance(checked, length, values);
 
             case 65: case 66: case 67: case 68: case 69: case 70: case 71: case 72: case 73: case 74: case 75: case 76: case 77: case 78: case 79: 
             case 80: case 81: case 82: case 83: case 84: case 85: case 86: case 87: case 88: case 89: case 90: case 91: case 92: case 93: case 94: case 95: 
             case 96: case 97: case 98: case 99: case 100: case 101: case 102: case 103: case 104: case 105: case 106: case 107: case 108: case 109: case 110: case 111: 
             case 112: case 113: case 114: case 115: case 116: case 117: case 118: case 119: case 120: case 121: case 122: case 123: case 124: case 125: case 126: case 127: 
             case 128: 
-                return MutableTabledArray0128Float.getInstance(checked, values);
+                return MutableTabledArray0128Float.getInstance(checked, length, values);
 
             case 129: case 130: case 131: case 132: case 133: case 134: case 135: case 136: case 137: case 138: case 139: case 140: case 141: case 142: case 143: 
             case 144: case 145: case 146: case 147: case 148: case 149: case 150: case 151: case 152: case 153: case 154: case 155: case 156: case 157: case 158: case 159: 
@@ -75,7 +75,7 @@ public abstract class MutableTabledArrayFloat extends ImmutableTabledArrayFloat 
             case 224: case 225: case 226: case 227: case 228: case 229: case 230: case 231: case 232: case 233: case 234: case 235: case 236: case 237: case 238: case 239: 
             case 240: case 241: case 242: case 243: case 244: case 245: case 246: case 247: case 248: case 249: case 250: case 251: case 252: case 253: case 254: case 255: 
             case 256: 
-                return MutableTabledArray0256Float.getInstance(checked, values);
+                return MutableTabledArray0256Float.getInstance(checked, length, values);
 
             case 257: case 258: case 259: case 260: case 261: case 262: case 263: case 264: case 265: case 266: case 267: case 268: case 269: case 270: case 271: 
             case 272: case 273: case 274: case 275: case 276: case 277: case 278: case 279: case 280: case 281: case 282: case 283: case 284: case 285: case 286: case 287: 
@@ -94,7 +94,7 @@ public abstract class MutableTabledArrayFloat extends ImmutableTabledArrayFloat 
             case 480: case 481: case 482: case 483: case 484: case 485: case 486: case 487: case 488: case 489: case 490: case 491: case 492: case 493: case 494: case 495: 
             case 496: case 497: case 498: case 499: case 500: case 501: case 502: case 503: case 504: case 505: case 506: case 507: case 508: case 509: case 510: case 511: 
             case 512: 
-                return MutableTabledArray0512Float.getInstance(checked, values);
+                return MutableTabledArray0512Float.getInstance(checked, length, values);
 
             case 513: case 514: case 515: case 516: case 517: case 518: case 519: case 520: case 521: case 522: case 523: case 524: case 525: case 526: case 527: 
             case 528: case 529: case 530: case 531: case 532: case 533: case 534: case 535: case 536: case 537: case 538: case 539: case 540: case 541: case 542: case 543: 
@@ -129,11 +129,11 @@ public abstract class MutableTabledArrayFloat extends ImmutableTabledArrayFloat 
             case 992: case 993: case 994: case 995: case 996: case 997: case 998: case 999: case 1000: case 1001: case 1002: case 1003: case 1004: case 1005: case 1006: case 1007: 
             case 1008: case 1009: case 1010: case 1011: case 1012: case 1013: case 1014: case 1015: case 1016: case 1017: case 1018: case 1019: case 1020: case 1021: case 1022: case 1023: 
             case 1024: 
-                return MutableTabledArray1024Float.getInstance(checked, values);
+                return MutableTabledArray1024Float.getInstance(checked, length, values);
 
 
             default:
-                return MutableTabledArray1024Float.getInstance(checked, values);
+                return MutableTabledArray1024Float.getInstance(checked, length, values);
         }
     }
 }

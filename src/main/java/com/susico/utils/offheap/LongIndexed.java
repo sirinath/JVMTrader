@@ -20,7 +20,7 @@ package com.susico.utils.offheap;
  * Created by sirin_000 on 02/09/2015.
  */
 public interface LongIndexed<T> {
-    void put(long i, T obj);
+    void put(long index, T obj);
 
-    T get(long i);
+    T get(long index);
 }

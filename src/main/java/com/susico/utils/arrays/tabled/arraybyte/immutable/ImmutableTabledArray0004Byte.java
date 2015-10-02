@@ -32,12 +32,12 @@ public abstract class ImmutableTabledArray0004Byte extends ImmutableTabledArray0
         return value0003;
     }
     
-    protected ImmutableTabledArray0004Byte(final boolean checked, final byte ... values) {
-        this(checked, 0, values);
+    protected ImmutableTabledArray0004Byte(final boolean checked, final int length, final byte ... values) {
+        this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0004Byte(final boolean checked, final int definedAsValues, final byte ... values) {
-        super(checked, definedAsValues + 2, values);
+    protected ImmutableTabledArray0004Byte(final boolean checked, final int definedAsValues, final int length, final byte ... values) {
+        super(checked, definedAsValues + 2, length, values);
         final int len = values.length;
 
         
@@ -55,8 +55,8 @@ public abstract class ImmutableTabledArray0004Byte extends ImmutableTabledArray0
             
     }
 
-    public static  ImmutableTabledArray0004Byte getInstance(final boolean checked, final byte ... values) {
-        return new ImmutableTabledArray0004Byte(checked, values) {
+    public static  ImmutableTabledArray0004Byte getInstance(final boolean checked, final int length, final byte ... values) {
+        return new ImmutableTabledArray0004Byte(checked, length, values) {
             
 
             @Override
