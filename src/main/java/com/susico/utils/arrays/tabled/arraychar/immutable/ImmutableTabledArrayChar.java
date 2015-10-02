@@ -23,11 +23,14 @@ public abstract class ImmutableTabledArrayChar extends TabledArray {
     protected final char[] rest;
 
     protected ImmutableTabledArrayChar(final boolean checked, final int definedAsValues, final int length, final char ... values) {
-        super(checked, definedAsValues, Math.max(length, values.length));
-        this.rest = new char[this.length > definedAsValues ? this.length - definedAsValues : 0];
+        super(checked, definedAsValues, length);
 
-        if (rest.length > 0)
-            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
+        final int effectiveLength = Math.max(length, values.length)
+        this.rest = new char[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
+
+        final int copyLength = values.length - definedAsValues
+        if (copyLength > 0)
+            System.arraycopy(values, definedAsValues, rest, 0, copyLength);
     }
 
     public abstract char get(final int index);

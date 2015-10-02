@@ -23,11 +23,14 @@ public abstract class ImmutableTabledArrayBoolean extends TabledArray {
     protected final boolean[] rest;
 
     protected ImmutableTabledArrayBoolean(final boolean checked, final int definedAsValues, final int length, final boolean ... values) {
-        super(checked, definedAsValues, Math.max(length, values.length));
-        this.rest = new boolean[this.length > definedAsValues ? this.length - definedAsValues : 0];
+        super(checked, definedAsValues, length);
 
-        if (rest.length > 0)
-            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
+        final int effectiveLength = Math.max(length, values.length)
+        this.rest = new boolean[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
+
+        final int copyLength = values.length - definedAsValues
+        if (copyLength > 0)
+            System.arraycopy(values, definedAsValues, rest, 0, copyLength);
     }
 
     public abstract boolean get(final int index);

@@ -23,11 +23,14 @@ public abstract class ImmutableTabledArrayByte extends TabledArray {
     protected final byte[] rest;
 
     protected ImmutableTabledArrayByte(final boolean checked, final int definedAsValues, final int length, final byte ... values) {
-        super(checked, definedAsValues, Math.max(length, values.length));
-        this.rest = new byte[this.length > definedAsValues ? this.length - definedAsValues : 0];
+        super(checked, definedAsValues, length);
 
-        if (rest.length > 0)
-            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
+        final int effectiveLength = Math.max(length, values.length)
+        this.rest = new byte[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
+
+        final int copyLength = values.length - definedAsValues
+        if (copyLength > 0)
+            System.arraycopy(values, definedAsValues, rest, 0, copyLength);
     }
 
     public abstract byte get(final int index);

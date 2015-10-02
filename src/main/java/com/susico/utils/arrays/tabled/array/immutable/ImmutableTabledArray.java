@@ -23,11 +23,14 @@ public abstract class ImmutableTabledArray<T> extends TabledArray {
     protected final Object[] rest;
 
     protected ImmutableTabledArray(final boolean checked, final int definedAsValues, final int length, final T ... values) {
-        super(checked, definedAsValues, Math.max(length, values.length));
-        this.rest = new Object[this.length > definedAsValues ? this.length - definedAsValues : 0];
+        super(checked, definedAsValues, length);
 
-        if (rest.length > 0)
-            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
+        final int effectiveLength = Math.max(length, values.length)
+        this.rest = new Object[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
+
+        final int copyLength = values.length - definedAsValues
+        if (copyLength > 0)
+            System.arraycopy(values, definedAsValues, rest, 0, copyLength);
     }
 
     public abstract T get(final int index);

@@ -23,11 +23,14 @@ public abstract class ImmutableTabledArrayShort extends TabledArray {
     protected final short[] rest;
 
     protected ImmutableTabledArrayShort(final boolean checked, final int definedAsValues, final int length, final short ... values) {
-        super(checked, definedAsValues, Math.max(length, values.length));
-        this.rest = new short[this.length > definedAsValues ? this.length - definedAsValues : 0];
+        super(checked, definedAsValues, length);
 
-        if (rest.length > 0)
-            System.arraycopy(values, definedAsValues, rest, 0, rest.length);
+        final int effectiveLength = Math.max(length, values.length)
+        this.rest = new short[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
+
+        final int copyLength = values.length - definedAsValues
+        if (copyLength > 0)
+            System.arraycopy(values, definedAsValues, rest, 0, copyLength);
     }
 
     public abstract short get(final int index);
