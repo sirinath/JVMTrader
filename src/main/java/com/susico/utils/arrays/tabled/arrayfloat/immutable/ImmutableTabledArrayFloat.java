@@ -21,22 +21,29 @@ import com.susico.utils.arrays.tabled.TabledArray;
 
 public abstract class ImmutableTabledArrayFloat extends TabledArray {
     protected final float[] rest;
+    protected final int totalLength;
 
     protected ImmutableTabledArrayFloat(final boolean checked, final int definedAsValues, final int length, final float ... values) {
         super(checked, definedAsValues, length);
 
         final int effectiveLength = Math.max(length, values.length)
-        this.rest = new float[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
+        rest = new float[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
 
         final int copyLength = values.length - definedAsValues
         if (copyLength > 0)
             System.arraycopy(values, definedAsValues, rest, 0, copyLength);
+
+        totalLength = definedAsValues + rest.length;
     }
 
     public abstract float get(final int index);
 
     protected final float getFromRest(final int index) {
         return (float) ARRAY_ACCESS.get(rest, index - definedAsValues);
+    }
+
+    public final int getTotalLength() {
+        return totalLength;
     }
 
     public static  ImmutableTabledArrayFloat getInstance(final boolean checked, final int length, final float ... values) {

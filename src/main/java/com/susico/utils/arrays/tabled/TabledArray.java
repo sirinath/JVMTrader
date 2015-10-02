@@ -59,6 +59,8 @@ public abstract class TabledArray {
         return length;
     }
 
+    public abstract int getTotalLength();
+
     public static  ImmutableTabledArrayBoolean getImmutableBooleanArray(final boolean checked, final int length, final boolean ... values) {
         return ImmutableTabledArrayBoolean.getInstance(checked, length, values);
     }

@@ -64,6 +64,8 @@ import com.susico.utils.arrays.ArrayUtils.ArrayAccess;
     public final int getLength() {
         return length;
     }
+
+    public abstract int getTotalLength();
 """);
 
     boolean[] mutable = [false, true]
@@ -162,22 +164,29 @@ import com.susico.utils.arrays.tabled.TabledArray;
 
 public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArray {
     protected final $erasedType[] rest;
+    protected final int totalLength;
 
     protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues, length);
 
         final int effectiveLength = Math.max(length, values.length)
-        this.rest = new $erasedType[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
+        rest = new $erasedType[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
 
         final int copyLength = values.length - definedAsValues
         if (copyLength > 0)
             System.arraycopy(values, definedAsValues, rest, 0, copyLength);
+
+        totalLength = definedAsValues + rest.length;
     }
 
     public abstract $typeName get(final int index);
 
     protected final $typeName getFromRest(final int index) {
         return ($typeName) ARRAY_ACCESS.get(rest, index - definedAsValues);
+    }
+
+    public final int getTotalLength() {
+        return totalLength;
     }
 """)
 
