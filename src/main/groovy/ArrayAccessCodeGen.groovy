@@ -77,10 +77,22 @@ public final class ArrayAccess {
         String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
         String generic = type.isPrimitive() ? "" : "<T>"
 
-        buff.append(""""
+        buff.append("""
     public static final long ARRAY_${typeSuffixCap}_BASE_OFFSET = UNSAFE.ARRAY_${typeSuffixCap}_BASE_OFFSET;
-    public static final long ARRAY_${typeSuffixCap}_INDEX_SCALE = UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE > 0 ? UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE : ${typeSuffix.equalsIgnoreCase("BOOLEAN") ? 1 : typeSuffix.equalsIgnoreCase("INT") ? "Integer.BYTE" : typeSuffix.equalsIgnoreCase("OBJECT") ? "UNSAFE.ADDRESS_SIZE" : typeSuffix + ".BYTE"};
+    public static final long ARRAY_${typeSuffixCap}_INDEX_SCALE = UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE > 0 ? UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE : ${typeSuffix.equalsIgnoreCase("BOOLEAN") ? 1 : typeSuffix.equalsIgnoreCase("INT") ? "Integer.BYTES" : typeSuffix.equalsIgnoreCase("CHAR") ? "Character.BYTES" : typeSuffix.equalsIgnoreCase("OBJECT") ? "UNSAFE.ADDRESS_SIZE" : typeSuffix + ".BYTES"};
     public static final long ARRAY_${typeSuffixCap}_INDEX_SHIFT = Long.SIZE - Long.numberOfLeadingZeros(ARRAY_${typeSuffixCap}_INDEX_SCALE) - 1;
+
+    public final $generic long contentByteSize(final $typeName ... buff) {
+        return buff.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT;
+    }
+
+    public final $generic long totalByteSize(final $typeName ... buff) {
+        return ARRAY_${typeSuffixCap}_BASE_OFFSET + buff.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT;
+    }
+
+    public final $generic void init(byte value, final $typeName[] buff) {
+        return UNSAFE.setMemory(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET, buff.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+    }
 
     public final $generic $typeName get(final long index, final $typeName ... buff) {
         if (SAFE)
@@ -251,6 +263,20 @@ public final class ArrayAccess {
 
                 return buff;
             }
+
+            public final $generic boolean compareAndSwap(final long index, final $typeName[] buff, final $typeName expected, final $typeName value) {
+                if (SAFE && (index < 0 || index >= buff.length))
+                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+
+                return UNSAFE.compareAndSwap${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, expected, value);
+            }
+
+            public final $generic boolean compareAndSwap(final int index, final $typeName[] buff, final $typeName expected, final $typeName value) {
+                if (SAFE && (index < 0 || index >= buff.length))
+                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+
+                return UNSAFE.compareAndSwap${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, expected, value);
+            }
     """)
         } else if (type.equals(Float.TYPE)) {
             buff.append("""
@@ -270,6 +296,20 @@ public final class ArrayAccess {
                     UNSAFE.putOrderedInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(value));
 
                 return buff;
+            }
+
+            public final $generic boolean compareAndSwap(final long index, final $typeName[] buff, final $typeName expected, final $typeName value) {
+                if (SAFE && (index < 0 || index >= buff.length))
+                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+
+                return UNSAFE.compareAndSwapInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(expected), Float.floatToRawIntBits(value));
+            }
+
+            public final $generic boolean compareAndSwap(final int index, final $typeName[] buff, final $typeName expected, final $typeName value) {
+                if (SAFE && (index < 0 || index >= buff.length))
+                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+
+                return UNSAFE.compareAndSwapInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(expected), Float.floatToRawIntBits(value));
             }
     """)
         } else if (type.equals(Double.TYPE)) {
@@ -291,6 +331,20 @@ public final class ArrayAccess {
 
                 return buff;
             }
+
+            public final $generic boolean compareAndSwap(final long index, final $typeName[] buff, final $typeName expected, final $typeName value) {
+                if (SAFE && (index < 0 || index >= buff.length))
+                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+
+                return UNSAFE.compareAndSwapLong(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Double.doubleToRawLongBits(expected), Double.doubleToRawLongBits(value));
+            }
+
+            public final $generic boolean compareAndSwap(final int index, final $typeName[] buff, final $typeName expected, final $typeName value) {
+                if (SAFE && (index < 0 || index >= buff.length))
+                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+
+                return UNSAFE.compareAndSwapLong(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Double.doubleToRawLongBits(expected), Double.doubleToRawLongBits(value));
+            }
     """)
         }
     }
@@ -310,3 +364,5 @@ void arrayAccessGen() {
     pw.flush()
     pw.close()
 }
+
+arrayAccessGen()
