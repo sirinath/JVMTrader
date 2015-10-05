@@ -166,7 +166,7 @@ public  final class SharedMappedBuffer implements Closeable {
         return refCounts.reference();
     }
 
-    public final boolean dereference(final long position, final long size) {
+    public final boolean release(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null)

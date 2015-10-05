@@ -16,7 +16,7 @@
 
 package com.susico.utils.io;
 
-import uk.co.real_logic.agrona.UnsafeAccess;
+import com.susico.utils.UnsafeAccess;
 import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
 
 import java.nio.ByteOrder;
@@ -251,16 +251,16 @@ public final class BitUtils {
         }
     }
 
-    public static final FastPacker FAST_PACKER = new FastPacker();
+    public static final BufferPacker BUFFER_PACKER = new BufferPacker();
 
-    public static final class FastPacker extends ThreadLocal<FastPacker> {
+    public static final class BufferPacker extends ThreadLocal<BufferPacker> {
         public static final int BUFF_LEN = Long.BYTES;
         protected final byte[] buff = new byte[BUFF_LEN];
         protected final UnsafeBuffer unsafeBuffer = new UnsafeBuffer(buff);
 
         @Override
-        protected FastPacker initialValue() {
-            return new FastPacker();
+        protected BufferPacker initialValue() {
+            return new BufferPacker();
         }
 
         public final long packToLong(final ByteOrder byteOrder, final int position, final byte... bytes) {
