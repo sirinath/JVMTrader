@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.utils.offheap;
+package com.susico.utils.memory.offheap;
 
 import java.io.Closeable;
 import java.io.File;

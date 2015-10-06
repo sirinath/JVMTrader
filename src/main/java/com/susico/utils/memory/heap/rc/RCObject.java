@@ -14,61 +14,51 @@
  * limitations under the License.
  */
 
-package com.susico.utils.heap.rc;
+package com.susico.utils.memory.heap.rc;
 
+import com.susico.utils.memory.pool.PooledObject;
 import sun.misc.Cleaner;
+import sun.reflect.Reflection;
 
+import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 import java.util.function.Supplier;
 
 /**
  * Created by sirin_000 on 05/10/2015.
  */
-public final class RCObject implements AutoCloseable {
-    public static final int INIT_RC_POOL_SIZE = 100;
-
+public final class RCObject extends PooledObject {
     private volatile int rc = 0;
+
+    private final ReferenceQueue<Object> refQ = new ReferenceQueue<>();
     private volatile SoftReference<Object> value = null;
 
-    private RCObject(final ArrayDeque<RCObject> queue, final Runnable releaseAction) {
-        this.queue = queue;
-        this.releaseAction = releaseAction;
-    }
-
-    // RCObject is not thread local through the pool is
-    private static final ThreadLocal<ArrayDeque<RCObject>> pool = new ThreadLocal<ArrayDeque<RCObject>>() {
-        @Override
-        protected final ArrayDeque<RCObject> initialValue() {
-            return new ArrayDeque<RCObject>(INIT_RC_POOL_SIZE);
-        }
-    };
-
-    private final ArrayDeque<RCObject> queue;
+    private RCObject() {}
 
     private volatile Runnable releaseAction;
 
     private Cleaner cleaner;
 
     public static <T> RCObject getInstance(final Supplier<T> supplier, final Runnable releaseAction) {
-        ArrayDeque<RCObject> queue = pool.get();
-        RCObject obj = queue.pollFirst();
+        ArrayDeque<PooledObject> pool = getQueueFor(RCObject.class);
+
+        PooledObject obj = pool.pollFirst();
 
         if (obj == null) {
-            obj = new RCObject(queue, releaseAction);
+            obj = new RCObject();
         }
 
         Object value = supplier.get();
 
-        obj.set(value, releaseAction);
+        ((RCObject) obj).set(value, releaseAction);
 
-        return obj;
+        return (RCObject) obj;
     }
 
     private final void set(final Object value, final Runnable releaseAction) {
         this.rc = 0;
-        this.value = new SoftReference<Object>(value);
+        this.value = new SoftReference<Object>(value, refQ);
         this.releaseAction = releaseAction;
 
         this.cleaner = Cleaner.create(value, () -> clean());
@@ -101,7 +91,7 @@ public final class RCObject implements AutoCloseable {
 
                 value = null;
 
-                queue.addLast(this);
+                returnToPool();
             }
         }
     }
@@ -124,6 +114,6 @@ public final class RCObject implements AutoCloseable {
 
         value = null;
 
-        queue.addLast(this);
+        returnToPool();
     }
 }

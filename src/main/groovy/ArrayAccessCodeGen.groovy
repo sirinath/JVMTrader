@@ -336,11 +336,49 @@ public final class ArrayAccess {
 
                 return UNSAFE.getAndAdd${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
             }
+
+            public final $generic $typeName getAndAdd(final int index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return UNSAFE.getAndAdd${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+            }
+
+            public final $generic $typeName addAndGet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                $typeName current;
+                $typeName newValue;
+                do {
+                    current = get${typeSuffix}Volatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                    newValue = current + value;
+                } while (!compareAndSwap${typeSuffix}(buff, offset, current, newValue));
+
+                return newValue;
+            }
+
+            public final $generic $typeName addAndGet(final int index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                $typeName current;
+                $typeName newValue;
+                do {
+                    current = get${typeSuffix}Volatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                    newValue = current + value;
+                } while (!compareAndSwap${typeSuffix}(buff, offset, current, newValue));
+
+                return newValue;
+            }
             """)
             }
 
             buff.append("""
             public final $generic $typeName getAndSet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return UNSAFE.getAndSet${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+            }
+
+            public final $generic $typeName getAndSet(final int index, final $typeName[] buff, final $typeName value) {
                 checkIndexIfSafeOn(index, buff);
 
                 return UNSAFE.getAndSet${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
@@ -388,7 +426,49 @@ public final class ArrayAccess {
                 return current;
             }
 
+            public final $generic $typeName getAndAdd(final int index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                float current;
+                do {
+                    current = getFloatVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                } while (!compareAndSwapInt(buff, offset, Float.floatToRawIntBits(current), Float.floatToRawIntBits(current + value)));
+                return current;
+            }
+
+            public final $generic $typeName addAndGet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                float current;
+                float newValue;
+                do {
+                    current = getFloatVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                    newValue = current + value;
+                } while (!compareAndSwapInt(buff, offset, Float.floatToRawIntBits(current), Float.floatToRawIntBits(newValue)));
+
+                return newValue;
+            }
+
+            public final $generic $typeName addAndGet(final int index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                float current;
+                float newValue;
+                do {
+                    current = getFloatVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                    newValue = current + value;
+                } while (!compareAndSwapInt(buff, offset, Float.floatToRawIntBits(current), Float.floatToRawIntBits(newValue)));
+
+                return newValue;
+            }
+
             public final $generic $typeName getAndSet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return Float.intBitsToFloat(UNSAFE.getAndSetInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(value)));
+            }
+
+            public final $generic $typeName getAndSet(final int index, final $typeName[] buff, final $typeName value) {
                 checkIndexIfSafeOn(index, buff);
 
                 return Float.intBitsToFloat(UNSAFE.getAndSetInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(value)));
@@ -433,10 +513,54 @@ public final class ArrayAccess {
                 do {
                     current = getDoubleVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
                 } while (!compareAndSwapLong(buff, offset, Double.doubleToRawLongBits(current), Double.doubleToRawLongBits(current + value)));
+
                 return current;
             }
 
+            public final $generic $typeName getAndAdd(final int index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                double current;
+                do {
+                    current = getDoubleVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                } while (!compareAndSwapLong(buff, offset, Double.doubleToRawLongBits(current), Double.doubleToRawLongBits(current + value)));
+
+                return current;
+            }
+
+            public final $generic $typeName addAndGet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                double current;
+                double newValue;
+                do {
+                    current = getDoubleVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                    newValue = current + value
+                } while (!compareAndSwapLong(buff, offset, Double.doubleToRawLongBits(current), Double.doubleToRawLongBits(newValue)));
+
+                return newValue;
+            }
+
+            public final $generic $typeName addAndGet(final int index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                double current;
+                double newValue;
+                do {
+                    current = getDoubleVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                    newValue = current + value
+                } while (!compareAndSwapLong(buff, offset, Double.doubleToRawLongBits(current), Double.doubleToRawLongBits(newValue)));
+
+                return newValue;
+            }
+
             public final $generic $typeName getAndSet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return Double.longBitsToDouble(UNSAFE.getAndSetLong(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Double.doubleToRawLongBits(value)));
+            }
+
+            public final $generic $typeName getAndSet(final int index, final $typeName[] buff, final $typeName value) {
                 checkIndexIfSafeOn(index, buff);
 
                 return Double.longBitsToDouble(UNSAFE.getAndSetLong(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Double.doubleToRawLongBits(value)));

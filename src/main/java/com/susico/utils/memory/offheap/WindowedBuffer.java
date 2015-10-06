@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.susico.utils.offheap;
-
-import java.nio.MappedByteBuffer;
+package com.susico.utils.memory.offheap;
 
 /**
  * Created by sirin_000 on 03/09/2015.
  */
-public final class WindowedBuffer {
-    private final SharedMappedBuffer sharedMappedBuffer;
+public final class WindowedBuffer<T> {
+    private final SharedBuffer<T> sharedBuffer;
     private final long start;
     private final long stride;
     private final long size;
@@ -30,7 +28,7 @@ public final class WindowedBuffer {
     private final boolean pow2;
     private final int shift;
 
-    public WindowedBuffer(final SharedMappedBuffer sharedMappedBuffer, final long start, final int stride, final int size) {
+    public WindowedBuffer(final SharedBuffer<T> sharedBuffer, final long start, final int stride, final int size) {
         if (stride <= 0) {
             if (size <= 0)
                 throw new IllegalArgumentException("size and stride should be greater than 0");
@@ -40,7 +38,7 @@ public final class WindowedBuffer {
             throw new IllegalArgumentException("size should be greater than 0");
 
 
-        this.sharedMappedBuffer = sharedMappedBuffer;
+        this.sharedBuffer = sharedBuffer;
         this.start = start;
         this.stride = stride;
         this.size = size;
@@ -49,11 +47,25 @@ public final class WindowedBuffer {
         this.shift = Long.SIZE - Long.numberOfLeadingZeros(stride) - 1;
     }
 
-    public final MappedByteBuffer window(final long index) {
+    public final T window(final long index) {
         if (pow2)
-            return sharedMappedBuffer.map(index << shift, size);
+            return sharedBuffer.map(index << shift, size);
         else
-            return sharedMappedBuffer.map(index * stride, size);
+            return sharedBuffer.map(index * stride, size);
+    }
+
+    public final void unmapIfRCZero(final long index) {
+        if (pow2)
+            sharedBuffer.unmapIfRCZero(index << shift, size);
+        else
+            sharedBuffer.unmapIfRCZero(index * stride, size);
+    }
+
+    public final void forceUnmap(final long index) {
+        if (pow2)
+            sharedBuffer.forceUnmap(index << shift, size);
+        else
+            sharedBuffer.forceUnmap(index * stride, size);
     }
 }
 

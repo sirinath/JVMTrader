@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.susico.utils.offheap;
+package com.susico.utils.memory.offheap;
 
 import com.susico.utils.io.IOUtils;
 import uk.co.real_logic.agrona.collections.Long2ObjectHashMap;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.util.ArrayDeque;
@@ -29,7 +28,7 @@ import java.util.concurrent.locks.LockSupport;
 /**
  * Created by sirin_000 on 17/09/2015.
  */
-public  final class SharedMappedBuffer implements Closeable {
+public  final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> {
     private static final class RefCounts { // Not thread safe!!! Do not use outside. Hence private.
         private MappedByteBuffer mappedByteBuffer;
         private int refCount = 0;
@@ -120,6 +119,7 @@ public  final class SharedMappedBuffer implements Closeable {
 
     private final AtomicBoolean guard = new AtomicBoolean(false);
 
+    @Override
     public final MappedByteBuffer map(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
@@ -166,7 +166,8 @@ public  final class SharedMappedBuffer implements Closeable {
         return refCounts.reference();
     }
 
-    public final boolean release(final long position, final long size) {
+    @Override
+    public final boolean unmapIfRCZero(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
         if (positionMap == null)
@@ -198,6 +199,7 @@ public  final class SharedMappedBuffer implements Closeable {
     }
 
 
+    @Override
     public final boolean forceUnmap(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
 
