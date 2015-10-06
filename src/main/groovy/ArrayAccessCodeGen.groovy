@@ -76,11 +76,63 @@ public final class ArrayAccess {
         String typeSuffixCap = typeSuffix.toUpperCase()
         String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
         String generic = type.isPrimitive() ? "" : "<T>"
-
+        
         buff.append("""
     public static final long ARRAY_${typeSuffixCap}_BASE_OFFSET = UNSAFE.ARRAY_${typeSuffixCap}_BASE_OFFSET;
     public static final long ARRAY_${typeSuffixCap}_INDEX_SCALE = UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE > 0 ? UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE : ${typeSuffix.equalsIgnoreCase("BOOLEAN") ? 1 : typeSuffix.equalsIgnoreCase("INT") ? "Integer.BYTES" : typeSuffix.equalsIgnoreCase("CHAR") ? "Character.BYTES" : typeSuffix.equalsIgnoreCase("OBJECT") ? "UNSAFE.ADDRESS_SIZE" : typeSuffix + ".BYTES"};
     public static final long ARRAY_${typeSuffixCap}_INDEX_SHIFT = Long.SIZE - Long.numberOfLeadingZeros(ARRAY_${typeSuffixCap}_INDEX_SCALE) - 1;
+
+    public static boolean inRange(final long index, final $typeName ... buff) {
+        return index < 0 || index >= buff.length;
+    }
+
+    public static boolean inRange(final int index, final $typeName ... buff) {
+        return index < 0 || index >= buff.length;
+    }
+
+    public static void checkIndex(final long index, final $typeName ... buff) {
+        if (inRange(index, buff))
+            new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+    }
+
+    public static void checkIndex(final int index, final $typeName ... buff) {
+        if (inRange(index, buff))
+            new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+    }
+
+    public final void checkIndexIfSafeOn(final long index, final $typeName ... buff) {
+        if (SAFE)
+            checkIndex(index, buff);
+    }
+    
+    public final void checkIndexIfSafeOn(final int index, final $typeName ... buff) {
+        if (SAFE)
+            checkIndex(index, buff);
+    }
+    
+    public static boolean inRange(final long index, final long length, final $typeName ... buff) {
+        return inRange(index + length);
+    }
+
+    public static boolean inRange(final int index, final int length, final $typeName ... buff) {
+        return inRange(index + length);
+    }
+
+    public static void checkIndex(final long index, final long length, final $typeName ... buff) {
+        checkIndex(index + length, buff);
+    }
+
+    public static void checkIndex(final int index, final int length, final $typeName ... buff) {
+        checkIndex(index + length, buff);
+    }
+
+    public final void checkIndexIfSafeOn(final long index, final long length, final $typeName ... buff) {
+        checkIndexIfSafeOn(index + length, buff);
+    }
+    
+    public final void checkIndexIfSafeOn(final int index, final int length, final $typeName ... buff) {
+        checkIndexIfSafeOn(index + length, buff);
+    }
 
     public final $generic long contentByteSize(final $typeName ... buff) {
         return buff.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT;
@@ -265,19 +317,35 @@ public final class ArrayAccess {
             }
 
             public final $generic boolean compareAndSwap(final long index, final $typeName[] buff, final $typeName expected, final $typeName value) {
-                if (SAFE && (index < 0 || index >= buff.length))
-                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
+                checkIndexIfSafeOn(index, buff);
 
                 return UNSAFE.compareAndSwap${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, expected, value);
             }
 
             public final $generic boolean compareAndSwap(final int index, final $typeName[] buff, final $typeName expected, final $typeName value) {
-                if (SAFE && (index < 0 || index >= buff.length))
-                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
-
+                checkIndexIfSafeOn(index, buff);
+                
                 return UNSAFE.compareAndSwap${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, expected, value);
             }
-    """)
+            """)
+
+            if (!type.equals(Object.class)) {
+                buff.append("""
+            public final $generic $typeName getAndAdd(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return UNSAFE.getAndAdd${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+            }
+            """)
+            }
+
+            buff.append("""
+            public final $generic $typeName getAndSet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return UNSAFE.getAndSet${typeSuffix}(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+            }
+            """)
         } else if (type.equals(Float.TYPE)) {
             buff.append("""
             public final $generic $typeName[] putOrdered(final long index, final $typeName[] buff, final $typeName value) {
@@ -299,19 +367,33 @@ public final class ArrayAccess {
             }
 
             public final $generic boolean compareAndSwap(final long index, final $typeName[] buff, final $typeName expected, final $typeName value) {
-                if (SAFE && (index < 0 || index >= buff.length))
-                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
-
+                checkIndexIfSafeOn(index, buff);
+                
                 return UNSAFE.compareAndSwapInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(expected), Float.floatToRawIntBits(value));
             }
 
             public final $generic boolean compareAndSwap(final int index, final $typeName[] buff, final $typeName expected, final $typeName value) {
-                if (SAFE && (index < 0 || index >= buff.length))
-                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
-
+                checkIndexIfSafeOn(index, buff);
+                
                 return UNSAFE.compareAndSwapInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(expected), Float.floatToRawIntBits(value));
             }
-    """)
+
+            public final $generic $typeName getAndAdd(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+                
+                float current;
+                do {
+                    current = getFloatVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                } while (!compareAndSwapInt(buff, offset, Float.floatToRawIntBits(current), Float.floatToRawIntBits(current + value)));
+                return current;
+            }
+
+            public final $generic $typeName getAndSet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return Float.intBitsToFloat(UNSAFE.getAndSetInt(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Float.floatToRawIntBits(value)));
+            }
+            """)
         } else if (type.equals(Double.TYPE)) {
             buff.append("""
             public final $generic $typeName[] putOrdered(final long index, final $typeName[] buff, final $typeName value) {
@@ -333,19 +415,33 @@ public final class ArrayAccess {
             }
 
             public final $generic boolean compareAndSwap(final long index, final $typeName[] buff, final $typeName expected, final $typeName value) {
-                if (SAFE && (index < 0 || index >= buff.length))
-                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
-
+                checkIndexIfSafeOn(index, buff);
+                
                 return UNSAFE.compareAndSwapLong(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Double.doubleToRawLongBits(expected), Double.doubleToRawLongBits(value));
             }
 
             public final $generic boolean compareAndSwap(final int index, final $typeName[] buff, final $typeName expected, final $typeName value) {
-                if (SAFE && (index < 0 || index >= buff.length))
-                    new ArrayIndexOutOfBoundsException(String.format("index %d not in range or 0 and array length %d", index, buff.length));
-
+                checkIndexIfSafeOn(index, buff);
+                
                 return UNSAFE.compareAndSwapLong(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Double.doubleToRawLongBits(expected), Double.doubleToRawLongBits(value));
             }
-    """)
+
+            public final $generic $typeName getAndAdd(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                double current;
+                do {
+                    current = getDoubleVolatile(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+                } while (!compareAndSwapLong(buff, offset, Double.doubleToRawLongBits(current), Double.doubleToRawLongBits(current + value)));
+                return current;
+            }
+
+            public final $generic $typeName getAndSet(final long index, final $typeName[] buff, final $typeName value) {
+                checkIndexIfSafeOn(index, buff);
+
+                return Double.longBitsToDouble(UNSAFE.getAndSetLong(buff, ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, Double.doubleToRawLongBits(value)));
+            }
+            """)
         }
     }
 
