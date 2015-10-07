@@ -16,9 +16,13 @@
 
 package com.susico.utils.memory;
 
+import com.susico.utils.memory.pool.PooledObject;
+
 /**
  * Created by sirin_000 on 06/10/2015.
  */
-public final class MemoryRange {
-
+public final class MemoryRange extends PooledObject {
+    public static MemoryRange getInstance() {
+        return getFromPoolOrSupplierIfAbsent(MemoryRange.class, MemoryRange::new);
+    }
 }

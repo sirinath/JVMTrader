@@ -22,16 +22,17 @@ import sun.misc.Unsafe;
  * Created by sirin_000 on 03/10/2015.
  */
 public class UncheckedExceptions {
+    private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
+
     public static void rethrow(final Throwable throwable) {
         UncheckedExceptions.<RuntimeException>rethrowUnchecked(throwable);
     }
 
-    private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
-    public static void rethrowUnsafe(final Throwable throwable) {
-        UNSAFE.throwException(throwable);
+    private static <T extends Throwable> void rethrowUnchecked(final Throwable throwable) throws T {
+        throw (T) throwable;
     }
 
-    private static <T extends Throwable> void rethrowUnchecked(final Throwable throwable) throws T {
-        throw (T)throwable;
+    public static void rethrowUnsafe(final Throwable throwable) {
+        UNSAFE.throwException(throwable);
     }
 }

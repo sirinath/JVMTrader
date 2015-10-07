@@ -16,8 +16,11 @@
 
 package com.susico.utils.memory.pool;
 
+import com.susico.utils.ThreadHelpers;
+
 import java.util.ArrayDeque;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 /**
  * Created by sirin_000 on 06/10/2015.
@@ -51,22 +54,36 @@ public abstract class PooledObject implements AutoCloseable {
         queue = pool.get();
     }
 
-    protected static ArrayDeque<PooledObject> getQueueFor(Class<?> cls) {
-        return poolList.get(cls).get();
+    public static <T extends PooledObject> T getFromPoolOrSupplierIfAbsent(Class<T> cls, Supplier<T> supplyNewIfNotInPool) {
+        ArrayDeque<PooledObject> pool = getQueueFor(cls);
+
+        PooledObject obj = pool.pollFirst();
+
+        if (obj == null) {
+            obj = supplyNewIfNotInPool.get();
+        }
+
+        return (T) obj;
     }
 
-    protected final void returnToPool() {
-        if (Thread.currentThread().equals(createdIn)) {
-            queue.addLast(this);
-        } else {
-            synchronized (queue) {
-                queue.addLast(this);
-            }
-        }
+    protected static ArrayDeque<PooledObject> getQueueFor(Class<?> cls) {
+        return poolList.get(cls).get();
     }
 
     @Override
     public void close() {
         returnToPool();
+    }
+
+    protected final void returnToPool() {
+        runThreadSafe(() -> queue.addLast(this));
+    }
+
+    public final boolean isThreadSafe() {
+        return ThreadHelpers.isThreadSafe(createdIn);
+    }
+
+    protected final void runThreadSafe(Runnable code) {
+        ThreadHelpers.runThreadSafeSynchronized(this, code, createdIn);
     }
 }

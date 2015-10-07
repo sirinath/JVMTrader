@@ -18,67 +18,64 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
- * 
+ *
+ * @param <T> Enum type
  * @author sirinath
- * @param <T>
- *           Enum type
- * 
  */
 @SuppressWarnings("serial")
 public final class VEnum<T extends Enum<T>> extends Number implements
-		BoxOnce<VEnum<T>> {
-	/**
-	 * Value
-	 */
-	private T	value;
-	
-	/**
-	 * @param i
-	 *           Parameter
-	 */
-	public VEnum(final T i) {
-		value = i;
-	}
-	
-	@Override
-	public final int hashCode() {
-		return value.hashCode();
-	}
-	
-	@Override
-	public final VEnum<T> clone() throws CloneNotSupportedException {
-		return new VEnum<T>(value);
-	}
-	
-	@Override
-	public final String toString() {
-		return String.valueOf(value);
-	}
-	
-	@Override
-	public final int compareTo(final VEnum<T> o) {
-		return value.compareTo(o.value);
-	}
-	
-	@Override
-	public final int intValue() {
-		return value.ordinal();
-	}
-	
-	@Override
-	public final long longValue() {
-		return value.ordinal();
-	}
-	
-	@Override
-	public final float floatValue() {
-		return value.ordinal();
-	}
-	
-	@Override
-	public double doubleValue() {
-		return value.ordinal();
-	}
+        BoxOnce<VEnum<T>> {
+    /**
+     * Value
+     */
+    private T value;
+
+    /**
+     * @param i Parameter
+     */
+    public VEnum(final T i) {
+        value = i;
+    }
+
+    @Override
+    public final int hashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    public final VEnum<T> clone() throws CloneNotSupportedException {
+        return new VEnum<T>(value);
+    }
+
+    @Override
+    public final String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public final int compareTo(final VEnum<T> o) {
+        return value.compareTo(o.value);
+    }
+
+    @Override
+    public final int intValue() {
+        return value.ordinal();
+    }
+
+    @Override
+    public final long longValue() {
+        return value.ordinal();
+    }
+
+    @Override
+    public final float floatValue() {
+        return value.ordinal();
+    }
+
+    @Override
+    public double doubleValue() {
+        return value.ordinal();
+    }
 
     public final T getValue() {
         return value;

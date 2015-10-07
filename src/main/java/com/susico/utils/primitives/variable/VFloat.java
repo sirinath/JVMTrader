@@ -18,70 +18,68 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
- * 
+ *
  * @author sirinath
- * 
  */
 @SuppressWarnings("serial")
 public final class VFloat extends Number implements BoxOnce<VFloat> {
-	/**
-	 * Value
-	 */
-	private float	value;
-	
-	/**
-	 * @param i
-	 *           Parameter
-	 */
-	public VFloat(final float i) {
-		value = i;
-	}
-	
-	@Override
-	public final int hashCode() {
-		return Float.floatToIntBits(value);
-	}
-	
-	@Override
-	public final VFloat clone() throws CloneNotSupportedException {
-		return new VFloat(value);
-	}
-	
-	@Override
-	public final String toString() {
-		return String.valueOf(value);
-	}
-	
-	@Override
-	public final int compareTo(final VFloat o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
-	}
-	
-	@Override
-	public final int intValue() {
-		return 0;
-	}
-	
-	@Override
-	public final long longValue() {
-		return (long) value;
-	}
-	
-	@Override
-	public final float floatValue() {
-		return value;
-	}
-	
-	@Override
-	public final double doubleValue() {
-		return value;
-	}
+    /**
+     * Value
+     */
+    private float value;
 
-	public final float getValue() {
-		return value;
-	}
+    /**
+     * @param i Parameter
+     */
+    public VFloat(final float i) {
+        value = i;
+    }
 
-	public final void setValue(final float value) {
-		this.value = value;
-	}
+    @Override
+    public final int hashCode() {
+        return Float.floatToIntBits(value);
+    }
+
+    @Override
+    public final VFloat clone() throws CloneNotSupportedException {
+        return new VFloat(value);
+    }
+
+    @Override
+    public final String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public final int compareTo(final VFloat o) {
+        return value == o.value ? 0 : (value < o.value ? -1 : 1);
+    }
+
+    @Override
+    public final int intValue() {
+        return 0;
+    }
+
+    @Override
+    public final long longValue() {
+        return (long) value;
+    }
+
+    @Override
+    public final float floatValue() {
+        return value;
+    }
+
+    @Override
+    public final double doubleValue() {
+        return value;
+    }
+
+    public final float getValue() {
+        return value;
+    }
+
+    public final void setValue(final float value) {
+        this.value = value;
+    }
 }

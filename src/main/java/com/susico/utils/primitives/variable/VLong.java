@@ -18,70 +18,68 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
- * 
+ *
  * @author sirinath
- * 
  */
 @SuppressWarnings("serial")
 public final class VLong extends Number implements BoxOnce<VLong> {
-	/**
-	 * Value
-	 */
-	private long	value;
-	
-	/**
-	 * @param i
-	 *           Parameter
-	 */
-	public VLong(final long i) {
-		value = i;
-	}
-	
-	@Override
-	public final int hashCode() {
-		return (int) (value + (value >> Integer.SIZE));
-	}
-	
-	@Override
-	public final VLong clone() throws CloneNotSupportedException {
-		return new VLong(value);
-	}
-	
-	@Override
-	public final String toString() {
-		return String.valueOf(value);
-	}
-	
-	@Override
-	public final int compareTo(final VLong o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
-	}
-	
-	@Override
-	public final int intValue() {
-		return (int) value;
-	}
-	
-	@Override
-	public final long longValue() {
-		return value;
-	}
-	
-	@Override
-	public final float floatValue() {
-		return value;
-	}
-	
-	@Override
-	public final double doubleValue() {
-		return value;
-	}
+    /**
+     * Value
+     */
+    private long value;
 
-	public final long getValue() {
-		return value;
-	}
+    /**
+     * @param i Parameter
+     */
+    public VLong(final long i) {
+        value = i;
+    }
 
-	public final void setValue(final long value) {
-		this.value = value;
-	}
+    @Override
+    public final int hashCode() {
+        return (int) (value + (value >> Integer.SIZE));
+    }
+
+    @Override
+    public final VLong clone() throws CloneNotSupportedException {
+        return new VLong(value);
+    }
+
+    @Override
+    public final String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public final int compareTo(final VLong o) {
+        return value == o.value ? 0 : (value < o.value ? -1 : 1);
+    }
+
+    @Override
+    public final int intValue() {
+        return (int) value;
+    }
+
+    @Override
+    public final long longValue() {
+        return value;
+    }
+
+    @Override
+    public final float floatValue() {
+        return value;
+    }
+
+    @Override
+    public final double doubleValue() {
+        return value;
+    }
+
+    public final long getValue() {
+        return value;
+    }
+
+    public final void setValue(final long value) {
+        this.value = value;
+    }
 }

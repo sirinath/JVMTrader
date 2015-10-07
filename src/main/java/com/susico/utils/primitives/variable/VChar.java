@@ -18,70 +18,68 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
- * 
+ *
  * @author sirinath
- * 
  */
 @SuppressWarnings("serial")
 public final class VChar extends Number implements BoxOnce<VChar> {
-	/**
-	 * Value
-	 */
-	private char	value;
-	
-	/**
-	 * @param i
-	 *           Parameter
-	 */
-	public VChar(final char i) {
-		value = i;
-	}
-	
-	@Override
-	public final int hashCode() {
-		return value;
-	}
-	
-	@Override
-	public final VChar clone() throws CloneNotSupportedException {
-		return new VChar(value);
-	}
-	
-	@Override
-	public final String toString() {
-		return String.valueOf(value);
-	}
-	
-	@Override
-	public final int compareTo(final VChar o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
-	}
-	
-	@Override
-	public final int intValue() {
-		return value;
-	}
-	
-	@Override
-	public final long longValue() {
-		return value;
-	}
-	
-	@Override
-	public final float floatValue() {
-		return value;
-	}
-	
-	@Override
-	public final double doubleValue() {
-		return value;
-	}
+    /**
+     * Value
+     */
+    private char value;
 
-	public final char getValue() {
-		return value;
-	}
+    /**
+     * @param i Parameter
+     */
+    public VChar(final char i) {
+        value = i;
+    }
 
-	public final void setValue(final char value) {
-		this.value = value;
-	}
+    @Override
+    public final int hashCode() {
+        return value;
+    }
+
+    @Override
+    public final VChar clone() throws CloneNotSupportedException {
+        return new VChar(value);
+    }
+
+    @Override
+    public final String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public final int compareTo(final VChar o) {
+        return value == o.value ? 0 : (value < o.value ? -1 : 1);
+    }
+
+    @Override
+    public final int intValue() {
+        return value;
+    }
+
+    @Override
+    public final long longValue() {
+        return value;
+    }
+
+    @Override
+    public final float floatValue() {
+        return value;
+    }
+
+    @Override
+    public final double doubleValue() {
+        return value;
+    }
+
+    public final char getValue() {
+        return value;
+    }
+
+    public final void setValue(final char value) {
+        this.value = value;
+    }
 }

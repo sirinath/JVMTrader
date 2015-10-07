@@ -19,70 +19,68 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
- * 
+ *
  * @author sirinath
- * 
  */
 @SuppressWarnings("serial")
 public final class VDouble extends Number implements BoxOnce<VDouble> {
-	/**
-	 * Value
-	 */
-	private double	value;
-	
-	/**
-	 * @param i
-	 *           Parameter
-	 */
-	public VDouble(final double i) {
-		value = i;
-	}
-	
-	@Override
-	public final int hashCode() {
-		return (int) Double.doubleToLongBits(value);
-	}
-	
-	@Override
-	public final VDouble clone() throws CloneNotSupportedException {
-		return new VDouble(value);
-	}
-	
-	@Override
-	public final String toString() {
-		return String.valueOf(value);
-	}
-	
-	@Override
-	public final int compareTo(final VDouble o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
-	}
-	
-	@Override
-	public final int intValue() {
-		return (int) value;
-	}
-	
-	@Override
-	public final long longValue() {
-		return (long) value;
-	}
-	
-	@Override
-	public final float floatValue() {
-		return (float) value;
-	}
-	
-	@Override
-	public final double doubleValue() {
-		return value;
-	}
+    /**
+     * Value
+     */
+    private double value;
 
-	public final double getValue() {
-		return value;
-	}
+    /**
+     * @param i Parameter
+     */
+    public VDouble(final double i) {
+        value = i;
+    }
 
-	public final void setValue(final double value) {
-		this.value = value;
-	}
+    @Override
+    public final int hashCode() {
+        return (int) Double.doubleToLongBits(value);
+    }
+
+    @Override
+    public final VDouble clone() throws CloneNotSupportedException {
+        return new VDouble(value);
+    }
+
+    @Override
+    public final String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public final int compareTo(final VDouble o) {
+        return value == o.value ? 0 : (value < o.value ? -1 : 1);
+    }
+
+    @Override
+    public final int intValue() {
+        return (int) value;
+    }
+
+    @Override
+    public final long longValue() {
+        return (long) value;
+    }
+
+    @Override
+    public final float floatValue() {
+        return (float) value;
+    }
+
+    @Override
+    public final double doubleValue() {
+        return value;
+    }
+
+    public final double getValue() {
+        return value;
+    }
+
+    public final void setValue(final double value) {
+        this.value = value;
+    }
 }

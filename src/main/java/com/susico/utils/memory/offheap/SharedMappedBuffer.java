@@ -28,96 +28,20 @@ import java.util.concurrent.locks.LockSupport;
 /**
  * Created by sirin_000 on 17/09/2015.
  */
-public  final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> {
-    private static final class RefCounts { // Not thread safe!!! Do not use outside. Hence private.
-        private MappedByteBuffer mappedByteBuffer;
-        private int refCount = 0;
-        private boolean save;
-
-        public static final int POOL_SIZE = 1000;
-        private static final ArrayDeque<RefCounts> pool = new ArrayDeque<>(POOL_SIZE);
-
-        private RefCounts() {
-            pool.addLast(this);
-        }
-
-        public static RefCounts getInstance() {
-            RefCounts obj = pool.removeFirst();
-            return obj == null ? new RefCounts() : obj;
-        }
-
-        protected static void returnToPool(RefCounts refCounts) {
-            pool.addLast(refCounts);
-        }
-
-        public final RefCounts initTo(final MappedByteBuffer mappedByteBuffer) {
-            this.mappedByteBuffer = mappedByteBuffer;
-            refCount = 1;
-
-            return this;
-        }
-
-        public final boolean isSave() {
-            return save;
-        }
-
-        public final RefCounts setSave(final boolean save) {
-            this.save = save;
-
-            return this;
-        }
-
-        public final MappedByteBuffer release() {
-            try {
-                return mappedByteBuffer;
-            } finally {
-                mappedByteBuffer = null;
-                refCount = 0;
-                save = true;
-                returnToPool(this);
-            }
-        }
-
-        public final MappedByteBuffer reference() {
-            ++refCount;
-
-            return mappedByteBuffer;
-        }
-
-        public final int dereference() {
-            int refs = --refCount;
-
-            if(refs == 0) {
-                try {
-                    if (save)
-                        IOUtils.saveAndUnmap(mappedByteBuffer);
-                    else
-                        IOUtils.discardAndUnmap(mappedByteBuffer);
-                } finally {
-                    release();
-                }
-            }
-
-            return refs;
-        }
-    }
-
+public final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> {
     protected final SharedMappedResource sharedMappedResource;
-
     protected final boolean save;
-
     private final Long2ObjectHashMap<Long2ObjectHashMap<RefCounts>> bufferMapping = new Long2ObjectHashMap<>();
-
-    public SharedMappedBuffer(final SharedMappedResource sharedMappedResource, final boolean save) {
-        this.sharedMappedResource = sharedMappedResource;
-        this.save = save;
-    }
+    private final AtomicBoolean guard = new AtomicBoolean(false);
 
     public SharedMappedBuffer(final SharedMappedResource sharedMappedResource) {
         this(sharedMappedResource, true);
     }
 
-    private final AtomicBoolean guard = new AtomicBoolean(false);
+    public SharedMappedBuffer(final SharedMappedResource sharedMappedResource, final boolean save) {
+        this.sharedMappedResource = sharedMappedResource;
+        this.save = save;
+    }
 
     @Override
     public final MappedByteBuffer map(final long position, final long size) {
@@ -198,7 +122,6 @@ public  final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer>
         return true;
     }
 
-
     @Override
     public final boolean forceUnmap(final long position, final long size) {
         Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
@@ -230,9 +153,80 @@ public  final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer>
         return true;
     }
 
-
     @Override
     public final void close() throws IOException {
         sharedMappedResource.close();
+    }
+
+    private static final class RefCounts { // Not thread safe!!! Do not use outside. Hence private.
+        public static final int POOL_SIZE = 1000;
+        private static final ArrayDeque<RefCounts> pool = new ArrayDeque<>(POOL_SIZE);
+        private MappedByteBuffer mappedByteBuffer;
+        private int refCount = 0;
+        private boolean save;
+
+        private RefCounts() {
+            pool.addLast(this);
+        }
+
+        public static RefCounts getInstance() {
+            RefCounts obj = pool.removeFirst();
+            return obj == null ? new RefCounts() : obj;
+        }
+
+        public final RefCounts initTo(final MappedByteBuffer mappedByteBuffer) {
+            this.mappedByteBuffer = mappedByteBuffer;
+            refCount = 1;
+
+            return this;
+        }
+
+        public final boolean isSave() {
+            return save;
+        }
+
+        public final RefCounts setSave(final boolean save) {
+            this.save = save;
+
+            return this;
+        }
+
+        public final MappedByteBuffer reference() {
+            ++refCount;
+
+            return mappedByteBuffer;
+        }
+
+        public final int dereference() {
+            int refs = --refCount;
+
+            if (refs == 0) {
+                try {
+                    if (save)
+                        IOUtils.saveAndUnmap(mappedByteBuffer);
+                    else
+                        IOUtils.discardAndUnmap(mappedByteBuffer);
+                } finally {
+                    release();
+                }
+            }
+
+            return refs;
+        }
+
+        public final MappedByteBuffer release() {
+            try {
+                return mappedByteBuffer;
+            } finally {
+                mappedByteBuffer = null;
+                refCount = 0;
+                save = true;
+                returnToPool(this);
+            }
+        }
+
+        protected static void returnToPool(RefCounts refCounts) {
+            pool.addLast(refCounts);
+        }
     }
 }

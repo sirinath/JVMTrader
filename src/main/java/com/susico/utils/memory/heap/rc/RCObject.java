@@ -18,42 +18,32 @@ package com.susico.utils.memory.heap.rc;
 
 import com.susico.utils.memory.pool.PooledObject;
 import sun.misc.Cleaner;
-import sun.reflect.Reflection;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
-import java.util.ArrayDeque;
 import java.util.function.Supplier;
 
 /**
  * Created by sirin_000 on 05/10/2015.
  */
 public final class RCObject extends PooledObject {
-    private volatile int rc = 0;
-
     private final ReferenceQueue<Object> refQ = new ReferenceQueue<>();
+    private volatile int rc = 0;
     private volatile SoftReference<Object> value = null;
-
-    private RCObject() {}
-
     private volatile Runnable releaseAction;
-
     private Cleaner cleaner;
 
+    private RCObject() {
+    }
+
     public static <T> RCObject getInstance(final Supplier<T> supplier, final Runnable releaseAction) {
-        ArrayDeque<PooledObject> pool = getQueueFor(RCObject.class);
-
-        PooledObject obj = pool.pollFirst();
-
-        if (obj == null) {
-            obj = new RCObject();
-        }
+        RCObject obj = getFromPoolOrSupplierIfAbsent(RCObject.class, RCObject::new);
 
         Object value = supplier.get();
 
-        ((RCObject) obj).set(value, releaseAction);
+        obj.set(value, releaseAction);
 
-        return (RCObject) obj;
+        return obj;
     }
 
     private final void set(final Object value, final Runnable releaseAction) {
@@ -62,6 +52,25 @@ public final class RCObject extends PooledObject {
         this.releaseAction = releaseAction;
 
         this.cleaner = Cleaner.create(value, () -> clean());
+    }
+
+    public final void clean() {
+        runThreadSafe(() -> {
+            rc = 0;
+
+            if (releaseAction != null) {
+                try {
+                    releaseAction.run();
+                } catch (Throwable t) {
+                } finally {
+                    releaseAction = null;
+                }
+            }
+
+            value = null;
+        });
+
+        returnToPool();
     }
 
     public final Object get() {
@@ -76,10 +85,14 @@ public final class RCObject extends PooledObject {
         return value;
     }
 
+    public final void release() {
+        close();
+    }
+
     @Override
     public final void close() {
         if (--rc == 0) {
-            synchronized (this) {
+            runThreadSafe(() -> {
                 if (releaseAction != null) {
                     try {
                         releaseAction.run();
@@ -92,28 +105,7 @@ public final class RCObject extends PooledObject {
                 value = null;
 
                 returnToPool();
-            }
+            });
         }
-    }
-
-    public final void release() {
-        close();
-    }
-
-    public synchronized final void clean() {
-        rc = 0;
-
-        if (releaseAction != null) {
-            try {
-                releaseAction.run();
-            } catch (Throwable t) {
-            } finally {
-                releaseAction = null;
-            }
-        }
-
-        value = null;
-
-        returnToPool();
     }
 }

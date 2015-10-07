@@ -26,6 +26,8 @@ import java.nio.ByteOrder;
  */
 public final class BitUtils {
     public static final long PAGE_SIZE = UnsafeAccess.UNSAFE.pageSize();
+    public static final SafePacker SAFE_PACKER = new SafePacker();
+    public static final BufferPacker BUFFER_PACKER = new BufferPacker();
 
     public static long roundUpToPageSize(long i) {
         return roundUpTo(i, PAGE_SIZE);
@@ -43,9 +45,11 @@ public final class BitUtils {
         return (i + multiple - 1) & ~(multiple - 1);
     }
 
-    public static final SafePacker SAFE_PACKER = new SafePacker();
-
     public static final class SafePacker {
+        public static long packToLong(final byte... bytes) {
+            return packToLong(ByteOrder.nativeOrder(), 0, bytes);
+        }
+
         public static long packToLong(final ByteOrder byteOrder, final int position, final byte... bytes) {
             final int len = bytes.length > position ? bytes.length - position : 0;
 
@@ -98,8 +102,8 @@ public final class BitUtils {
             }
         }
 
-        public static long packToLong(final byte... bytes) {
-            return packToLong(ByteOrder.nativeOrder(), 0, bytes);
+        public static void unpack(final ByteOrder byteOrder, final long value, final byte[] bytes) {
+            unpack(byteOrder, value, 0, bytes);
         }
 
         public static void unpack(final ByteOrder byteOrder, final long value, final int position, final byte[] bytes) {
@@ -152,16 +156,16 @@ public final class BitUtils {
             }
         }
 
-        public static void unpack(final ByteOrder byteOrder, final long value, final byte[] bytes) {
-            unpack(byteOrder, value, 0, bytes);
-        }
-
         public static void unpack(final long value, final int position, final byte[] bytes) {
             unpack(ByteOrder.nativeOrder(), value, position, bytes);
         }
 
         public static void unpack(final long value, final byte[] bytes) {
             unpack(ByteOrder.nativeOrder(), value, 0, bytes);
+        }
+
+        public static int packToInt(final byte... bytes) {
+            return packToInt(ByteOrder.nativeOrder(), 0, bytes);
         }
 
         public static int packToInt(final ByteOrder byteOrder, final int position, final byte... bytes) {
@@ -200,8 +204,8 @@ public final class BitUtils {
             }
         }
 
-        public static int packToInt(final byte... bytes) {
-            return packToInt(ByteOrder.nativeOrder(), 0, bytes);
+        public static void unpack(final ByteOrder byteOrder, final int value, final byte[] bytes) {
+            unpack(byteOrder, value, 0, bytes);
         }
 
         public static void unpack(final ByteOrder byteOrder, final int value, final int position, final byte[] bytes) {
@@ -238,10 +242,6 @@ public final class BitUtils {
             }
         }
 
-        public static void unpack(final ByteOrder byteOrder, final int value, final byte[] bytes) {
-            unpack(byteOrder, value, 0, bytes);
-        }
-
         public static void unpack(final int value, final int position, final byte[] bytes) {
             unpack(ByteOrder.nativeOrder(), value, position, bytes);
         }
@@ -250,8 +250,6 @@ public final class BitUtils {
             unpack(ByteOrder.nativeOrder(), value, 0, bytes);
         }
     }
-
-    public static final BufferPacker BUFFER_PACKER = new BufferPacker();
 
     public static final class BufferPacker extends ThreadLocal<BufferPacker> {
         public static final int BUFF_LEN = Long.BYTES;
@@ -279,16 +277,16 @@ public final class BitUtils {
             return unsafeBuffer.getLong(longBuffOffset, byteOrder);
         }
 
+        public final void unpack(final ByteOrder byteOrder, final long value, final byte[] bytes) {
+            unpack(byteOrder, value, 0, bytes);
+        }
+
         public final void unpack(final ByteOrder byteOrder, final long value, final int position, final byte[] bytes) {
             unsafeBuffer.putLong(0, value, byteOrder);
 
             final int len = bytes.length > position ? bytes.length - position : 0;
 
             System.arraycopy(buff, 0, bytes, position, len);
-        }
-
-        public final void unpack(final ByteOrder byteOrder, final long value, final byte[] bytes) {
-            unpack(byteOrder, value, 0, bytes);
         }
 
         public final void unpack(final long value, final int position, final byte[] bytes) {
@@ -315,16 +313,16 @@ public final class BitUtils {
             return unsafeBuffer.getInt(intBuffOffset, byteOrder);
         }
 
+        public final void unpack(final int value, final int position, final byte[] bytes) {
+            unpack(ByteOrder.nativeOrder(), value, position, bytes);
+        }
+
         public final void unpack(final ByteOrder byteOrder, final int value, final int position, final byte[] bytes) {
             unsafeBuffer.putInt(0, value, byteOrder);
 
             final int len = bytes.length > position ? bytes.length - position : 0;
 
             System.arraycopy(buff, 0, bytes, position, len);
-        }
-
-        public final void unpack(final int value, final int position, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, position, bytes);
         }
 
         public final void unpack(final ByteOrder byteOrder, final int value, final byte[] bytes) {

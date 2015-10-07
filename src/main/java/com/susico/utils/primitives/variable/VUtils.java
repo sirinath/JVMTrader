@@ -19,91 +19,80 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Help instantiate boxing
- * 
+ *
  * @author sirinath
- * 
  */
 public class VUtils {
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VBool VBox(final boolean v) {
-		return new VBool(v);
-	}
-	
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VByte VBox(final byte v) {
-		return new VByte(v);
-	}
-	
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VChar VBox(final char v) {
-		return new VChar(v);
-	}
-	
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VDouble VBox(final double v) {
-		return new VDouble(v);
-	}
-	
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VFloat VBox(final float v) {
-		return new VFloat(v);
-	}
-	
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VInt VBox(final int v) {
-		return new VInt(v);
-	}
-	
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VLong VBox(final long v) {
-		return new VLong(v);
-	}
-	
-	/**
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static VShort VBox(final short v) {
-		return new VShort(v);
-	}
-	
-	/**
-	 * @param <T>
-	 *           Enum type
-	 * @param v
-	 *           value to be boxed
-	 * @return boxed value
-	 */
-	public static <T extends Enum<T>> VEnum<T> VBox(final T v) {
-		return new VEnum<T>(v);
-	}
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VBool VBox(final boolean v) {
+        return new VBool(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VByte VBox(final byte v) {
+        return new VByte(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VChar VBox(final char v) {
+        return new VChar(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VDouble VBox(final double v) {
+        return new VDouble(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VFloat VBox(final float v) {
+        return new VFloat(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VInt VBox(final int v) {
+        return new VInt(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VLong VBox(final long v) {
+        return new VLong(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static VShort VBox(final short v) {
+        return new VShort(v);
+    }
+
+    /**
+     * @param <T> Enum type
+     * @param v   value to be boxed
+     * @return boxed value
+     */
+    public static <T extends Enum<T>> VEnum<T> VBox(final T v) {
+        return new VEnum<T>(v);
+    }
 }

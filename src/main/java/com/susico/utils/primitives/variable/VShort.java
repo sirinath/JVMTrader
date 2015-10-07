@@ -18,75 +18,73 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
- * 
+ *
  * @author sirinath
- * 
  */
 @SuppressWarnings("serial")
 public final class VShort extends Number implements BoxOnce<VShort> {
-	/**
-	 * Value
-	 */
-	private short	value;
-	
-	/**
-	 * @param i
-	 *           Parameter
-	 */
-	public VShort(final short i) {
-		value = i;
-	}
-	
-	@Override
-	public final int hashCode() {
-		return value;
-	}
-	
-	@Override
-	public final VShort clone() throws CloneNotSupportedException {
-		return new VShort(value);
-	}
-	
-	@Override
-	public final String toString() {
-		return String.valueOf(value);
-	}
-	
-	@Override
-	public final int compareTo(final VShort o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
-	}
-	
-	@Override
-	public final int intValue() {
-		return value;
-	}
-	
-	@Override
-	public final long longValue() {
-		return value;
-	}
-	
-	@Override
-	public final float floatValue() {
-		return value;
-	}
-	
-	@Override
-	public final double doubleValue() {
-		return value;
-	}
-	
-	@Override
-	public final short shortValue() {
-		return value;
-	}
+    /**
+     * Value
+     */
+    private short value;
 
-	public final short getValue() {
-		return value;
-	}
+    /**
+     * @param i Parameter
+     */
+    public VShort(final short i) {
+        value = i;
+    }
 
-	public final void setValue(final short value) {
-		this.value = value;
-	}
+    @Override
+    public final int hashCode() {
+        return value;
+    }
+
+    @Override
+    public final VShort clone() throws CloneNotSupportedException {
+        return new VShort(value);
+    }
+
+    @Override
+    public final String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public final int compareTo(final VShort o) {
+        return value == o.value ? 0 : (value < o.value ? -1 : 1);
+    }
+
+    @Override
+    public final int intValue() {
+        return value;
+    }
+
+    @Override
+    public final long longValue() {
+        return value;
+    }
+
+    @Override
+    public final float floatValue() {
+        return value;
+    }
+
+    @Override
+    public final double doubleValue() {
+        return value;
+    }
+
+    @Override
+    public final short shortValue() {
+        return value;
+    }
+
+    public final short getValue() {
+        return value;
+    }
+
+    public final void setValue(final short value) {
+        this.value = value;
+    }
 }

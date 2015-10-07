@@ -18,64 +18,62 @@ package com.susico.utils.primitives.variable;
 
 /**
  * Wrapper class
- * 
+ *
  * @author sirinath
- * 
  */
 @SuppressWarnings("serial")
 public final class VInt extends Number implements BoxOnce<VInt> {
-	/**
-	 * Value
-	 */
-	private int	value;
-	
-	/**
-	 * @param i
-	 *           Parameter
-	 */
-	public VInt(final int i) {
-		value = i;
-	}
-	
-	@Override
-	public final int hashCode() {
-		return value;
-	}
-	
-	@Override
-	public final VInt clone() throws CloneNotSupportedException {
-		return new VInt(value);
-	}
-	
-	@Override
-	public final String toString() {
-		return String.valueOf(value);
-	}
-	
-	@Override
-	public final int compareTo(final VInt o) {
-		return value == o.value ? 0 : (value < o.value ? -1 : 1);
-	}
-	
-	@Override
-	public final int intValue() {
-		return value;
-	}
-	
-	@Override
-	public final long longValue() {
-		return value;
-	}
-	
-	@Override
-	public final float floatValue() {
-		return value;
-	}
-	
-	@Override
-	public final double doubleValue() {
-		return value;
-	}
+    /**
+     * Value
+     */
+    private int value;
+
+    /**
+     * @param i Parameter
+     */
+    public VInt(final int i) {
+        value = i;
+    }
+
+    @Override
+    public final int hashCode() {
+        return value;
+    }
+
+    @Override
+    public final VInt clone() throws CloneNotSupportedException {
+        return new VInt(value);
+    }
+
+    @Override
+    public final String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public final int compareTo(final VInt o) {
+        return value == o.value ? 0 : (value < o.value ? -1 : 1);
+    }
+
+    @Override
+    public final int intValue() {
+        return value;
+    }
+
+    @Override
+    public final long longValue() {
+        return value;
+    }
+
+    @Override
+    public final float floatValue() {
+        return value;
+    }
+
+    @Override
+    public final double doubleValue() {
+        return value;
+    }
 
     public final int getValue() {
         return value;

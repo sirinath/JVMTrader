@@ -20,11 +20,9 @@ import java.io.Serializable;
 
 /**
  * Box Once market interface
- * 
+ *
+ * @param <T> Type
  * @author sirinath
- * @param <T>
- *           Type
- * 
  */
 public interface BoxOnce<T> extends Comparable<T>, Cloneable, Serializable {
 }

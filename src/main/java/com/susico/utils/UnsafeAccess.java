@@ -32,11 +32,11 @@ public class UnsafeAccess {
         Unsafe unsafe = null;
         try {
             final PrivilegedExceptionAction<Unsafe> action = () -> {
-                        final Field f = Unsafe.class.getDeclaredField("theUnsafe");
-                        f.setAccessible(true);
+                final Field f = Unsafe.class.getDeclaredField("theUnsafe");
+                f.setAccessible(true);
 
-                        return (Unsafe)f.get(null);
-                    };
+                return (Unsafe) f.get(null);
+            };
 
             unsafe = AccessController.doPrivileged(action);
         } catch (final Throwable t) {
