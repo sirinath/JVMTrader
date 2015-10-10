@@ -23,8 +23,8 @@ package com.susico.utils.primitives.variable;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VEnum<T extends Enum<T>> extends Number implements
-        BoxOnce<VEnum<T>> {
+public final class PVEnum<T extends Enum<T>> extends Number implements
+        BoxOnce<PVEnum<T>> {
     /**
      * Value
      */
@@ -33,7 +33,7 @@ public final class VEnum<T extends Enum<T>> extends Number implements
     /**
      * @param i Parameter
      */
-    public VEnum(final T i) {
+    public PVEnum(final T i) {
         value = i;
     }
 
@@ -43,8 +43,8 @@ public final class VEnum<T extends Enum<T>> extends Number implements
     }
 
     @Override
-    public final VEnum<T> clone() throws CloneNotSupportedException {
-        return new VEnum<T>(value);
+    public final PVEnum<T> clone() throws CloneNotSupportedException {
+        return new PVEnum<T>(value);
     }
 
     @Override
@@ -53,7 +53,7 @@ public final class VEnum<T extends Enum<T>> extends Number implements
     }
 
     @Override
-    public final int compareTo(final VEnum<T> o) {
+    public final int compareTo(final PVEnum<T> o) {
         return value.compareTo(o.value);
     }
 

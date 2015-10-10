@@ -22,16 +22,16 @@ package com.susico.utils.primitives.variable;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VByte extends Number implements BoxOnce<VByte> {
+public final class PVChar extends Number implements BoxOnce<PVChar> {
     /**
      * Value
      */
-    private byte value;
+    private char value;
 
     /**
      * @param i Parameter
      */
-    public VByte(final byte i) {
+    public PVChar(final char i) {
         value = i;
     }
 
@@ -41,8 +41,8 @@ public final class VByte extends Number implements BoxOnce<VByte> {
     }
 
     @Override
-    public final VByte clone() throws CloneNotSupportedException {
-        return new VByte(value);
+    public final PVChar clone() throws CloneNotSupportedException {
+        return new PVChar(value);
     }
 
     @Override
@@ -51,7 +51,7 @@ public final class VByte extends Number implements BoxOnce<VByte> {
     }
 
     @Override
-    public final int compareTo(final VByte o) {
+    public final int compareTo(final PVChar o) {
         return value == o.value ? 0 : (value < o.value ? -1 : 1);
     }
 
@@ -75,16 +75,11 @@ public final class VByte extends Number implements BoxOnce<VByte> {
         return value;
     }
 
-    @Override
-    public final byte byteValue() {
+    public final char getValue() {
         return value;
     }
 
-    public final byte getValue() {
-        return value;
-    }
-
-    public final void setValue(final byte value) {
+    public final void setValue(final char value) {
         this.value = value;
     }
 }

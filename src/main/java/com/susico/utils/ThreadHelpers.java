@@ -30,12 +30,20 @@ public class ThreadHelpers {
     }
 
     public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun, final Thread safeThread) {
-        if (isThreadSafe(safeThread))
+        runThreadSafeSynchronized(synchronizationTarget, codeToRun, isThreadSafe(safeThread));
+    }
+
+    public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun, final boolean singleThreadedOrThreadSafe) {
+        if (singleThreadedOrThreadSafe)
             codeToRun.run();
         else
             synchronized (synchronizationTarget) {
                 codeToRun.run();
             }
+    }
+
+    public static void runThreadSafeSynchronized(final Runnable codeToRun, final boolean singleThreadedOrThreadSafe) {
+        runThreadSafeSynchronized(codeToRun, codeToRun, singleThreadedOrThreadSafe);
     }
 
     public static void runThreadSafeSynchronized(final Runnable codeToRun, final Thread safeThread) {
@@ -54,8 +62,8 @@ public class ThreadHelpers {
         UNSAFE.storeFence();
     }
 
-    public static void runThreadSafeFenced(final Runnable codeToRun, final Thread safeThread) {
-        if (isThreadSafe(safeThread))
+    public static void runThreadSafeFenced(final Runnable codeToRun, final boolean singleThreadedOrThreadSafe) {
+        if (singleThreadedOrThreadSafe)
             codeToRun.run();
         else {
             UNSAFE.fullFence();
@@ -64,5 +72,9 @@ public class ThreadHelpers {
 
             UNSAFE.fullFence();
         }
+    }
+
+    public static void runThreadSafeFenced(final Runnable codeToRun, final Thread safeThread) {
+        runThreadSafeFenced(codeToRun, isThreadSafe(safeThread));
     }
 }

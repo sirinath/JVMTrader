@@ -22,27 +22,27 @@ package com.susico.utils.primitives.variable;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VShort extends Number implements BoxOnce<VShort> {
+public final class PVFloat extends Number implements BoxOnce<PVFloat> {
     /**
      * Value
      */
-    private short value;
+    private float value;
 
     /**
      * @param i Parameter
      */
-    public VShort(final short i) {
+    public PVFloat(final float i) {
         value = i;
     }
 
     @Override
     public final int hashCode() {
-        return value;
+        return Float.floatToIntBits(value);
     }
 
     @Override
-    public final VShort clone() throws CloneNotSupportedException {
-        return new VShort(value);
+    public final PVFloat clone() throws CloneNotSupportedException {
+        return new PVFloat(value);
     }
 
     @Override
@@ -51,18 +51,18 @@ public final class VShort extends Number implements BoxOnce<VShort> {
     }
 
     @Override
-    public final int compareTo(final VShort o) {
+    public final int compareTo(final PVFloat o) {
         return value == o.value ? 0 : (value < o.value ? -1 : 1);
     }
 
     @Override
     public final int intValue() {
-        return value;
+        return 0;
     }
 
     @Override
     public final long longValue() {
-        return value;
+        return (long) value;
     }
 
     @Override
@@ -75,16 +75,11 @@ public final class VShort extends Number implements BoxOnce<VShort> {
         return value;
     }
 
-    @Override
-    public final short shortValue() {
+    public final float getValue() {
         return value;
     }
 
-    public final short getValue() {
-        return value;
-    }
-
-    public final void setValue(final short value) {
+    public final void setValue(final float value) {
         this.value = value;
     }
 }

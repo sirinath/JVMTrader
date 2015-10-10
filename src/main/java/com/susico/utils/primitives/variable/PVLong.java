@@ -16,34 +16,33 @@
 
 package com.susico.utils.primitives.variable;
 
-
 /**
  * Wrapper class
  *
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VDouble extends Number implements BoxOnce<VDouble> {
+public final class PVLong extends Number implements BoxOnce<PVLong> {
     /**
      * Value
      */
-    private double value;
+    private long value;
 
     /**
      * @param i Parameter
      */
-    public VDouble(final double i) {
+    public PVLong(final long i) {
         value = i;
     }
 
     @Override
     public final int hashCode() {
-        return (int) Double.doubleToLongBits(value);
+        return (int) (value + (value >> Integer.SIZE));
     }
 
     @Override
-    public final VDouble clone() throws CloneNotSupportedException {
-        return new VDouble(value);
+    public final PVLong clone() throws CloneNotSupportedException {
+        return new PVLong(value);
     }
 
     @Override
@@ -52,7 +51,7 @@ public final class VDouble extends Number implements BoxOnce<VDouble> {
     }
 
     @Override
-    public final int compareTo(final VDouble o) {
+    public final int compareTo(final PVLong o) {
         return value == o.value ? 0 : (value < o.value ? -1 : 1);
     }
 
@@ -63,12 +62,12 @@ public final class VDouble extends Number implements BoxOnce<VDouble> {
 
     @Override
     public final long longValue() {
-        return (long) value;
+        return value;
     }
 
     @Override
     public final float floatValue() {
-        return (float) value;
+        return value;
     }
 
     @Override
@@ -76,11 +75,11 @@ public final class VDouble extends Number implements BoxOnce<VDouble> {
         return value;
     }
 
-    public final double getValue() {
+    public final long getValue() {
         return value;
     }
 
-    public final void setValue(final double value) {
+    public final void setValue(final long value) {
         this.value = value;
     }
 }

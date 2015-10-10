@@ -22,27 +22,27 @@ package com.susico.utils.primitives.variable;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VFloat extends Number implements BoxOnce<VFloat> {
+public final class PVBool extends Number implements BoxOnce<PVBool> {
     /**
      * Value
      */
-    private float value;
+    private boolean value;
 
     /**
      * @param i Parameter
      */
-    public VFloat(final float i) {
+    public PVBool(final boolean i) {
         value = i;
     }
 
     @Override
     public final int hashCode() {
-        return Float.floatToIntBits(value);
+        return value ? 1 : 0;
     }
 
     @Override
-    public final VFloat clone() throws CloneNotSupportedException {
-        return new VFloat(value);
+    public final PVBool clone() throws CloneNotSupportedException {
+        return new PVBool(value);
     }
 
     @Override
@@ -51,35 +51,35 @@ public final class VFloat extends Number implements BoxOnce<VFloat> {
     }
 
     @Override
-    public final int compareTo(final VFloat o) {
-        return value == o.value ? 0 : (value < o.value ? -1 : 1);
+    public final int compareTo(final PVBool o) {
+        return value == o.value ? 0 : (o.value ? -1 : 1);
     }
 
     @Override
     public final int intValue() {
-        return 0;
+        return value ? 1 : 0;
     }
 
     @Override
     public final long longValue() {
-        return (long) value;
+        return value ? 1 : 0;
     }
 
     @Override
     public final float floatValue() {
-        return value;
+        return value ? 1 : 0;
     }
 
     @Override
     public final double doubleValue() {
+        return value ? 1 : 0;
+    }
+
+    public final boolean getValue() {
         return value;
     }
 
-    public final float getValue() {
-        return value;
-    }
-
-    public final void setValue(final float value) {
+    public final void setValue(final boolean value) {
         this.value = value;
     }
 }

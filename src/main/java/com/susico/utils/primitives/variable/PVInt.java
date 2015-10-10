@@ -22,7 +22,7 @@ package com.susico.utils.primitives.variable;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VInt extends Number implements BoxOnce<VInt> {
+public final class PVInt extends Number implements BoxOnce<PVInt> {
     /**
      * Value
      */
@@ -31,7 +31,7 @@ public final class VInt extends Number implements BoxOnce<VInt> {
     /**
      * @param i Parameter
      */
-    public VInt(final int i) {
+    public PVInt(final int i) {
         value = i;
     }
 
@@ -41,8 +41,8 @@ public final class VInt extends Number implements BoxOnce<VInt> {
     }
 
     @Override
-    public final VInt clone() throws CloneNotSupportedException {
-        return new VInt(value);
+    public final PVInt clone() throws CloneNotSupportedException {
+        return new PVInt(value);
     }
 
     @Override
@@ -51,7 +51,7 @@ public final class VInt extends Number implements BoxOnce<VInt> {
     }
 
     @Override
-    public final int compareTo(final VInt o) {
+    public final int compareTo(final PVInt o) {
         return value == o.value ? 0 : (value < o.value ? -1 : 1);
     }
 

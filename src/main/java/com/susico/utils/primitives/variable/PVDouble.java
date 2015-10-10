@@ -16,33 +16,34 @@
 
 package com.susico.utils.primitives.variable;
 
+
 /**
  * Wrapper class
  *
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VChar extends Number implements BoxOnce<VChar> {
+public final class PVDouble extends Number implements BoxOnce<PVDouble> {
     /**
      * Value
      */
-    private char value;
+    private double value;
 
     /**
      * @param i Parameter
      */
-    public VChar(final char i) {
+    public PVDouble(final double i) {
         value = i;
     }
 
     @Override
     public final int hashCode() {
-        return value;
+        return (int) Double.doubleToLongBits(value);
     }
 
     @Override
-    public final VChar clone() throws CloneNotSupportedException {
-        return new VChar(value);
+    public final PVDouble clone() throws CloneNotSupportedException {
+        return new PVDouble(value);
     }
 
     @Override
@@ -51,23 +52,23 @@ public final class VChar extends Number implements BoxOnce<VChar> {
     }
 
     @Override
-    public final int compareTo(final VChar o) {
+    public final int compareTo(final PVDouble o) {
         return value == o.value ? 0 : (value < o.value ? -1 : 1);
     }
 
     @Override
     public final int intValue() {
-        return value;
+        return (int) value;
     }
 
     @Override
     public final long longValue() {
-        return value;
+        return (long) value;
     }
 
     @Override
     public final float floatValue() {
-        return value;
+        return (float) value;
     }
 
     @Override
@@ -75,11 +76,11 @@ public final class VChar extends Number implements BoxOnce<VChar> {
         return value;
     }
 
-    public final char getValue() {
+    public final double getValue() {
         return value;
     }
 
-    public final void setValue(final char value) {
+    public final void setValue(final double value) {
         this.value = value;
     }
 }

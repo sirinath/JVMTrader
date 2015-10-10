@@ -22,27 +22,27 @@ package com.susico.utils.primitives.variable;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class VBool extends Number implements BoxOnce<VBool> {
+public final class PVByte extends Number implements BoxOnce<PVByte> {
     /**
      * Value
      */
-    private boolean value;
+    private byte value;
 
     /**
      * @param i Parameter
      */
-    public VBool(final boolean i) {
+    public PVByte(final byte i) {
         value = i;
     }
 
     @Override
     public final int hashCode() {
-        return value ? 1 : 0;
+        return value;
     }
 
     @Override
-    public final VBool clone() throws CloneNotSupportedException {
-        return new VBool(value);
+    public final PVByte clone() throws CloneNotSupportedException {
+        return new PVByte(value);
     }
 
     @Override
@@ -51,35 +51,40 @@ public final class VBool extends Number implements BoxOnce<VBool> {
     }
 
     @Override
-    public final int compareTo(final VBool o) {
-        return value == o.value ? 0 : (o.value ? -1 : 1);
+    public final int compareTo(final PVByte o) {
+        return value == o.value ? 0 : (value < o.value ? -1 : 1);
     }
 
     @Override
     public final int intValue() {
-        return value ? 1 : 0;
+        return value;
     }
 
     @Override
     public final long longValue() {
-        return value ? 1 : 0;
+        return value;
     }
 
     @Override
     public final float floatValue() {
-        return value ? 1 : 0;
+        return value;
     }
 
     @Override
     public final double doubleValue() {
-        return value ? 1 : 0;
-    }
-
-    public final boolean getValue() {
         return value;
     }
 
-    public final void setValue(final boolean value) {
+    @Override
+    public final byte byteValue() {
+        return value;
+    }
+
+    public final byte getValue() {
+        return value;
+    }
+
+    public final void setValue(final byte value) {
         this.value = value;
     }
 }

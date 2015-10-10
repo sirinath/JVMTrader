@@ -22,69 +22,69 @@ package com.susico.utils.primitives.variable;
  *
  * @author sirinath
  */
-public class VUtils {
+public class PrimitiveUtils {
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VBool VBox(final boolean v) {
-        return new VBool(v);
+    public static PVBool Box(final boolean v) {
+        return new PVBool(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VByte VBox(final byte v) {
-        return new VByte(v);
+    public static PVByte Box(final byte v) {
+        return new PVByte(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VChar VBox(final char v) {
-        return new VChar(v);
+    public static PVChar Box(final char v) {
+        return new PVChar(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VDouble VBox(final double v) {
-        return new VDouble(v);
+    public static PVDouble Box(final double v) {
+        return new PVDouble(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VFloat VBox(final float v) {
-        return new VFloat(v);
+    public static PVFloat Box(final float v) {
+        return new PVFloat(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VInt VBox(final int v) {
-        return new VInt(v);
+    public static PVInt Box(final int v) {
+        return new PVInt(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VLong VBox(final long v) {
-        return new VLong(v);
+    public static PVLong Box(final long v) {
+        return new PVLong(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static VShort VBox(final short v) {
-        return new VShort(v);
+    public static PVShort Box(final short v) {
+        return new PVShort(v);
     }
 
     /**
@@ -92,7 +92,7 @@ public class VUtils {
      * @param v   value to be boxed
      * @return boxed value
      */
-    public static <T extends Enum<T>> VEnum<T> VBox(final T v) {
-        return new VEnum<T>(v);
+    public static <T extends Enum<T>> PVEnum<T> Box(final T v) {
+        return new PVEnum<T>(v);
     }
 }
