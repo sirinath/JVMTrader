@@ -69,31 +69,40 @@ public class ArrayAccess {
     }
 
     public static  boolean inRange(final int index, final int length) {
-        return index >= 0 || index < length;
+        return index < length && index >= 0;
     }
 
     public static  boolean inRange(final int index, final long length) {
-        return index >= 0 || index < length;
+        return index < length && index >= 0;
     }
 
     public static  boolean inRange(final long index, final long length) {
-        return index >= 0 || index < length;
+        return index < length && index >= 0;
     }
 
     public static  boolean inRange(final int index, final int offset, final int length) {
-        return index >= 0 || index + offset < length;
+        final int indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
 
     public static  boolean inRange(final int index, final long offset, final long length) {
-        return index >= 0 || index + offset < length;
+        final long indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
 
     public static  boolean inRange(final long index, final int offset, final int length) {
-        return index >= 0 || index + offset < length;
+        final int indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
+    }
+
+    public static  boolean inRange(final long index, final long offset, final int length) {
+        final long indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
 
     public static  boolean inRange(final long index, final long offset, final long length) {
-        return index >= 0 || index + offset < length;
+        final long indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
 """)
 
@@ -138,12 +147,8 @@ public class ArrayAccess {
             buffer.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
     }
 
-    public static $generic $typeName[] get(final boolean SAFE, final $typeName[] buffer, final $typeName ... values) {
-        return copy(buffer, values);
-    }
-
-    public static $generic $typeName[] put(final boolean SAFE, final $typeName[] buffer, final $typeName ... values) {
-        return copy(buffer, values);
+    public final $generic $typeName[] copy(final $typeName[] destination, final $typeName ... source) {
+        return copy(this.SAFE, destination, source);
     }
 
     public static $generic $typeName[] copy(final boolean SAFE, final $typeName[] destination, final $typeName ... source) {
@@ -158,16 +163,19 @@ public class ArrayAccess {
         return destination;
     }
 
-    public final $generic $typeName[] get(final $typeName[] buffer, final $typeName ... values) {
-        return copy(this.SAFE, buffer, values);
+    @FunctionalInterface
+    public static interface UnaryArrayOp${typeSuffix} {
+        $typeName apply($typeName x);
     }
 
-    public final $generic $typeName[] put(final $typeName[] buffer, final $typeName ... values) {
-        return copy(this.SAFE, buffer, values);
+    @FunctionalInterface
+    public static interface BiArrayOp${typeSuffix} {
+        $typeName apply($typeName x, $typeName y);
     }
 
-    public final $generic $typeName[] copy(final $typeName[] destination, final $typeName ... source) {
-        return copy(this.SAFE, destination, source);
+    @FunctionalInterface
+    public static interface MultiArrayOp${typeSuffix} {
+        $typeName apply($typeName x, $typeName ... values);
     }
 """)
 
@@ -205,9 +213,10 @@ public class ArrayAccess {
                 "index range %d and %d of length %d is not in range of 0 and array length %d", index, index + length, length, buffer.length));
     }
 
-    public static $generic void checkIndexIfSafeOn(final boolean SAFE, final ${indexTypeName} index, final long length, final $typeName ... buffer) {
+    public static $generic void checkIndexIfSafeOn(final ${indexTypeName} index, final long length, final $typeName ... buffer) {
         checkIndexIfSafeOn(this.SAFE, index, buffer);
     }
+
     public final $generic void checkIndexIfSafeOn(final boolean SAFE, final ${indexTypeName} index, final long length, final $typeName ... buffer) {
         if (SAFE)
             checkIndex(index, length, buffer);
@@ -265,22 +274,6 @@ public class ArrayAccess {
         return buffer;
     }
 
-    public final $generic $typeName[] get(final ${indexTypeName} index, final $typeName[] buffer, final $typeName ... values) {
-        return copy(index, buffer, values);
-    }
-
-    public static $generic $typeName[] get(final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final $typeName ... values) {
-        return copy(SAFE, index, buffer, values);
-    }
-
-    public final $generic $typeName[] put(final ${indexTypeName} index, final $typeName[] buffer, final $typeName ... values) {
-        return copy(index, buffer, values);
-    }
-
-    public static $generic $typeName[] put(final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final $typeName ... values) {
-        return copy(SAFE, index, buffer, values);
-    }
-
     public final $generic $typeName[] copy(final ${indexTypeName} index, final $typeName[] destination, final $typeName ... source) {
         return copy(this.SAFE, index, destination, source);
     }
@@ -296,22 +289,6 @@ public class ArrayAccess {
                 source.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
 
         return destination;
-    }
-
-    public final $generic $typeName[] get(final ${indexTypeName} length, final ${indexTypeName} indexBuff, final $typeName[] buffer, final ${indexTypeName} indexValues, final $typeName ... values) {
-        return copy(length, indexBuff, buffer, indexValues, values);
-    }
-
-    public static $generic $typeName[] get(final boolean SAFE, final ${indexTypeName} length, final ${indexTypeName} indexBuff, final $typeName[] buffer, final ${indexTypeName} indexValues, final $typeName ... values) {
-        return copy(SAFE, length, indexBuff, buffer, indexValues, values);
-    }
-
-    public final $generic $typeName[] put(final ${indexTypeName} length, final ${indexTypeName} indexBuff, final $typeName[] buffer, final ${indexTypeName} indexValues, final $typeName ... values) {
-        return copy(length, indexBuff, buffer, indexValues, values);
-    }
-
-    public static $generic $typeName[] put(final boolean SAFE, final ${indexTypeName} length, final ${indexTypeName} indexBuff, final $typeName[] buffer, final ${indexTypeName} indexValues, final $typeName ... values) {
-        return copy(SAFE, length, indexBuff, buffer, indexValues, values);
     }
 
     public final $generic $typeName[] copy(final ${indexTypeName} length, final ${indexTypeName} indexDestination, final $typeName[] destination, final ${indexTypeName} indexSource, final $typeName ... source) {
@@ -332,172 +309,117 @@ public class ArrayAccess {
     }
 """)
 
-            if (type.equals(Integer.TYPE) || type.equals(Long.TYPE) || type.equals(Object.class)) {
+            if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                    type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                    type.equals(Object.class)) {
+                String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                        type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" : "Float.floatToRawIntBits"
+                String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                        type.equals(Double.TYPE) ? "Double.longBitsToDouble" : "Float.intBitsToFloat"
+                String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
+                        type.equals(Long.TYPE) ? "Long" :
+                                type.equals(Float.TYPE) ? "Int" :
+                                        type.equals(Double.TYPE) ? "Long" : "Object"
+
                 buffer.append("""
     public final $generic $typeName[] putOrdered(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
+        return putOrdered(this.SAFE, index, budder, value);
+    }
+
+    public static $generic $typeName[] putOrdered(final boolean SAFE, final ${
+                    indexTypeName
+                } index, final $typeName[] buffer, final $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
         else
-            UNSAFE.putOrdered${typeSuffix}(buffer,
-                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+            UNSAFE.putOrdered${sameSizeNum}(buffer,
+                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
+                ${valTransform}(value));
 
         return buffer;
     }
 
-    public final $generic boolean compareAndSwap(final ${indexTypeName} index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
+    public static $generic boolean compareAndSwap(final ${
+                    indexTypeName
+                } index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
+        return compareAndSwap(this.SAFE, index, buffer, expected, value);
+    }
 
-        return UNSAFE.compareAndSwap${typeSuffix}(buffer,
-            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, expected, value);
+    public final $generic boolean compareAndSwap(final boolean SAFE, final ${
+                    indexTypeName
+                } index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
+        checkIndexIfSafeOn(SAFE, index, buffer);
+
+        return UNSAFE.compareAndSwap${sameSizeNum}(buffer,
+            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
+            ${valTransform}(expected), ${valTransform}(value));
+    }
+
+    public final $generic $typeName getAndSet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
+        return getAndSet(this.SAAFE, index, buffer, value);
+    }
+
+    public static $generic $typeName getAndSet(final boolean SAFE, final ${
+                    indexTypeName
+                } index, final $typeName[] buffer, final $typeName value) {
+        checkIndexIfSafeOn(SAFE, index, buffer);
+
+        return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(buffer,
+            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
+            ${valTransform}(value)));
     }
         """)
 
-            if (!type.equals(Object.class)) {
-                buffer.append("""
-    public final $generic $typeName getAndAdd(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
+                if (!type.equals(Object.class)) {
+                    String[] opTypes = ["BiArrayOp${typeSuffix}", "UnaryArrayOp${typeSuffix}", "MultiArrayOp${typeSuffix}"]
 
-        return UNSAFE.getAndAdd${typeSuffix}(buffer,
-            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+                    for (String opType : opTypes) {
+                        String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
+
+                        buffer.append("""
+    public final $generic $typeName getAndUpdate(final ${
+                            indexTypeName
+                        } index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
+        return getAndUpdate(this.SAFE, index, buffer, op, value);
     }
 
-    public final $generic $typeName addAndGet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
+    public static $generic $typeName getAndUpdate(final boolean SAFE, final ${
+                            indexTypeName
+                        } index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
+        checkIndexIfSafeOn(SAFE, index, buffer);
+
+        $typeName current;
+        do {
+            current = UNSAFE.get${typeSuffix}Volatile(buffer,
+                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(buffer, index,
+            ${valTransform}(current), ${valTransform}(op.apply(current, value))));
+        return current;
+    }
+
+    public final $generic $typeName updateAndGet(
+        final ${indexTypeName} index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
+        return updateAndGet(this.SAFE, index, buffer, op, value);
+    }
+
+    public static $generic $typeName updateAndGet(
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
+        checkIndexIfSafeOn(SAFE, index, buffer);
 
         $typeName current;
         $typeName newValue;
         do {
             current = UNSAFE.get${typeSuffix}Volatile(buffer,
                 ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
-            newValue = current + value;
-        } while (!UNSAFE.compareAndSwap${typeSuffix}(buffer, index, current, newValue));
+            newValue = op.apply(current, value);
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(buffer, index,
+            ${valTransform}(current), ${valTransform}(newValue)));
 
         return newValue;
-    }
-            """)
-                }
-
-                buffer.append("""
-    public final $generic $typeName getAndSet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        return ($typeName) UNSAFE.getAndSet${typeSuffix}(buffer,
-            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
-    }
-            """)
-            } else if (type.equals(Float.TYPE)) {
-                buffer.append("""
-    public final $generic $typeName[] putOrdered(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        if (SAFE)
-            buffer[(int) index] = value;
-        else
-            UNSAFE.putOrderedInt(buffer,
-                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
-                Float.floatToRawIntBits(value));
-
-        return buffer;
-    }
-
-    public final $generic boolean compareAndSwap(final ${indexTypeName} index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        return UNSAFE.compareAndSwapInt(buffer,
-            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
-            Float.floatToRawIntBits(expected), Float.floatToRawIntBits(value));
-    }
-
-    public final $generic $typeName getAndAdd(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        float current;
-        do {
-            current = UNSAFE.getFloatVolatile(buffer,
-                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
-        } while (!UNSAFE.compareAndSwapInt(buffer, index,
-            Float.floatToRawIntBits(current), Float.floatToRawIntBits(current + value)));
-        return current;
-    }
-
-    public final $generic $typeName addAndGet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        float current;
-        float newValue;
-        do {
-            current = UNSAFE.getFloatVolatile(buffer,
-                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
-            newValue = current + value;
-        } while (!UNSAFE.compareAndSwapInt(buffer, index,
-            Float.floatToRawIntBits(current), Float.floatToRawIntBits(newValue)));
-
-        return newValue;
-    }
-
-    public final $generic $typeName getAndSet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        return Float.intBitsToFloat(UNSAFE.getAndSetInt(buffer,
-            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
-            Float.floatToRawIntBits(value)));
-    }
-            """)
-            } else if (type.equals(Double.TYPE)) {
-                buffer.append("""
-    public final $generic $typeName[] putOrdered(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        if (SAFE)
-            buffer[(int) index] = value;
-        else
-            UNSAFE.putOrderedLong(buffer,
-                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
-                Double.doubleToRawLongBits(value));
-
-        return buffer;
-    }
-
-    public final $generic boolean compareAndSwap(final ${indexTypeName} index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        return UNSAFE.compareAndSwapLong(buffer,
-        ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
-            Double.doubleToRawLongBits(expected), Double.doubleToRawLongBits(value));
-    }
-
-    public final $generic $typeName getAndAdd(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        double current;
-        do {
-            current = UNSAFE.getDoubleVolatile(buffer,
-                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
-        } while (!UNSAFE.compareAndSwapLong(buffer, index,
-            Double.doubleToRawLongBits(current), Double.doubleToRawLongBits(current + value)));
-
-        return current;
-    }
-
-    public final $generic $typeName addAndGet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        double current;
-        double newValue;
-        do {
-            current = UNSAFE.getDoubleVolatile(buffer,
-                ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
-            newValue = current + value;
-        } while (!UNSAFE.compareAndSwapLong(buffer, index,
-            Double.doubleToRawLongBits(current), Double.doubleToRawLongBits(newValue)));
-
-        return newValue;
-    }
-
-    public final $generic $typeName getAndSet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        checkIndexIfSafeOn(index, buffer);
-
-        return Double.longBitsToDouble(UNSAFE.getAndSetLong(buffer,
-            ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
-            Double.doubleToRawLongBits(value)));
     }
 """)
+                    }
+                }
             }
         }
     }

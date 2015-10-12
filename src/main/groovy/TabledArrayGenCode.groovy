@@ -83,9 +83,8 @@ import com.susico.utils.arrays.ArrayAccess;
             theImports.append("import com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerCase()}.${mutability}TabledArray${typeSuffix};\n")
 
             str.append("""
-    public static $generic ${mutability}TabledArray${typeSuffix}$generic get${mutability}${
-                typeSuffix
-            }Array(final boolean checked, final int length, final $typeName ... values) {
+    public static $generic ${mutability}TabledArray${typeSuffix}$generic get${mutability}${typeSuffix}Array(
+        final boolean checked, final int length, final $typeName ... values) {
         return ${mutability}TabledArray${typeSuffix}.${generic}getInstance(checked, length, values);
     }
 """)
@@ -141,6 +140,10 @@ public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTab
     protected final void putToRest(final int index, final $typeName value) {
         ARRAY_ACCESS.put(index - definedAsValues, rest, value);
     }
+
+    protected final void putVolatileToRest(final int index, final $typeName value) {
+        ARRAY_ACCESS.putVolatile(index - definedAsValues, rest, value);
+    }
 """)
     else
         str.append("""// Auto generated. Do not edit directly!
@@ -187,6 +190,10 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
         return ($typeName) ARRAY_ACCESS.get(index - definedAsValues, rest);
     }
 
+    protected final $typeName getVolatileFromRest(final int index) {
+        return ($typeName) ARRAY_ACCESS.getVolatile(index - definedAsValues, rest);
+    }
+
     @Override
     public final int getActualLength() {
         return actualLength;
@@ -220,17 +227,19 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
                 str.append("case $j: ")
             }
         }
+        String formatEnd = String.format("%04d", end)
 
         str.append("""
-                return ${mutability}TabledArray${String.format("%04d", end)}${typeSuffix}.${generic}getInstance(checked, length, values);
+                return ${mutability}TabledArray${formatEnd}${typeSuffix}.${generic}getInstance(checked, length, values);
 
 """
         )
     }
+    String formatLimit = String.format("%04d", 2**limit)
 
     str.append("""
             default:
-                return ${mutability}TabledArray${String.format("%04d", 2**limit)}${typeSuffix}.getInstance(checked, length, values);
+                return ${mutability}TabledArray${formatLimit}${typeSuffix}.getInstance(checked, length, values);
         }
     }
 """)
@@ -269,15 +278,13 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
         this(checked, 0, length, values);
     }
 
-    protected MutableTabledArray0000${
-            typeSuffix
-        }(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+    protected MutableTabledArray0000${typeSuffix}(
+        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues, length, values);
     }
 
-    public static ${generic} MutableTabledArray0000${typeSuffix}${
-            generic
-        } getInstance(final boolean checked, final int length, final $typeName ... values) {
+    public static ${generic} MutableTabledArray0000${typeSuffix}${generic} getInstance(
+            final boolean checked, final int length, final $typeName ... values) {
         return new MutableTabledArray0000${typeSuffix}${generic}(checked, length, values) {
             @Override
             public final void put(final int index, final $typeName value) {
@@ -312,22 +319,19 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
 
 package com.susico.utils.arrays.tabled.array${packageName}.immutable;
 
-public abstract class ImmutableTabledArray0000${typeSuffix}${generic} extends ImmutableTabledArray${typeSuffix}${
-            generic
-        } {
+public abstract class ImmutableTabledArray0000${typeSuffix}${generic}
+    extends ImmutableTabledArray${typeSuffix}${generic} {
     protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final $typeName ... values) {
         this(checked, 0, length, values);
     }
 
-    protected ImmutableTabledArray0000${
-            typeSuffix
-        }(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+    protected ImmutableTabledArray0000${typeSuffix}(
+        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues, length, values);
     }
 
-    public static ${generic} ImmutableTabledArray0000${typeSuffix}${
-            generic
-        } getInstance(final boolean checked, final int length, final $typeName ... values) {
+    public static ${generic} ImmutableTabledArray0000${typeSuffix}${generic} getInstance(
+        final boolean checked, final int length, final $typeName ... values) {
         return new ImmutableTabledArray0000${typeSuffix}${generic}(checked, length, values) {
             @Override
             public final $typeName get(final int index) {
@@ -369,11 +373,19 @@ package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerC
 
 import com.susico.utils.arrays.ArrayAccess;
 
-public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
-        mutability
-    }TabledArray0000$typeSuffix$generic {
+import com.susico.utils.UnsafeAccess;
+import sun.misc.Unsafe;
+
+public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
+    ${mutability}TabledArray0000$typeSuffix$generic {
+    private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
+
     ${
         StringBuilder tmp = new StringBuilder()
+
+        tmp.append("""
+    protected final static value0000FieldOffset =
+        UNSAFE.objectFieldOffset(${mutability}TabledArray0001${typeSuffix}.class.getField("value0000"));""")
 
         if (mutable) {
             tmp.append("""
@@ -401,13 +413,13 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
 
         return tmp.toString()
     }
-    protected ${mutability}TabledArray0001$typeSuffix(final boolean checked, final int length, final $typeName ... values) {
+    protected ${mutability}TabledArray0001$typeSuffix(
+        final boolean checked, final int length, final $typeName ... values) {
         this(checked, 0, length, values);
     }
 
-    protected ${
-        mutability
-    }TabledArray0001$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+    protected ${mutability}TabledArray0001$typeSuffix(
+        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues + 1, length, values);
 
         if (values.length >= 1) {
@@ -418,28 +430,25 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
 
     }
 
-    public static ${generic} ${
-        mutability
-    }TabledArray0001$typeSuffix getInstance(final boolean checked, final int length, final $typeName ... values) {
+    public static ${generic} ${mutability}TabledArray0001$typeSuffix getInstance(
+        final boolean checked, final int length, final $typeName ... values) {
         return new ${mutability}TabledArray0001$typeSuffix$generic(checked, length, values) {
-            ${
+    ${
         StringBuilder put = new StringBuilder()
         if (mutable) {
             put.append("""
             @Override
             public final void put(final int index, final $typeName value) {
                 switch (index) {
-                ${
-                StringBuilder tmp = new StringBuilder()
-                tmp.append("""
+                """)
+
+                put.append("""
                     case 0:
-                        value0000 = value;
+                        setValue0000(value);
                         break;
                     """
                 )
-
-                return tmp.toString()
-            }
+            put.append("""
                     default:
                         putToRest(index, value);
                 }
@@ -449,23 +458,28 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends ${
 
         return put.toString()
     }
-
+    ${
+        StringBuilder get = new StringBuilder()
+        get.append("""
             @Override
             public final $typeName get(final int index) {
                 switch (index) {
-                ${
-        StringBuilder tmp = new StringBuilder()
-        tmp.append("""
+        """)
+
+        get.append("""
                     case 0:
-                        return value0000;
+                        return getValue0000();
                                 """)
 
-        return tmp.toString()
-    }
+        get.append("""
                     default:
                         return getFromRest(index);
                 }
             }
+            """)
+
+        return get.toString()
+    }
         };
     }
 }
@@ -480,6 +494,9 @@ String tabledArray(boolean mutable, Class<?> type, int start) {
     String generic = type.isPrimitive() ? "" : "<T>"
     int end = 2 * start
     String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
+    String classEnding = String.format("%04d", end)
+    String classStart = String.format("%04d", end)
+
 
     return """ // Auto generated. Do not edit directly!
 /*
@@ -502,60 +519,61 @@ package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerC
 
 import com.susico.utils.arrays.ArrayAccess;
 
-public abstract class ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix$generic extends ${
-        mutability
-    }TabledArray${String.format("%04d", start)}$typeSuffix$generic {
+public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic extends
+    ${mutability}TabledArray${classStart}$typeSuffix$generic {
     ${
         StringBuilder tmp = new StringBuilder()
-        StringBuilder str
 
         for (int i = start; i < end; i++) {
-            if (mutable) {
-                str = new StringBuilder("""
-    protected $typeName value%04d;""")
-            } else {
-                str = new StringBuilder("""
-    protected final $typeName value%04d;""")
-            }
+            String formatI = String.format("%04d", i)
+            tmp.append("""
+    protected final static value%04dFieldOffset =
+        UNSAFE.objectFieldOffset(${mutability}TabledArray${classEnding}${typeSuffix}.class.getField("value%04d"));""")
 
-            tmp.append(String.format(str.toString(), i))
+            if (mutable) {
+                tmp.append("""
+    protected $typeName value${formatI};""")
+            } else {
+                tmp.append("""
+    protected final $typeName value${formatI};""")
+            }
         }
 
         tmp.append("""
         """)
 
         for (int i = start; i < end; i++) {
-            str = new StringBuilder("""
-    public final $typeName getValue%04d() {
-        return value%04d;
+            String formatI = String.format("%04d", i)
+
+            tmp.append("""
+    public final $typeName getValue${formatI}() {
+        return value${formatI};
     }
     """)
-            tmp.append(String.format(str.toString(), i, i))
         }
 
 
         if (mutable) {
             for (int i = start; i < end; i++) {
-                str = new StringBuilder("""
-    public final void setValue%04d(final $typeName value%04d) {
-        this.value%04d = value%04d;
+                String formatI = String.format("%04d", i)
+
+                tmp.append("""
+    public final void setValue${formatI}(final $typeName value${formatI}) {
+        this.value${formatI} = value${formatI};
     }
     """)
-                tmp.append(String.format(str.toString(), i, i, i, i))
             }
         }
 
         return tmp.toString()
     }
-    protected ${mutability}TabledArray${
-        String.format("%04d", end)
-    }$typeSuffix(final boolean checked, final int length, final $typeName ... values) {
+    protected ${mutability}TabledArray${classEnding}$typeSuffix(
+        final boolean checked, final int length, final $typeName ... values) {
         this(checked, 0, length, values);
     }
 
-    protected ${mutability}TabledArray${
-        String.format("%04d", end)
-    }$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+    protected ${mutability}TabledArray${classEnding}$typeSuffix(
+        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues + ${end - start}, length, values);
         final int len = values.length;
 
@@ -563,24 +581,25 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
         StringBuilder tmp = new StringBuilder()
 
         for (int i = end; i > start; i--) {
-            tmp.append(String.format("""
-        if (len >= %d) {
-            this.value%04d = ArrayAccess.UNCHECKED.get(%d, values);
+            String formatI = String.format("%04d", i)
+
+            tmp.append("""
+        if (len >= ${formatI}) {
+            this.value${formatI} = ArrayAccess.UNCHECKED.get(${formatI}, values);
         } else {
-            this.value%04d = ${defaultValue};
+            this.value${formatI} = ${defaultValue};
         }
-            """, i, i - 1, i - 1, i - 1))
+            """)
         }
 
         return tmp.toString()
     }
     }
 
-    public static ${generic} ${mutability}TabledArray${String.format("%04d", end)}${typeSuffix}${
-        generic
-    } getInstance(final boolean checked, final int length, final $typeName ... values) {
-        return new ${mutability}TabledArray${String.format("%04d", end)}$typeSuffix$generic(checked, length, values) {
-            ${
+    public static ${generic} ${mutability}TabledArray${classEnding}${typeSuffix}${generic} getInstance(
+        final boolean checked, final int length, final $typeName ... values) {
+        return new ${mutability}TabledArray${classEnding}$typeSuffix$generic(checked, length, values) {
+    ${
         StringBuilder put = new StringBuilder()
         if (mutable) {
             put.append("""
@@ -590,11 +609,12 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
                     """)
 
             for (int i = 0; i < end; i++) {
-                put.append(String.format("""
-                    case %d:
-                        value%04d = value;
+                String formatI = String.format("%04d", i)
+                put.append("""
+                    case ${formatI}:
+                        putValue${formatI}(value);
                         break;
-                    """, i, i))
+                    """)
             }
 
             put.append("""
@@ -607,25 +627,31 @@ public abstract class ${mutability}TabledArray${String.format("%04d", end)}$type
 
         return put.toString()
     }
-
+    ${
+        StringBuilder get = new StringBuilder()
+        get.append("""
             @Override
             public final $typeName get(final int index) {
                 switch (index) {
-                ${
-        StringBuilder tmp = new StringBuilder()
-        for (int i = 0; i < end; i++)
-            tmp.append(String.format("""
-                    case %d:
-                        return value%04d;
-                                """, i, i)
-            )
+                """)
 
-        return tmp.toString()
-    }
+            for (int i = 0; i < end; i++) {
+                String formatI = String.format("%04d", i)
+
+                get.append("""
+                    case ${formatI}:
+                        return getValue${formatI}();
+                                """)
+            }
+
+        get.append("""
                     default:
                         return getFromRest(index);
                 }
-            }
+            }""")
+
+        return get.toString()
+    }
         };
     }
 }

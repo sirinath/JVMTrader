@@ -49,9 +49,13 @@ String genClass(boolean mutable, Class<?> type) {
     String classPrefix = upcase1st(packageName)
     String comparativeOtherClassPrefix = upcase1st(!mutable ? "mutable" : "immutable")
     String finalValue = mutable ? "final" : ""
+    String boxedTypeStatic = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : upcase1st(type.getSimpleName())) : "Objects"
+    String boxedType = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : upcase1st(type.getSimpleName())) : type.isEnum() ? "Enum" : "Object"
+    String valueExtractor = type.isPrimitive() ? "(${boxedType} other)." + type.getSimpleName() + "Value()" : "other.equals(value)"
     boolean isObject = type.equals(Object.class)
     boolean isBoolean = type.equals(Boolean.TYPE)
     boolean isEnum = type.isEnum()
+    boolean isPrimitive = type.isPrimitive()
 
     buffer.append("""
 package com.susico.utils.primitives.${packageName};
@@ -90,6 +94,23 @@ public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number
         return String.valueOf(value);
     }
 
+    @Override
+    public final int hashCode() {
+        return ${boxedTypeStatic}.hashCode(value);
+    }
+
+    @Override
+    public final boolean equals(Object other) {
+        if (other instanceof ${classPrefix}${typeSuffix}${generic})
+            return value == ((${classPrefix}${typeSuffix}${generic}) other).getValue();
+        else if (other instanceof ${comparativeOtherClassPrefix}${typeSuffix}${generic})
+            return value == ((${comparativeOtherClassPrefix}${typeSuffix}${generic}) other).getValue();
+        else if (other instanceof ${boxedType})
+            return ${valueExtractor};
+        else
+            return false;
+    }
+
     public final ${typeName} getValue() {
         return value;
     }
@@ -121,11 +142,6 @@ public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number
     public final int compareTo(final ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
         return value == other.getValue() ? 0 : (other.getValue() ? -1 : 1);
     }
-
-    @Override
-    public final int hashCode() {
-        return value ? 1 : 0;
-    }
 """)
 
         buffer.append("""
@@ -156,29 +172,24 @@ public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number
         final ${typeName} otherValue = other.getValue;
         if (value instanceof Comparable)
             return value.compareTo(otherValue);
-        else if (value == otherValue || value.equals(otherValue))
+        else if (value == otherValue || (value != null && value.equals(otherValue)))
             return 0;
         else if (otherValue instanceof Comparable)
             return - otherValue.compareTo(value);
         else
-            throw IllegalStateException(value + " cannot be compaired with: " + otherValue);
+            throw IllegalStateException(value + " cannot be compaired with: " + otherValue + " as neither Object impliments Comparable");
     }
 
     public final int compareTo(final ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
         final ${typeName} otherValue = other.getValue;
         if (value instanceof Comparable)
             return value.compareTo(otherValue);
-        else if (value == otherValue || value.equals(otherValue))
+        else if (value == otherValue || (value != null && value.equals(otherValue)))
             return 0;
         else if (otherValue instanceof Comparable)
             return - otherValue.compareTo(value);
         else
-            throw IllegalStateException(value + " cannot be compaired with: " + otherValue);
-    }
-
-    @Override
-    public final int hashCode() {
-        return value.hashCode();
+            throw IllegalStateException(value + " cannot be compaired with: " + otherValue + " as neither Object impliments Comparable");
     }
 """)
     } else if (isEnum) {
@@ -230,21 +241,6 @@ public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number
         return (double) value;
     }
 """)
-        if (type.equals(Integer.TYPE)) {
-            buffer.append("""
-    @Override
-    public final int hashCode() {
-        return Integer.hashCode(value);
-    }
-""")
-        } else {
-            buffer.append("""
-    @Override
-    public final int hashCode() {
-        return ${typeSuffix}.hashCode(value);
-    }
-""")
-        }
     }
 
     return buffer.append("}").toString()
