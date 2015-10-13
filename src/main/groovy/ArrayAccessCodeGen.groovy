@@ -322,13 +322,13 @@ public class ArrayAccess {
                                         type.equals(Double.TYPE) ? "Long" : "Object"
 
                 buffer.append("""
-    public final $generic $typeName[] putOrdered(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
+    public final $generic $typeName[] putOrdered(
+        final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
         return putOrdered(this.SAFE, index, budder, value);
     }
 
-    public static $generic $typeName[] putOrdered(final boolean SAFE, final ${
-                    indexTypeName
-                } index, final $typeName[] buffer, final $typeName value) {
+    public static $generic $typeName[] putOrdered(
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
         else
@@ -339,15 +339,14 @@ public class ArrayAccess {
         return buffer;
     }
 
-    public static $generic boolean compareAndSwap(final ${
-                    indexTypeName
-                } index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
+    public static $generic boolean compareAndSwap(
+        final ${indexTypeName} index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
         return compareAndSwap(this.SAFE, index, buffer, expected, value);
     }
 
-    public final $generic boolean compareAndSwap(final boolean SAFE, final ${
-                    indexTypeName
-                } index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
+    public final $generic boolean compareAndSwap(
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final $typeName expected,
+        final $typeName value) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
         return UNSAFE.compareAndSwap${sameSizeNum}(buffer,
@@ -355,13 +354,13 @@ public class ArrayAccess {
             ${valTransform}(expected), ${valTransform}(value));
     }
 
-    public final $generic $typeName getAndSet(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
-        return getAndSet(this.SAAFE, index, buffer, value);
+    public final $generic $typeName getAndSet(
+        final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
+        return getAndSet(this.SAFE, index, buffer, value);
     }
 
-    public static $generic $typeName getAndSet(final boolean SAFE, final ${
-                    indexTypeName
-                } index, final $typeName[] buffer, final $typeName value) {
+    public static $generic $typeName getAndSet(
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
         return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(buffer,
@@ -377,15 +376,14 @@ public class ArrayAccess {
                         String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
 
                         buffer.append("""
-    public final $generic $typeName getAndUpdate(final ${
-                            indexTypeName
-                        } index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
+    public final $generic $typeName getAndUpdate(
+        final ${indexTypeName} index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
         return getAndUpdate(this.SAFE, index, buffer, op, value);
     }
 
-    public static $generic $typeName getAndUpdate(final boolean SAFE, final ${
-                            indexTypeName
-                        } index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
+    public static $generic $typeName getAndUpdate(
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${opType} op,
+        final $valueTypeName value) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
         $typeName current;
@@ -403,7 +401,8 @@ public class ArrayAccess {
     }
 
     public static $generic $typeName updateAndGet(
-        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${opType} op, final $valueTypeName value) {
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${opType} op,
+        final $valueTypeName value) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
         $typeName current;

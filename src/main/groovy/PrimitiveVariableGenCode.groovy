@@ -43,7 +43,7 @@ String genClass(boolean mutable, Class<?> type) {
 
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Reference"
-    String genericClassName = type.isPrimitive() ? "" : type.isEnum() ? "<T extends Enum<T>>" : "<T>"
+    String genericClassSuffix = type.isPrimitive() ? "" : type.isEnum() ? "<T extends Enum<T>>" : "<T>"
     String generic = type.isPrimitive() ? "" : "<T>"
     String packageName = mutable ? "mutable" : "immutable"
     String classPrefix = upcase1st(packageName)
@@ -51,11 +51,10 @@ String genClass(boolean mutable, Class<?> type) {
     String finalValue = mutable ? "final" : ""
     String boxedTypeStatic = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : upcase1st(type.getSimpleName())) : "Objects"
     String boxedType = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : upcase1st(type.getSimpleName())) : type.isEnum() ? "Enum" : "Object"
-    String valueExtractor = type.isPrimitive() ? "(${boxedType} other)." + type.getSimpleName() + "Value()" : "other.equals(value)"
+    String equalsComparison = type.isPrimitive() ? "(${boxedType} other)." + type.getSimpleName() + "Value()" : "other.equals(value)"
     boolean isObject = type.equals(Object.class)
     boolean isBoolean = type.equals(Boolean.TYPE)
     boolean isEnum = type.isEnum()
-    boolean isPrimitive = type.isPrimitive()
 
     buffer.append("""
 package com.susico.utils.primitives.${packageName};
@@ -69,8 +68,21 @@ import sun.misc.Unsafe;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number implements BoxOnce<PV${typeSuffix}${generic}> {
+public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number implements BoxOnce<PV${typeSuffix}${generic}> {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
+
+    @FunctionalInterface
+    public static interface BiOp${typeSuffix} {
+        $typeName apply($typeName x, $typeName y);
+    }
+
+    @FunctionalInterface
+    public static interface MultiOp${typeSuffix} {
+        $typeName apply($typeName x, $typeName ... values);
+    }
+
+    protected final static valueFieldOffset =
+        UNSAFE.objectFieldOffset(${classPrefix}${typeSuffix}.class.getField("value"));
 
     /**
      * Value
@@ -106,7 +118,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number
         else if (other instanceof ${comparativeOtherClassPrefix}${typeSuffix}${generic})
             return value == ((${comparativeOtherClassPrefix}${typeSuffix}${generic}) other).getValue();
         else if (other instanceof ${boxedType})
-            return ${valueExtractor};
+            return ${equalsComparison};
         else
             return false;
     }
@@ -117,6 +129,10 @@ public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number
 
     public final ${typeName} get() {
         return value;
+    }
+
+    public final $typeName getValueVolatile() {
+        return UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
     }
     """)
 
@@ -129,7 +145,82 @@ public final class ${classPrefix}${typeSuffix}${genericClassName} extends Number
     public final void set(final ${typeName} value) {
         this.value = value;
     }
+
+    public final void setValueVolatile(final $typeName value) {
+        return UNSAFE.put${typeSuffix}Volatile(this, valueFieldOffset, value);
+    }
 """)
+
+        if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                type.equals(Object.class)) {
+
+            String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                    type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" : "Float.floatToRawIntBits"
+            String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                    type.equals(Double.TYPE) ? "Double.longBitsToDouble" : "Float.intBitsToFloat"
+            String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
+                    type.equals(Long.TYPE) ? "Long" :
+                            type.equals(Float.TYPE) ? "Int" :
+                                    type.equals(Double.TYPE) ? "Long" : "Object"
+
+            buffer.append("""
+    public static $generic $typeName[] setValueOrdered(
+        final $typeName value) {
+            UNSAFE.putOrdered${sameSizeNum}(this, valueFieldOffset, ${valTransform}(value));
+
+        return buffer;
+    }
+
+    public final $generic boolean compareAndSwapValue(final $typeName expected,
+        final $typeName value) {
+        return UNSAFE.compareAndSwap${sameSizeNum}(this,
+            valueFieldOffset,
+            ${valTransform}(expected), ${valTransform}(value));
+    }
+
+    public static $generic $typeName getAndSetValue(
+        final $typeName value) {
+        return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
+            valueFieldOffset,
+            ${valTransform}(value)));
+    }
+        """)
+
+            if (!type.equals(Object.class)) {
+                String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+
+                for (String opType : opTypes) {
+                    String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
+
+                    buffer.append("""
+    public static $generic $typeName getAndUpdateValue(final ${opType} op, final $valueTypeName value) {
+        $typeName current;
+
+        do {
+            current = UNSAFE.get${typeSuffix}Volatile(this,
+                valueFieldOffset);
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, valueFieldOffset,
+            ${valTransform}(current), ${valTransform}(op.apply(current, value))));
+        return current;
+    }
+
+    public static $generic $typeName updateAndGetValue(final ${opType} op, final $valueTypeName value) {
+        $typeName current;
+        $typeName newValue;
+
+        do {
+            current = UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
+            newValue = op.apply(current, value);
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, valueFieldOffset,
+            ${valTransform}(current), ${valTransform}(newValue)));
+
+        return newValue;
+    }
+""")
+                }
+            }
+        }
     }
 
     if (isBoolean) {

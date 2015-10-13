@@ -43,6 +43,8 @@ package com.susico.utils.arrays.tabled;
 
 import com.susico.utils.arrays.ArrayAccess;
 
+import com.susico.utils.functions.*;
+
 """)
 
     StringBuffer theImports = new StringBuffer()
@@ -129,13 +131,12 @@ package com.susico.utils.arrays.tabled.array${packageName}.mutable;
 
 import com.susico.utils.arrays.tabled.array${packageName}.immutable.ImmutableTabledArray$typeSuffix;
 
+import com.susico.utils.functions.*;
+
 public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTabledArray$typeSuffix$generic {
     protected MutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues, length, values);
     }
-
-
-    public abstract void put(final int index, final $typeName value);
 
     protected final void putToRest(final int index, final $typeName value) {
         ARRAY_ACCESS.put(index - definedAsValues, rest, value);
@@ -144,7 +145,41 @@ public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTab
     protected final void putVolatileToRest(final int index, final $typeName value) {
         ARRAY_ACCESS.putVolatile(index - definedAsValues, rest, value);
     }
+
+    public abstract void put(final int index, final $typeName value);
+
+    public abstract void putUnsafe(final int index, final $typeName value);
+
+    public abstract void putVolatile(final int index, final $typeName value);
 """)
+
+    if (type.equals(Object.class) || type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+            type.equals(Integer.TYPE) || type.equals(Long.TYPE)) {
+            str.append("""
+    protected final void putOrderedToRest(final int index, final $typeName value) {
+        ARRAY_ACCESS.putOrdered(index - definedAsValues, rest, value);
+    }
+
+    protected final void getAndSetToRest(final int index, final $typeName value) {
+        ARRAY_ACCESS.putOrdered(index - definedAsValues, rest, value);
+    }
+
+    public abstract void putOrdered(final int index, final $typeName value);
+
+    public abstract void getAndSet(final int index, final $typeName value);
+""")
+        }
+
+    if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+            type.equals(Integer.TYPE) || type.equals(Long.TYPE)) {
+            str.append("""
+            public abstract void compairAndSwap(final int index, final $typeName value);
+
+            public abstract void updateAndGet(final int index, final $typeName value);
+
+            public abstract void getAndUpdate(final int index, final $typeName value);
+""")
+        }
     else
         str.append("""// Auto generated. Do not edit directly!
 /*
@@ -167,7 +202,24 @@ package com.susico.utils.arrays.tabled.array${packageName}.immutable;
 
 import com.susico.utils.arrays.tabled.TabledArray;
 
+import com.susico.utils.functions.*;
+
 public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArray {
+    @FunctionalInterface
+    public static interface UnaryOp${typeSuffix} {
+        $typeName apply($typeName x);
+    }
+
+    @FunctionalInterface
+    public static interface BiOp${typeSuffix} {
+        $typeName apply($typeName x, $typeName y);
+    }
+
+    @FunctionalInterface
+    public static interface MultiOp${typeSuffix} {
+        $typeName apply($typeName x, $typeName ... values);
+    }
+
     protected final $erasedType[] rest;
     protected final int actualLength;
 
@@ -184,7 +236,10 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
         actualLength = definedAsValues + rest.length;
     }
 
-    public abstract $typeName get(final int index);
+    @Override
+    public final int getActualLength() {
+        return actualLength;
+    }
 
     protected final $typeName getFromRest(final int index) {
         return ($typeName) ARRAY_ACCESS.get(index - definedAsValues, rest);
@@ -194,10 +249,11 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
         return ($typeName) ARRAY_ACCESS.getVolatile(index - definedAsValues, rest);
     }
 
-    @Override
-    public final int getActualLength() {
-        return actualLength;
-    }
+    public abstract $typeName get(final int index);
+
+    public abstract $typeName getUnsafe(final int index);
+
+    public abstract $typeName getVolatile(final int index);
 """)
 
     String mutability = mutable ? "Mutable" : "Immutable"
@@ -273,6 +329,8 @@ String tabledArray0(boolean mutable, Class<?> type) {
 
 package com.susico.utils.arrays.tabled.array${packageName}.mutable;
 
+import com.susico.utils.functions.*;
+
 public abstract class MutableTabledArray0000${typeSuffix}${generic} extends MutableTabledArray${typeSuffix}${generic} {
     protected MutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final $typeName ... values) {
         this(checked, 0, length, values);
@@ -291,9 +349,18 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
                 putToRest(index, value);
             }
 
+            public final void putVolatile(final int index, final $typeName value) {
+                putVolatileToRest(index, value);
+            }
+
             @Override
             public final $typeName get(final int index) {
                 return getFromRest(index);
+            }
+
+            @Override
+            public final $typeName getVolatile(final int index) {
+                return getVolatileFromRest(index);
             }
         };
     }
@@ -319,6 +386,8 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
 
 package com.susico.utils.arrays.tabled.array${packageName}.immutable;
 
+import com.susico.utils.functions.*;
+
 public abstract class ImmutableTabledArray0000${typeSuffix}${generic}
     extends ImmutableTabledArray${typeSuffix}${generic} {
     protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final $typeName ... values) {
@@ -336,6 +405,11 @@ public abstract class ImmutableTabledArray0000${typeSuffix}${generic}
             @Override
             public final $typeName get(final int index) {
                 return getFromRest(index);
+            }
+
+            @Override
+            public final $typeName getVolatile(final int index) {
+                return getVolatileFromRest(index);
             }
         };
     }
@@ -376,9 +450,11 @@ import com.susico.utils.arrays.ArrayAccess;
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
 
+import com.susico.utils.functions.*;
+
 public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     ${mutability}TabledArray0000$typeSuffix$generic {
-    private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
+    protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
     ${
         StringBuilder tmp = new StringBuilder()
@@ -400,6 +476,14 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     public final $typeName getValue0000() {
         return value0000;
     }
+
+    public final $typeName getValue0000Volatile() {
+        return UNSAFE.get${typeSuffix}Volatile(this, value0000FieldOffset);
+    }
+
+    public final $typeName getValue0000Unsafe() {
+        return UNSAFE.get${typeSuffix}(this, value0000FieldOffset);
+    }
     """)
 
 
@@ -408,7 +492,86 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     public final void setValue0000(final $typeName value0000) {
         this.value0000 = value0000;
     }
+
+    public final void putValue0000Volatile(final $typeName value0000) {
+        return UNSAFE.put${typeSuffix}Volatile(this, value0000FieldOffset, value0000);
+    }
+
+    public final void putValue0000Unsafe(final $typeName value0000) {
+        return UNSAFE.put${typeSuffix}(this, value0000FieldOffset, value0000);
+    }
     """)
+
+            if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                    type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                    type.equals(Object.class)) {
+
+                String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                        type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" : "Float.floatToRawIntBits"
+                String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                        type.equals(Double.TYPE) ? "Double.longBitsToDouble" : "Float.intBitsToFloat"
+                String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
+                        type.equals(Long.TYPE) ? "Long" :
+                                type.equals(Float.TYPE) ? "Int" :
+                                        type.equals(Double.TYPE) ? "Long" : "Object"
+
+                tmp.append("""
+    public static $generic $typeName[] putValue0000Ordered(
+        final $typeName value0000) {
+            UNSAFE.putOrdered${sameSizeNum}(this, value0000FieldOffset, ${valTransform}(value0000));
+
+        return buffer;
+    }
+
+    public final $generic boolean compareAndSwapValue0000(final $typeName expected,
+        final $typeName value0000) {
+        return UNSAFE.compareAndSwap${sameSizeNum}(this,
+            value0000FieldOffset,
+            ${valTransform}(expected), ${valTransform}(value0000));
+    }
+
+    public static $generic $typeName getAndSetValue0000(
+        final $typeName value0000) {
+        return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
+            value0000FieldOffset,
+            ${valTransform}(value0000)));
+    }
+        """)
+
+                if (!type.equals(Object.class)) {
+                    String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+
+                    for (String opType : opTypes) {
+                        String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
+
+                        tmp.append("""
+    public static $generic $typeName getAndUpdateValue0000(final ${opType} op, final $valueTypeName value0000) {
+        $typeName current;
+
+        do {
+            current = UNSAFE.get${typeSuffix}Volatile(this,
+                valueFieldOffset);
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value0000FieldOffset,
+            ${valTransform}(current), ${valTransform}(op.apply(current, value0000))));
+        return current;
+    }
+
+    public static $generic $typeName updateAndGetValue0000(final ${opType} op, final $valueTypeName value0000) {
+        $typeName current;
+        $typeName newValue;
+
+        do {
+            current = UNSAFE.get${typeSuffix}Volatile(this, value0000FieldOffset);
+            newValue = op.apply(current, value0000);
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value0000FieldOffset,
+            ${valTransform}(current), ${valTransform}(newValue)));
+
+        return newValue;
+    }
+""")
+                    }
+                }
+            }
         }
 
         return tmp.toString()
@@ -435,6 +598,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
         return new ${mutability}TabledArray0001$typeSuffix$generic(checked, length, values) {
     ${
         StringBuilder put = new StringBuilder()
+
         if (mutable) {
             put.append("""
             @Override
@@ -442,15 +606,53 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
                 switch (index) {
                 """)
 
-                put.append("""
+            put.append("""
                     case 0:
                         setValue0000(value);
                         break;
-                    """
-                )
+                    """)
+
             put.append("""
                     default:
                         putToRest(index, value);
+                }
+            }
+            """)
+
+            put.append("""
+            @Override
+            public final void putUnsafe(final int index, final $typeName value) {
+                switch (index) {
+                """)
+
+            put.append("""
+                    case 0:
+                        putValue0000Unsafe(value);
+                        break;
+                    """)
+
+            put.append("""
+                    default:
+                        putToRest(index, value);
+                }
+            }
+            """)
+
+            put.append("""
+            @Override
+            public final void putVolatile(final int index, final $typeName value) {
+                switch (index) {
+                """)
+
+            put.append("""
+                    case 0:
+                        putValue0000Volatile(value);
+                        break;
+                    """)
+
+            put.append("""
+                    default:
+                        putVolatileToRest(index, value);
                 }
             }
             """)
@@ -474,6 +676,42 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
         get.append("""
                     default:
                         return getFromRest(index);
+                }
+            }
+            """)
+
+        get.append("""
+            @Override
+            public final $typeName getUnsafe(final int index) {
+                switch (index) {
+        """)
+
+        get.append("""
+                    case 0:
+                        return getValue0000Unsafe();
+                                """)
+
+        get.append("""
+                    default:
+                        return getFromRest(index);
+                }
+            }
+            """)
+
+        get.append("""
+            @Override
+            public final $typeName getVolatile(final int index) {
+                switch (index) {
+        """)
+
+        get.append("""
+                    case 0:
+                        return getValue0000Volatile();
+                                """)
+
+        get.append("""
+                    default:
+                        return getVolatileFromRest(index);
                 }
             }
             """)
@@ -519,6 +757,8 @@ package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerC
 
 import com.susico.utils.arrays.ArrayAccess;
 
+import com.susico.utils.functions.*;
+
 public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic extends
     ${mutability}TabledArray${classStart}$typeSuffix$generic {
     ${
@@ -549,6 +789,14 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
     public final $typeName getValue${formatI}() {
         return value${formatI};
     }
+
+    public final $typeName getValue${formatI}Unsafe() {
+        return UNSAFE.get${typeSuffix}(this, value${formatI}FieldOffset);
+    }
+
+    public final $typeName getValue${formatI}Volatile() {
+        return UNSAFE.get${typeSuffix}Volatile(this, value${formatI}FieldOffset);
+    }
     """)
         }
 
@@ -561,7 +809,85 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
     public final void setValue${formatI}(final $typeName value${formatI}) {
         this.value${formatI} = value${formatI};
     }
+
+    public final void putValue${formatI}Unsafe(final $typeName value${formatI}) {
+        return UNSAFE.put${typeSuffix}(this, value${formatI}FieldOffset, value${formatI});
+    }
+
+    public final void putValue${formatI}Volatile(final $typeName value${formatI}) {
+        return UNSAFE.put${typeSuffix}Volatile(this, value${formatI}FieldOffset, value${formatI});
+    }
     """)
+                if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                        type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                        type.equals(Object.class)) {
+
+                    String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                            type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" : "Float.floatToRawIntBits"
+                    String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                            type.equals(Double.TYPE) ? "Double.longBitsToDouble" : "Float.intBitsToFloat"
+                    String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
+                            type.equals(Long.TYPE) ? "Long" :
+                                    type.equals(Float.TYPE) ? "Int" :
+                                            type.equals(Double.TYPE) ? "Long" : "Object"
+
+                    tmp.append("""
+    public static $generic $typeName[] putValue${formatI}Ordered(
+        final $typeName value${formatI}) {
+            UNSAFE.putOrdered${sameSizeNum}(this, value${formatI}FieldOffset, ${valTransform}(value${formatI}));
+
+        return buffer;
+    }
+
+    public final $generic boolean compareAndSwapValue${formatI}(final $typeName expected,
+        final $typeName value${formatI}) {
+        return UNSAFE.compareAndSwap${sameSizeNum}(this,
+            value${formatI}FieldOffset,
+            ${valTransform}(expected), ${valTransform}(value${formatI}));
+    }
+
+    public static $generic $typeName getAndSetValue${formatI}(
+        final $typeName value${formatI}) {
+        return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
+            value0000FieldOffset,
+            ${valTransform}(value${formatI})));
+    }
+        """)
+
+                    if (!type.equals(Object.class)) {
+                        String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+
+                        for (String opType : opTypes) {
+                            String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
+
+                            tmp.append("""
+    public static $generic $typeName getAndUpdateValue${formatI}(final ${opType} op, final $valueTypeName value${formatI}) {
+        $typeName current;
+
+        do {
+            current = UNSAFE.get${typeSuffix}Volatile(this,
+                value${formatI}FieldOffset);
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value${formatI}FieldOffset,
+            ${valTransform}(current), ${valTransform}(op.apply(current, value${formatI}))));
+        return current;
+    }
+
+    public static $generic $typeName updateAndGetValue${formatI}(final ${opType} op, final $valueTypeName value${formatI}) {
+        $typeName current;
+        $typeName newValue;
+
+        do {
+            current = UNSAFE.get${typeSuffix}Volatile(this, value${formatI}FieldOffset);
+            newValue = op.apply(current, value${formatI});
+        } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value${formatI}FieldOffset,
+            ${valTransform}(current), ${valTransform}(newValue)));
+
+        return newValue;
+    }
+""")
+                        }
+                    }
+                }
             }
         }
 
