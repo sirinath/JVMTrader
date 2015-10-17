@@ -45,13 +45,28 @@ import com.susico.utils.arrays.ArrayAccess;
 
 import com.susico.utils.functions.*;
 
+import com.susico.utils.UnsafeAccess;
+import sun.misc.Unsafe;
+
 """)
 
     StringBuffer theImports = new StringBuffer()
     StringBuffer str = new StringBuffer("""public abstract class TabledArray {
+    protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
+
     protected final ArrayAccess ARRAY_ACCESS;
     protected final int targetLength;
     protected final int definedAsValues;
+
+    protected static long getFieldOffset(Class<?> cls, String field) {
+        try {
+            return UNSAFE.objectFieldOffset(cls.getField(field));
+        } catch (NoSuchFieldException e) {
+            com.susico.utils.UncheckedExceptions.rethrow(e);
+        }
+
+        return 0;
+    }
 
     protected TabledArray(final boolean checked, final int definedAsValues, final int length) {
         this.ARRAY_ACCESS = ArrayAccess.checked(checked);
@@ -104,12 +119,13 @@ String tabledArrayBase(boolean mutable, Class<?> type) {
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
     String packageName = type.isPrimitive() ? type.getSimpleName() : ""
     String erasedType = type.isPrimitive() ? type.getSimpleName() : "Object"
+    String opSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
     String generic = type.isPrimitive() ? "" : "<T>"
     StringBuffer str = new StringBuffer()
-    int limit = 10
+    int limit = 9
 
-    if (mutable)
+    if (mutable) {
         str.append("""// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
@@ -139,11 +155,11 @@ public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTab
     }
 
     protected final void putToRest(final int index, final $typeName value) {
-        ARRAY_ACCESS.put(index - definedAsValues, rest, value);
+        ARRAY_ACCESS.${generic}put(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
     protected final void putVolatileToRest(final int index, final $typeName value) {
-        ARRAY_ACCESS.putVolatile(index - definedAsValues, rest, value);
+        ARRAY_ACCESS.${generic}putVolatile(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
     public abstract void put(final int index, final $typeName value);
@@ -153,34 +169,60 @@ public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTab
     public abstract void putVolatile(final int index, final $typeName value);
 """)
 
-    if (type.equals(Object.class) || type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
-            type.equals(Integer.TYPE) || type.equals(Long.TYPE)) {
+        if (type.equals(Object.class) || type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                type.equals(Integer.TYPE) || type.equals(Long.TYPE)) {
             str.append("""
     protected final void putOrderedToRest(final int index, final $typeName value) {
-        ARRAY_ACCESS.putOrdered(index - definedAsValues, rest, value);
+        ARRAY_ACCESS.${generic}putOrdered(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
-    protected final void getAndSetToRest(final int index, final $typeName value) {
-        ARRAY_ACCESS.putOrdered(index - definedAsValues, rest, value);
+    protected final $typeName getAndSetFromRest(final int index, final $typeName value) {
+        return ARRAY_ACCESS.${generic}getAndSet(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
     public abstract void putOrdered(final int index, final $typeName value);
 
-    public abstract void getAndSet(final int index, final $typeName value);
+    public abstract $typeName getAndSet(final int index, final $typeName value);
+
+    protected final boolean compareAndSwapFromRest(final int index, final $typeName expected, final $typeName value) {
+        return ARRAY_ACCESS.${generic}compareAndSwap(
+            index - definedAsValues, ($typeName[]) rest, ($typeName) expected, ($typeName) value);
+    }
+
+    public abstract boolean compareAndSwap(final int index, final $typeName expected, final $typeName value);
 """)
-        }
 
-    if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
-            type.equals(Integer.TYPE) || type.equals(Long.TYPE)) {
-            str.append("""
-            public abstract void compairAndSwap(final int index, final $typeName value);
+            String[] opTypes = ["BiOp${opSuffix}", "UnaryOp${opSuffix}", "MultiOp${opSuffix}"]
 
-            public abstract void updateAndGet(final int index, final $typeName value);
+            for (String opType : opTypes) {
+                String valueParam = opType.startsWith("Multi") ?
+                        ", final $typeName ... value" :
+                        opType.startsWith("Bi") ?
+                                ", final $typeName value" :
+                                ""
 
-            public abstract void getAndUpdate(final int index, final $typeName value);
+                String applyOpMulti = opType.startsWith("Multi") ?
+                        ", value" :
+                        opType.startsWith("Bi") ?
+                                ", value" :
+                                ""
+
+                str.append("""
+    protected final $typeName updateAndGetFromRest(final int index, final ${opType}$generic op$valueParam) {
+        return ARRAY_ACCESS.${generic}updateAndGet(index - definedAsValues, ($typeName[]) rest, op${applyOpMulti});
+    }
+
+    protected final $typeName getAndUpdateFromRest(final int index, final ${opType}$generic op$valueParam) {
+        return ARRAY_ACCESS.${generic}getAndUpdate(index - definedAsValues, ($typeName[]) rest, op${applyOpMulti});
+    }
+
+    public abstract $typeName updateAndGet(final int index, final ${opType}$generic op$valueParam);
+
+    public abstract $typeName getAndUpdate(final int index, final ${opType}$generic op$valueParam);
 """)
+            }
         }
-    else
+    } else {
         str.append("""// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
@@ -205,31 +247,16 @@ import com.susico.utils.arrays.tabled.TabledArray;
 import com.susico.utils.functions.*;
 
 public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArray {
-    @FunctionalInterface
-    public static interface UnaryOp${typeSuffix} {
-        $typeName apply($typeName x);
-    }
-
-    @FunctionalInterface
-    public static interface BiOp${typeSuffix} {
-        $typeName apply($typeName x, $typeName y);
-    }
-
-    @FunctionalInterface
-    public static interface MultiOp${typeSuffix} {
-        $typeName apply($typeName x, $typeName ... values);
-    }
-
     protected final $erasedType[] rest;
     protected final int actualLength;
 
     protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
         super(checked, definedAsValues, length);
 
-        final int effectiveLength = Math.max(length, values.length)
+        final int effectiveLength = Math.max(length, values.length);
         rest = new $erasedType[effectiveLength > definedAsValues ? effectiveLength - definedAsValues : 0];
 
-        final int copyLength = values.length - definedAsValues
+        final int copyLength = values.length - definedAsValues;
         if (copyLength > 0)
             System.arraycopy(values, definedAsValues, rest, 0, copyLength);
 
@@ -242,11 +269,11 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
     }
 
     protected final $typeName getFromRest(final int index) {
-        return ($typeName) ARRAY_ACCESS.get(index - definedAsValues, rest);
+        return ($typeName) ARRAY_ACCESS.${generic}get(index - definedAsValues, rest);
     }
 
     protected final $typeName getVolatileFromRest(final int index) {
-        return ($typeName) ARRAY_ACCESS.getVolatile(index - definedAsValues, rest);
+        return ($typeName) ARRAY_ACCESS.${generic}getVolatile(index - definedAsValues, rest);
     }
 
     public abstract $typeName get(final int index);
@@ -255,13 +282,13 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
 
     public abstract $typeName getVolatile(final int index);
 """)
+    }
 
     String mutability = mutable ? "Mutable" : "Immutable"
 
     str.append("""
-    public static $generic ${mutability}TabledArray${
-        typeSuffix
-    }$generic getInstance(final boolean checked, final int length, final $typeName ... values) {
+    public static $generic ${mutability}TabledArray${typeSuffix}$generic getInstance(
+        final boolean checked, final int length, final $typeName ... values) {
         switch (length) {
             case 0:
                 return ${mutability}TabledArray0000${typeSuffix}.${generic}getInstance(checked, length, values);
@@ -295,7 +322,7 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
 
     str.append("""
             default:
-                return ${mutability}TabledArray${formatLimit}${typeSuffix}.getInstance(checked, length, values);
+                return ${mutability}TabledArray${formatLimit}${typeSuffix}.${generic}getInstance(checked, length, values);
         }
     }
 """)
@@ -303,14 +330,15 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
     return str.append("}").toString()
 }
 
-String tabledArray0(boolean mutable, Class<?> type) {
+String tabledArray0000(boolean mutable, Class<?> type) {
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
     String packageName = type.isPrimitive() ? type.getSimpleName() : ""
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String opSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
     String generic = type.isPrimitive() ? "" : "<T>"
 
-    if (mutable)
-        return """// Auto generated. Do not edit directly!
+    if (mutable) {
+        StringBuffer buffer = new StringBuffer("""// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -349,6 +377,10 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
                 putToRest(index, value);
             }
 
+            public final void putUnsafe(final int index, final $typeName value) {
+                putToRest(index, value);
+            }
+
             public final void putVolatile(final int index, final $typeName value) {
                 putVolatileToRest(index, value);
             }
@@ -359,15 +391,74 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
             }
 
             @Override
+            public final $typeName getUnsafe(final int index) {
+                return getFromRest(index);
+            }
+
+            @Override
             public final $typeName getVolatile(final int index) {
                 return getVolatileFromRest(index);
             }
+""")
+
+        if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                type.equals(Object.class)) {
+
+            buffer.append("""
+            public final void putOrdered(
+                final int index, final $typeName value) {
+                    putOrderedToRest(index, value);
+            }
+
+            public final boolean compareAndSwap(
+                final int index, final $typeName expected, final $typeName value) {
+                return compareAndSwapFromRest(index, expected, value);
+            }
+
+            public final $typeName getAndSet(
+                final int index, final $typeName value) {
+                return getAndSetFromRest(index, value);
+            }
+        """)
+
+            String[] opTypes = ["BiOp${opSuffix}", "UnaryOp${opSuffix}", "MultiOp${opSuffix}"]
+
+            for (String opType : opTypes) {
+                String valueParam = opType.startsWith("Multi") ?
+                        ", final $typeName ... value" :
+                        opType.startsWith("Bi") ?
+                                ", final $typeName value" :
+                                ""
+
+                String applyOpMulti = opType.startsWith("Multi") ?
+                        ", value" :
+                        opType.startsWith("Bi") ?
+                                ", value" :
+                                ""
+
+                buffer.append("""
+            public final $typeName getAndUpdate(
+                final int index, final ${opType}$generic op${valueParam}) {
+                return getAndUpdateFromRest(index, op${applyOpMulti});
+            }
+
+            public final $typeName updateAndGet(
+                final int index, final ${opType}$generic op${valueParam}) {
+                return updateAndGetFromRest(index, op${applyOpMulti});
+            }
+""")
+            }
+        }
+
+        buffer.append("""
         };
     }
-}
-"""
-    else
-        return """// Auto generated. Do not edit directly!
+""")
+
+        return buffer.append("}").toString()
+    } else {
+        StringBuffer buffer = new StringBuffer("""// Auto generated. Do not edit directly!
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -408,21 +499,29 @@ public abstract class ImmutableTabledArray0000${typeSuffix}${generic}
             }
 
             @Override
+            public final $typeName getUnsafe(final int index) {
+                return getFromRest(index);
+            }
+
+            @Override
             public final $typeName getVolatile(final int index) {
                 return getVolatileFromRest(index);
             }
         };
     }
+""")
+        return buffer.append("}").toString()
+    }
 }
 
-"""
-}
-
-String tabledArray1(boolean mutable, Class<?> type) {
+String tabledArray0001(boolean mutable, Class<?> type) {
     String mutability = mutable ? "Mutable" : "Immutable"
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
     String packageName = type.isPrimitive() ? type.getSimpleName() : ""
+    String erasedType = type.isPrimitive() ? type.getSimpleName() : "Object"
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String unsafeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
+    String opSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
     String generic = type.isPrimitive() ? "" : "<T>"
     String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
 
@@ -454,21 +553,22 @@ import com.susico.utils.functions.*;
 
 public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     ${mutability}TabledArray0000$typeSuffix$generic {
-    protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
-
     ${
         StringBuilder tmp = new StringBuilder()
 
         tmp.append("""
-    protected final static value0000FieldOffset =
-        UNSAFE.objectFieldOffset(${mutability}TabledArray0001${typeSuffix}.class.getField("value0000"));""")
+    protected final static long value0000FieldOffset = getFieldOffset(
+        ${mutability}TabledArray0001${typeSuffix}.class, "value0000");
+""")
 
         if (mutable) {
             tmp.append("""
-    protected $typeName value0000;""")
+    protected $typeName value0000;
+""")
         } else {
             tmp.append("""
-    protected final $typeName value0000;""")
+    protected final $typeName value0000;
+""")
         }
 
 
@@ -478,11 +578,11 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     }
 
     public final $typeName getValue0000Volatile() {
-        return UNSAFE.get${typeSuffix}Volatile(this, value0000FieldOffset);
+        return ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this, value0000FieldOffset);
     }
 
     public final $typeName getValue0000Unsafe() {
-        return UNSAFE.get${typeSuffix}(this, value0000FieldOffset);
+        return ($typeName) UNSAFE.get${unsafeSuffix}(this, value0000FieldOffset);
     }
     """)
 
@@ -494,11 +594,11 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     }
 
     public final void putValue0000Volatile(final $typeName value0000) {
-        return UNSAFE.put${typeSuffix}Volatile(this, value0000FieldOffset, value0000);
+         UNSAFE.put${unsafeSuffix}Volatile(this, value0000FieldOffset, value0000);
     }
 
     public final void putValue0000Unsafe(final $typeName value0000) {
-        return UNSAFE.put${typeSuffix}(this, value0000FieldOffset, value0000);
+        UNSAFE.put${unsafeSuffix}(this, value0000FieldOffset, value0000);
     }
     """)
 
@@ -507,69 +607,77 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
                     type.equals(Object.class)) {
 
                 String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                        type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" : "Float.floatToRawIntBits"
+                        type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" :
+                                type.equals(Float.TYPE) ? "Float.floatToRawIntBits" : ""
                 String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                        type.equals(Double.TYPE) ? "Double.longBitsToDouble" : "Float.intBitsToFloat"
+                        type.equals(Double.TYPE) ? "Double.longBitsToDouble" :
+                                type.equals(Float.TYPE) ? "Float.intBitsToFloat" : ""
                 String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
                         type.equals(Long.TYPE) ? "Long" :
                                 type.equals(Float.TYPE) ? "Int" :
                                         type.equals(Double.TYPE) ? "Long" : "Object"
 
                 tmp.append("""
-    public static $generic $typeName[] putValue0000Ordered(
+    public final void putValue0000Ordered(
         final $typeName value0000) {
             UNSAFE.putOrdered${sameSizeNum}(this, value0000FieldOffset, ${valTransform}(value0000));
-
-        return buffer;
     }
 
-    public final $generic boolean compareAndSwapValue0000(final $typeName expected,
+    public final boolean compareAndSwapValue0000(final $typeName expected,
         final $typeName value0000) {
         return UNSAFE.compareAndSwap${sameSizeNum}(this,
             value0000FieldOffset,
             ${valTransform}(expected), ${valTransform}(value0000));
     }
 
-    public static $generic $typeName getAndSetValue0000(
+    public final $typeName getAndSetValue0000(
         final $typeName value0000) {
-        return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
+        return ($typeName) ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             value0000FieldOffset,
             ${valTransform}(value0000)));
     }
         """)
 
-                if (!type.equals(Object.class)) {
-                    String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+                String[] opTypes = ["BiOp${opSuffix}", "UnaryOp${opSuffix}", "MultiOp${opSuffix}"]
 
-                    for (String opType : opTypes) {
-                        String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
+                for (String opType : opTypes) {
+                    String valueParam = opType.startsWith("Multi") ?
+                            ", final $typeName ... value0000" :
+                            opType.startsWith("Bi") ?
+                                    ", final $typeName value0000" :
+                                    ""
 
-                        tmp.append("""
-    public static $generic $typeName getAndUpdateValue0000(final ${opType} op, final $valueTypeName value0000) {
+                    String applyOp = opType.startsWith("Multi") ?
+                            "op.apply(current, value0000)" :
+                            opType.startsWith("Bi") ?
+                                    "op.apply(current, value0000)" :
+                                    "op.apply(current)"
+
+                    tmp.append("""
+    public final $typeName getAndUpdateValue0000(final ${opType}$generic op${valueParam}) {
         $typeName current;
 
         do {
-            current = UNSAFE.get${typeSuffix}Volatile(this,
-                valueFieldOffset);
+            current = ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this,
+                value0000FieldOffset);
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value0000FieldOffset,
-            ${valTransform}(current), ${valTransform}(op.apply(current, value0000))));
+            ${valTransform}(current), ${valTransform}(${applyOp})));
         return current;
     }
 
-    public static $generic $typeName updateAndGetValue0000(final ${opType} op, final $valueTypeName value0000) {
+    public final $typeName updateAndGetValue0000(final ${opType}$generic op${valueParam}) {
         $typeName current;
         $typeName newValue;
 
         do {
-            current = UNSAFE.get${typeSuffix}Volatile(this, value0000FieldOffset);
-            newValue = op.apply(current, value0000);
+            current = ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this, value0000FieldOffset);
+            newValue = ${applyOp};
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value0000FieldOffset,
             ${valTransform}(current), ${valTransform}(newValue)));
 
         return newValue;
     }
 """)
-                    }
                 }
             }
         }
@@ -656,6 +764,118 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
                 }
             }
             """)
+
+            if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                    type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                    type.equals(Object.class)) {
+
+                put.append("""
+            @Override
+            public final void putOrdered(final int index, final $typeName value) {
+                switch (index) {
+                """)
+
+                put.append("""
+                    case 0:
+                        putValue0000Ordered(value);
+                        break;
+                    """)
+
+                put.append("""
+                    default:
+                        putOrderedToRest(index, value);
+                }
+            }
+            """)
+
+                put.append("""
+            @Override
+            public final boolean compareAndSwap(final int index, final $typeName expected, final $typeName value) {
+                switch (index) {
+                """)
+
+                put.append("""
+                    case 0:
+                        return compareAndSwapValue0000(expected, value);
+                    """)
+
+                put.append("""
+                    default:
+                        return compareAndSwapFromRest(index, expected, value);
+                }
+            }
+            """)
+
+                put.append("""
+            @Override
+            public final $typeName getAndSet(final int index, final $typeName value) {
+                switch (index) {
+                """)
+
+                put.append("""
+                    case 0:
+                        return getAndSetValue0000(value);
+                    """)
+
+                put.append("""
+                    default:
+                        return getAndSetFromRest(index, value);
+                }
+            }
+            """)
+
+                String[] opTypes = ["BiOp${opSuffix}", "UnaryOp${opSuffix}", "MultiOp${opSuffix}"]
+
+                for (String opType : opTypes) {
+                    String valueParam = opType.startsWith("Multi") ?
+                            ", final $typeName ... value" :
+                            opType.startsWith("Bi") ?
+                                    ", final $typeName value" :
+                                    ""
+
+                    String applyOpMulti = opType.startsWith("Multi") ?
+                            ", value" :
+                            opType.startsWith("Bi") ?
+                                    ", value" :
+                                    ""
+
+                    put.append("""
+            @Override
+            public final $typeName getAndUpdate(final int index, final ${opType}$generic op${valueParam}) {
+                switch (index) {
+                """)
+
+                    put.append("""
+                    case 0:
+                        return getAndUpdateValue0000(op${applyOpMulti});
+                    """)
+
+                    put.append("""
+                    default:
+                        return getAndUpdateFromRest(index, op${applyOpMulti});
+                }
+            }
+            """)
+
+                    put.append("""
+            @Override
+            public final $typeName updateAndGet(final int index, final ${opType}$generic op${valueParam}) {
+                switch (index) {
+                """)
+
+                    put.append("""
+                    case 0:
+                        return updateAndGetValue0000(op${applyOpMulti});
+                    """)
+
+                    put.append("""
+                    default:
+                        return updateAndGetFromRest(index, op${applyOpMulti});
+                }
+            }
+            """)
+                }
+            }
         }
 
         return put.toString()
@@ -728,12 +948,15 @@ String tabledArray(boolean mutable, Class<?> type, int start) {
     String mutability = mutable ? "Mutable" : "Immutable"
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
     String packageName = type.isPrimitive() ? type.getSimpleName() : ""
+    String erasedType = type.isPrimitive() ? type.getSimpleName() : "Object"
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : ""
+    String unsafeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
+    String opSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
     String generic = type.isPrimitive() ? "" : "<T>"
     int end = 2 * start
     String defaultValue = type.equals(Boolean.TYPE) ? "false" : (type.isPrimitive() ? (type.equals(Float.TYPE) ? "Float.NaN" : (type.equals(Double.TYPE) ? "Double.NaN" : "0")) : "null")
     String classEnding = String.format("%04d", end)
-    String classStart = String.format("%04d", end)
+    String classStart = String.format("%04d", start)
 
 
     return """ // Auto generated. Do not edit directly!
@@ -767,15 +990,18 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
         for (int i = start; i < end; i++) {
             String formatI = String.format("%04d", i)
             tmp.append("""
-    protected final static value%04dFieldOffset =
-        UNSAFE.objectFieldOffset(${mutability}TabledArray${classEnding}${typeSuffix}.class.getField("value%04d"));""")
+    protected final static long value${formatI}FieldOffset = getFieldOffset(
+        ${mutability}TabledArray${classEnding}${typeSuffix}.class, "value${formatI}");
+""")
 
             if (mutable) {
                 tmp.append("""
-    protected $typeName value${formatI};""")
+    protected $typeName value${formatI};
+""")
             } else {
                 tmp.append("""
-    protected final $typeName value${formatI};""")
+    protected final $typeName value${formatI};
+""")
             }
         }
 
@@ -791,11 +1017,11 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
     }
 
     public final $typeName getValue${formatI}Unsafe() {
-        return UNSAFE.get${typeSuffix}(this, value${formatI}FieldOffset);
+        return ($typeName) UNSAFE.get${unsafeSuffix}(this, value${formatI}FieldOffset);
     }
 
     public final $typeName getValue${formatI}Volatile() {
-        return UNSAFE.get${typeSuffix}Volatile(this, value${formatI}FieldOffset);
+        return ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this, value${formatI}FieldOffset);
     }
     """)
         }
@@ -811,11 +1037,11 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
     }
 
     public final void putValue${formatI}Unsafe(final $typeName value${formatI}) {
-        return UNSAFE.put${typeSuffix}(this, value${formatI}FieldOffset, value${formatI});
+        UNSAFE.put${unsafeSuffix}(this, value${formatI}FieldOffset, value${formatI});
     }
 
     public final void putValue${formatI}Volatile(final $typeName value${formatI}) {
-        return UNSAFE.put${typeSuffix}Volatile(this, value${formatI}FieldOffset, value${formatI});
+        UNSAFE.put${unsafeSuffix}Volatile(this, value${formatI}FieldOffset, value${formatI});
     }
     """)
                 if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
@@ -823,69 +1049,79 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
                         type.equals(Object.class)) {
 
                     String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                            type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" : "Float.floatToRawIntBits"
+                            type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" :
+                                    type.equals(Float.TYPE) ? "Float.floatToRawIntBits" :
+                                            ""
                     String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                            type.equals(Double.TYPE) ? "Double.longBitsToDouble" : "Float.intBitsToFloat"
+                            type.equals(Double.TYPE) ? "Double.longBitsToDouble" :
+                                    type.equals(Float.TYPE) ? "Float.intBitsToFloat" :
+                                            ""
                     String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
                             type.equals(Long.TYPE) ? "Long" :
                                     type.equals(Float.TYPE) ? "Int" :
                                             type.equals(Double.TYPE) ? "Long" : "Object"
 
                     tmp.append("""
-    public static $generic $typeName[] putValue${formatI}Ordered(
+    public final void putValue${formatI}Ordered(
         final $typeName value${formatI}) {
             UNSAFE.putOrdered${sameSizeNum}(this, value${formatI}FieldOffset, ${valTransform}(value${formatI}));
-
-        return buffer;
     }
 
-    public final $generic boolean compareAndSwapValue${formatI}(final $typeName expected,
+    public final boolean compareAndSwapValue${formatI}(final $typeName expected,
         final $typeName value${formatI}) {
         return UNSAFE.compareAndSwap${sameSizeNum}(this,
             value${formatI}FieldOffset,
             ${valTransform}(expected), ${valTransform}(value${formatI}));
     }
 
-    public static $generic $typeName getAndSetValue${formatI}(
+    public final $typeName getAndSetValue${formatI}(
         final $typeName value${formatI}) {
-        return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
+        return ($typeName) ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             value0000FieldOffset,
             ${valTransform}(value${formatI})));
     }
         """)
 
-                    if (!type.equals(Object.class)) {
-                        String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+                    String[] opTypes = ["BiOp${opSuffix}", "UnaryOp${opSuffix}", "MultiOp${opSuffix}"]
 
-                        for (String opType : opTypes) {
-                            String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
+                    for (String opType : opTypes) {
+                        String valueParam = opType.startsWith("Multi") ?
+                                ", final $typeName ... value${formatI}" :
+                                opType.startsWith("Bi") ?
+                                        ", final $typeName value${formatI}" :
+                                        ""
 
-                            tmp.append("""
-    public static $generic $typeName getAndUpdateValue${formatI}(final ${opType} op, final $valueTypeName value${formatI}) {
+                        String applyOp = opType.startsWith("Multi") ?
+                                "op.apply(current, value${formatI})" :
+                                opType.startsWith("Bi") ?
+                                        "op.apply(current, value${formatI})" :
+                                        "op.apply(current)"
+
+                        tmp.append("""
+    public final $typeName getAndUpdateValue${formatI}(final ${opType}$generic op${valueParam}) {
         $typeName current;
 
         do {
-            current = UNSAFE.get${typeSuffix}Volatile(this,
+            current = ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this,
                 value${formatI}FieldOffset);
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value${formatI}FieldOffset,
-            ${valTransform}(current), ${valTransform}(op.apply(current, value${formatI}))));
+            ${valTransform}(current), ${valTransform}(${applyOp})));
         return current;
     }
 
-    public static $generic $typeName updateAndGetValue${formatI}(final ${opType} op, final $valueTypeName value${formatI}) {
+    public final $typeName updateAndGetValue${formatI}(final ${opType}$generic op${valueParam}) {
         $typeName current;
         $typeName newValue;
 
         do {
-            current = UNSAFE.get${typeSuffix}Volatile(this, value${formatI}FieldOffset);
-            newValue = op.apply(current, value${formatI});
+            current = ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this, value${formatI}FieldOffset);
+            newValue = ${applyOp};
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, value${formatI}FieldOffset,
             ${valTransform}(current), ${valTransform}(newValue)));
 
         return newValue;
     }
 """)
-                        }
                     }
                 }
             }
@@ -907,11 +1143,11 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
         StringBuilder tmp = new StringBuilder()
 
         for (int i = end; i > start; i--) {
-            String formatI = String.format("%04d", i)
+            String formatI = String.format("%04d", i - 1)
 
             tmp.append("""
-        if (len >= ${formatI}) {
-            this.value${formatI} = ArrayAccess.UNCHECKED.get(${formatI}, values);
+        if (len >= ${i - 1}) {
+            this.value${formatI} = ArrayAccess.UNCHECKED.get(${i - 1}, values);
         } else {
             this.value${formatI} = ${defaultValue};
         }
@@ -937,8 +1173,8 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
             for (int i = 0; i < end; i++) {
                 String formatI = String.format("%04d", i)
                 put.append("""
-                    case ${formatI}:
-                        putValue${formatI}(value);
+                    case ${i}:
+                        setValue${formatI}(value);
                         break;
                     """)
             }
@@ -949,6 +1185,178 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
                 }
             }
             """)
+
+            put.append("""
+            @Override
+            public final void putVolatile(final int index, final $typeName value) {
+                switch (index) {
+                    """)
+
+            for (int i = 0; i < end; i++) {
+                String formatI = String.format("%04d", i)
+                put.append("""
+                    case ${i}:
+                        putValue${formatI}Volatile(value);
+                        break;
+                    """)
+            }
+
+            put.append("""
+                    default:
+                        putVolatileToRest(index, value);
+                }
+            }
+            """)
+
+            put.append("""
+            @Override
+            public final void putUnsafe(final int index, final $typeName value) {
+                switch (index) {
+                    """)
+
+            for (int i = 0; i < end; i++) {
+                String formatI = String.format("%04d", i)
+                put.append("""
+                    case ${i}:
+                        putValue${formatI}Unsafe(value);
+                        break;
+                    """)
+            }
+
+            put.append("""
+                    default:
+                        putToRest(index, value);
+                }
+            }
+            """)
+
+
+            if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                    type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                    type.equals(Object.class)) {
+
+                put.append("""
+            @Override
+            public final void putOrdered(final int index, final $typeName value) {
+                switch (index) {
+                """)
+
+                for (int i = 0; i < end; i++) {
+                    String formatI = String.format("%04d", i)
+                    put.append("""
+                    case ${i}:
+                        putValue${formatI}Ordered(value);
+                        break;
+                    """)
+                }
+
+                put.append("""
+                    default:
+                        putOrderedToRest(index, value);
+                }
+            }
+            """)
+
+                put.append("""
+            @Override
+            public final boolean compareAndSwap(final int index, final $typeName expected, final $typeName value) {
+                switch (index) {
+                """)
+
+                for (int i = 0; i < end; i++) {
+                    String formatI = String.format("%04d", i)
+                    put.append("""
+                    case ${i}:
+                        return compareAndSwapValue${formatI}(expected, value);
+                    """)
+                }
+
+                put.append("""
+                    default:
+                        return compareAndSwapFromRest(index, expected, value);
+                }
+            }
+            """)
+
+                put.append("""
+            @Override
+            public final $typeName getAndSet(final int index, final $typeName value) {
+                switch (index) {
+                """)
+
+                for (int i = 0; i < end; i++) {
+                    String formatI = String.format("%04d", i)
+                    put.append("""
+                    case ${i}:
+                        return getAndSetValue${formatI}(value);
+                    """)
+                }
+
+                put.append("""
+                    default:
+                        return getAndSetFromRest(index, value);
+                }
+            }
+            """)
+
+                String[] opTypes = ["BiOp${opSuffix}", "UnaryOp${opSuffix}", "MultiOp${opSuffix}"]
+
+                for (String opType : opTypes) {
+                    String valueParam = opType.startsWith("Multi") ?
+                            ", final $typeName ... value" :
+                            opType.startsWith("Bi") ?
+                                    ", final $typeName value" :
+                                    ""
+
+                    String applyOpMulti = opType.startsWith("Multi") ?
+                            ", value" :
+                            opType.startsWith("Bi") ?
+                                    ", value" :
+                                    ""
+
+                    put.append("""
+            @Override
+            public final $typeName getAndUpdate(final int index, final ${opType}$generic op${valueParam}) {
+                switch (index) {
+                """)
+
+                    for (int i = 0; i < end; i++) {
+                        String formatI = String.format("%04d", i)
+                        put.append("""
+                    case ${i}:
+                        return getAndUpdateValue${formatI}(op${applyOpMulti});
+                    """)
+                    }
+
+                    put.append("""
+                    default:
+                        return getAndUpdateFromRest(index, op${applyOpMulti});
+                }
+            }
+            """)
+
+                    put.append("""
+            @Override
+            public final $typeName updateAndGet(final int index, final ${opType}$generic op${valueParam}) {
+                switch (index) {
+                """)
+
+                    for (int i = 0; i < end; i++) {
+                        String formatI = String.format("%04d", i)
+                        put.append("""
+                    case ${i}:
+                        return updateAndGetValue${formatI}(op${applyOpMulti});
+                    """)
+                    }
+
+                    put.append("""
+                    default:
+                        return updateAndGetFromRest(index, op${applyOpMulti});
+                }
+            }
+            """)
+                }
+            }
         }
 
         return put.toString()
@@ -961,18 +1369,61 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
                 switch (index) {
                 """)
 
-            for (int i = 0; i < end; i++) {
-                String formatI = String.format("%04d", i)
+        for (int i = 0; i < end; i++) {
+            String formatI = String.format("%04d", i)
 
-                get.append("""
-                    case ${formatI}:
+            get.append("""
+                    case ${i}:
                         return getValue${formatI}();
                                 """)
-            }
+        }
 
         get.append("""
                     default:
                         return getFromRest(index);
+                }
+            }""")
+
+
+        get.append("""
+            @Override
+            public final $typeName getUnsafe(final int index) {
+                switch (index) {
+                """)
+
+        for (int i = 0; i < end; i++) {
+            String formatI = String.format("%04d", i)
+
+            get.append("""
+                    case ${i}:
+                        return getValue${formatI}Unsafe();
+                                """)
+        }
+
+        get.append("""
+                    default:
+                        return getFromRest(index);
+                }
+            }""")
+
+        get.append("""
+            @Override
+            public final $typeName getVolatile(final int index) {
+                switch (index) {
+                """)
+
+        for (int i = 0; i < end; i++) {
+            String formatI = String.format("%04d", i)
+
+            get.append("""
+                    case ${i}:
+                        return getValue${formatI}Volatile();
+                                """)
+        }
+
+        get.append("""
+                    default:
+                        return getVolatileFromRest(index);
                 }
             }""")
 
@@ -987,7 +1438,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 void tabledArrayGenAll() {
     boolean[] mutable = [false, true]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
-    int limit = 10
+    int limit = 9
 
     File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\tabled\\")
     p.mkdirs()
@@ -1022,7 +1473,7 @@ void tabledArrayGenAll() {
             f.createNewFile()
 
             pw = f.newPrintWriter()
-            pw.print(tabledArray0(m, type))
+            pw.print(tabledArray0000(m, type))
             pw.flush()
             pw.close()
 
@@ -1030,7 +1481,7 @@ void tabledArrayGenAll() {
             f.createNewFile()
 
             pw = f.newPrintWriter()
-            pw.print(tabledArray1(m, type))
+            pw.print(tabledArray0001(m, type))
             pw.flush()
             pw.close()
 

@@ -23,7 +23,7 @@ String upcase1st(String str) {
 
 String genUnaryOp(Class<?> type, String opType) {
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Reference"
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Object"
     String generic = type.isPrimitive() ? "" : "<T>"
 
     StringBuilder buffer = new StringBuilder("""
@@ -47,7 +47,9 @@ package com.susico.utils.functions;
 
 @FunctionalInterface
 public interface ${opType}${typeSuffix}${generic} {
-    $typeName apply(${opType.startsWith("UnaryOp") ? "$typeName x" : opType.startsWith("BiOp") ? "$typeName x, $typeName y" : "$typeName ... values"});
+    $typeName apply(${
+        opType.startsWith("UnaryOp") ? "$typeName x" : opType.startsWith("BiOp") ? "$typeName x, $typeName y" : "$typeName x, $typeName ... values"
+    });
 }
 """)
 }
@@ -61,7 +63,7 @@ void genUnaryOpGen() {
 
     for (String opType : opTypes) {
         for (Class<?> type : types) {
-            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Reference"
+            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Object"
 
             File f = new File(p, "${opType}${typeSuffix}.java")
             f.createNewFile()

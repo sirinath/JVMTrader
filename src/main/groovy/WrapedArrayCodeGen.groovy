@@ -21,7 +21,14 @@ String upcase1st(String str) {
     return str.substring(0, 1).toUpperCase() + str.substring(1)
 }
 
-String arrayAccess() {
+String arrayAccess(Class<?> type, boolean mutable) {
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
+    String typeSuffixCap = typeSuffix.toUpperCase()
+    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
+    String generic = type.isPrimitive() ? "" : "<T>"
+    String mutabilityPrefix = mutable ? "Mutable" : "Immutable"
+    String finalField = mutable ? "volatile" : "final"
+
     StringBuilder buffer = new StringBuilder("""
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
@@ -46,32 +53,43 @@ import sun.misc.Unsafe;
 
 import com.susico.utils.functions.*;
 
-public final class ArrayAccess {
-    public static final ArrayAccess CHECKED = new ArrayAccess(true);
-    public static final ArrayAccess UNCHECKED = new ArrayAccess(false);
-
-    protected final boolean SAFE;
-
+public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
-    private ArrayAccess(final boolean SAFE) {
+    protected final boolean SAFE;
+    protected ${finalField} ${typeName}[] buffer;
+
+    public ArrayAccess(final boolean SAFE, final ${typeName}[] array) {
         this.SAFE = SAFE;
+        this.buffer = array;
+    }
+
+    ${
+        mutable ? """
+    public final ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic wrap(final ${typeName}[] array) {
+        this.buffer = array
+
+        return this;
+    }""" : ""
+    }
+
+    public static $generic ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic checked(
+        final boolean checked, final ${typeName}[] array) {
+        return new ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic(checked, array);
+    }
+
+    public static $generic ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic checked(
+        final ${typeName}[] array) {
+        return checked(true, array);
+    }
+
+    public static $generic ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic unchecked(
+        final ${typeName}[] array) {
+        return checked(false, array);
     }
 
     public final boolean isSafe() {
         return SAFE;
-    }
-
-    public static ArrayAccess checked(final boolean checked) {
-        return checked ? CHECKED : UNCHECKED;
-    }
-
-    public static ArrayAccess checked() {
-        return CHECKED;
-    }
-
-    public static ArrayAccess unchecked() {
-        return UNCHECKED;
     }
 
     public static  boolean inRange(final int index, final int length) {
@@ -117,29 +135,21 @@ public final class ArrayAccess {
     }
 """)
 
-    Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
-
-    for (Class<?> type : types) {
-        String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
-        String typeSuffixCap = typeSuffix.toUpperCase()
-        String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-        String generic = type.isPrimitive() ? "" : "<T>"
-
-        buffer.append("""
+    buffer.append("""
     public static final long ARRAY_${typeSuffixCap}_BASE_OFFSET = UNSAFE.ARRAY_${typeSuffixCap}_BASE_OFFSET;
     public static final long ARRAY_${typeSuffixCap}_INDEX_SCALE = UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE > 0 ?
             UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE :
             ${
-            typeSuffix.equalsIgnoreCase("BOOLEAN") ?
-                    1 :
-                    typeSuffix.equalsIgnoreCase("INT") ?
-                            "Integer.BYTES" :
-                            typeSuffix.equalsIgnoreCase("CHAR") ?
-                                    "Character.BYTES" :
-                                    typeSuffix.equalsIgnoreCase("OBJECT") ?
-                                            "UNSAFE.ADDRESS_SIZE" :
-                                            typeSuffix + ".BYTES"
-        };
+        typeSuffix.equalsIgnoreCase("BOOLEAN") ?
+                1 :
+                typeSuffix.equalsIgnoreCase("INT") ?
+                        "Integer.BYTES" :
+                        typeSuffix.equalsIgnoreCase("CHAR") ?
+                                "Character.BYTES" :
+                                typeSuffix.equalsIgnoreCase("OBJECT") ?
+                                        "UNSAFE.ADDRESS_SIZE" :
+                                        typeSuffix + ".BYTES"
+    };
 
     public static final long ARRAY_${typeSuffixCap}_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_${typeSuffixCap}_INDEX_SCALE) - 1;
@@ -148,14 +158,30 @@ public final class ArrayAccess {
         return buffer.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT;
     }
 
+    public final long contentByteSize() {
+        return contentByteSize(buffer);
+    }
+
     public static $generic long totalByteSize(final $typeName ... buffer) {
         return ARRAY_${typeSuffixCap}_BASE_OFFSET + buffer.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT;
+    }
+
+    public final long totalByteSize() {
+        return totalByteSize(buffer);
     }
 
     public static $generic void init(final byte value, final $typeName[] buffer) {
         UNSAFE.setMemory(buffer,
             ARRAY_${typeSuffixCap}_BASE_OFFSET,
             buffer.length << ARRAY_${typeSuffixCap}_INDEX_SHIFT, value);
+    }
+
+    public final void init(final byte value) {
+        init(value, buffer);
+    }
+
+    public final $typeName[] copy(final $typeName[] destination) {
+        return copy(destination, buffer);
     }
 
     public final $generic $typeName[] copy(final $typeName[] destination, final $typeName ... source) {
@@ -175,19 +201,31 @@ public final class ArrayAccess {
     }
 """)
 
-        Class<?>[] indexTypes = [Integer.TYPE, Long.TYPE]
+    Class<?>[] indexTypes = [Integer.TYPE, Long.TYPE]
 
-        for (Class<?> indexType : indexTypes) {
-            String indexTypeName = indexType.getSimpleName();
+    for (Class<?> indexType : indexTypes) {
+        String indexTypeName = indexType.getSimpleName();
 
-            buffer.append("""
+        buffer.append("""
+    public final boolean inRange(final ${indexTypeName} index) {
+        return inRange(index, buffer);
+    }
+
     public static $generic boolean inRange(final ${indexTypeName} index, final $typeName ... buffer) {
         return inRange(index, buffer.length);
+    }
+
+    public final void checkIndex(final ${indexTypeName} index) {
+        checkIndex(index, buffer);
     }
 
     public static $generic void checkIndex(final ${indexTypeName} index, final $typeName ... buffer) {
         if (inRange(index, buffer))
             new ArrayIndexOutOfBoundsException(String.format("index %d not in range of 0 and array length %d", index, buffer.length));
+    }
+
+    public final void checkIndexIfSafeOn(final ${indexTypeName} index) {
+        checkIndexIfSafeOn(index);
     }
 
     public final $generic void checkIndexIfSafeOn(final ${indexTypeName} index, final $typeName ... buffer) {
@@ -199,8 +237,16 @@ public final class ArrayAccess {
             checkIndex(index, buffer);
     }
 
+    public final boolean inRange(final ${indexTypeName} index, final long length) {
+        return inRange(index, length, buffer);
+    }
+
     public static $generic boolean inRange(final ${indexTypeName} index, final long length, final $typeName ... buffer) {
         return inRange(index, length, buffer.length);
+    }
+
+    public final void checkIndex(final ${indexTypeName} index, final long length) {
+        checkIndex(index, length, buffer);
     }
 
     public static $generic void checkIndex(final ${indexTypeName} index, final long length, final $typeName ... buffer) {
@@ -209,15 +255,22 @@ public final class ArrayAccess {
                 "index range %d and %d of length %d is not in range of 0 and array length %d", index, index + length, length, buffer.length));
     }
 
-    public final $generic void checkIndexIfSafeOn(
-        final ${indexTypeName} index, final long length, final $typeName ... buffer) {
+    public final void checkIndexIfSafeOn(final ${indexTypeName} index, final long length) {
+        checkIndexIfSafeOn(index, length, buffer);
+    }
+
+    public final $generic void checkIndexIfSafeOn(final ${indexTypeName} index, final long length, final $typeName ... buffer) {
         checkIndexIfSafeOn(this.SAFE, index, buffer);
     }
 
-    public static $generic void checkIndexIfSafeOn(
+    public static void checkIndexIfSafeOn(
         final boolean SAFE, final ${indexTypeName} index, final long length, final $typeName ... buffer) {
         if (SAFE)
             checkIndex(index, length, buffer);
+    }
+
+    public final $typeName get(final ${indexTypeName} index) {
+        return get(index, buffer);
     }
 
     public final $generic $typeName get(final ${indexTypeName} index, final $typeName ... buffer) {
@@ -230,6 +283,10 @@ public final class ArrayAccess {
         else
             return ($typeName) UNSAFE.get$typeSuffix(buffer,
                 ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+    }
+
+    public final $typeName[] put(final ${indexTypeName} index, final $typeName value) {
+        return put(index, buffer, value);
     }
 
     public final $generic $typeName[] put(final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
@@ -247,6 +304,10 @@ public final class ArrayAccess {
         return buffer;
     }
 
+    public final $typeName getVolatile(final ${indexTypeName} index) {
+        return getVolatile(index, buffer);
+    }
+
     public final $generic $typeName getVolatile(final ${indexTypeName} index, final $typeName ... buffer) {
         return getVolatile(this.SAFE, index, buffer);
     }
@@ -257,6 +318,11 @@ public final class ArrayAccess {
         else
             return ($typeName) UNSAFE.get${typeSuffix}Volatile(buffer,
                 ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT);
+    }
+
+    public final $typeName[] putVolatile(
+        final ${indexTypeName} index, final $typeName value) {
+        return putVolatile(index, buffer, value);
     }
 
     public final $generic $typeName[] putVolatile(
@@ -275,13 +341,17 @@ public final class ArrayAccess {
         return buffer;
     }
 
+    public final $typeName[] copy(final ${indexTypeName} index, final $typeName ... source) {
+        return copy(index, buffer, source);
+    }
+
     public final $generic $typeName[] copy(final ${indexTypeName} index, final $typeName[] destination, final $typeName ... source) {
         return copy(this.SAFE, index, destination, source);
     }
 
     public static $generic $typeName[] copy(final boolean SAFE, final ${
-                indexTypeName
-            } index, final $typeName[] destination, final $typeName ... source) {
+            indexTypeName
+        } index, final $typeName[] destination, final $typeName ... source) {
         if (SAFE)
             System.arraycopy(source, 0, destination, (int) index, source.length);
         else
@@ -294,15 +364,21 @@ public final class ArrayAccess {
         return destination;
     }
 
-    public final $generic $typeName[] copy(final ${indexTypeName} length, final ${
-                indexTypeName
-            } indexDestination, final $typeName[] destination, final ${indexTypeName} indexSource, final $typeName ... source) {
+    public final $typeName[] copy(
+        final ${indexTypeName} length, final ${indexTypeName} indexDestination,
+        final ${indexTypeName} indexSource, final $typeName ... source) {
+        return copy(length, indexDestination, buffer, indexSource, source);
+    }
+
+    public final $generic $typeName[] copy(
+        final ${indexTypeName} length, final ${indexTypeName} indexDestination, final $typeName[] destination,
+        final ${indexTypeName} indexSource, final $typeName ... source) {
         return copy(this.SAFE, length, indexDestination, destination, indexSource, source);
     }
 
-    public static $generic $typeName[] copy(final boolean SAFE, final ${indexTypeName} length, final ${
-                indexTypeName
-            } indexDestination, final $typeName[] destination, final ${indexTypeName} indexSource, final $typeName ... source) {
+    public static $generic $typeName[] copy(
+        final boolean SAFE, final ${indexTypeName} length, final ${indexTypeName} indexDestination,
+        final $typeName[] destination, final ${indexTypeName} indexSource, final $typeName ... source) {
         if (SAFE)
             System.arraycopy(source, (int) indexSource, destination, (int) indexDestination, (int) length);
         else
@@ -316,23 +392,28 @@ public final class ArrayAccess {
     }
 """)
 
-            if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
-                    type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
-                    type.equals(Object.class)) {
-                String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                        type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" :
-                                type.equals(Float.TYPE) ? "Float.floatToRawIntBits" :
-                                        ""
-                String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                        type.equals(Double.TYPE) ? "Double.longBitsToDouble" :
-                                type.equals(Float.TYPE) ? "Float.intBitsToFloat" :
-                                        ""
-                String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
-                        type.equals(Long.TYPE) ? "Long" :
-                                type.equals(Float.TYPE) ? "Int" :
-                                        type.equals(Double.TYPE) ? "Long" : "Object"
+        if (type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
+                type.equals(Integer.TYPE) || type.equals(Long.TYPE) ||
+                type.equals(Object.class)) {
+            String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                    type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" :
+                            type.equals(Float.TYPE) ? "Float.floatToRawIntBits" :
+                                    ""
+            String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
+                    type.equals(Double.TYPE) ? "Double.longBitsToDouble" :
+                            type.equals(Float.TYPE) ? "Float.intBitsToFloat" :
+                                    ""
+            String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
+                    type.equals(Long.TYPE) ? "Long" :
+                            type.equals(Float.TYPE) ? "Int" :
+                                    type.equals(Double.TYPE) ? "Long" : "Object"
 
-                buffer.append("""
+            buffer.append("""
+    public final $typeName[] putOrdered(
+        final ${indexTypeName} index, final $typeName value) {
+        return putOrdered(index, buffer, value);
+    }
+
     public final $generic $typeName[] putOrdered(
         final ${indexTypeName} index, final $typeName[] buffer, final $typeName value) {
         return putOrdered(this.SAFE, index, buffer, value);
@@ -350,6 +431,11 @@ public final class ArrayAccess {
         return buffer;
     }
 
+    public final boolean compareAndSwap(
+        final ${indexTypeName} index, final $typeName expected, final $typeName value) {
+        return compareAndSwap(index, buffer, expected, value);
+    }
+
     public final $generic boolean compareAndSwap(
         final ${indexTypeName} index, final $typeName[] buffer, final $typeName expected, final $typeName value) {
         return compareAndSwap(this.SAFE, index, buffer, expected, value);
@@ -363,6 +449,11 @@ public final class ArrayAccess {
         return UNSAFE.compareAndSwap${sameSizeNum}(buffer,
             ARRAY_${typeSuffixCap}_BASE_OFFSET + index << ARRAY_${typeSuffixCap}_INDEX_SHIFT,
             ${valTransform}(expected), ${valTransform}(value));
+    }
+
+    public final $typeName getAndSet(
+        final ${indexTypeName} index, final $typeName value) {
+        return ($typeName) getAndSet(index, buffer, value);
     }
 
     public final $generic $typeName getAndSet(
@@ -380,35 +471,42 @@ public final class ArrayAccess {
     }
         """)
 
-                String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+            String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
 
-                for (String opType : opTypes) {
-                    String valueParam = opType.startsWith("Multi") ?
-                            ", final $typeName ... value" :
-                            opType.startsWith("Bi") ?
-                                    ", final $typeName value" :
-                                    ""
+            for (String opType : opTypes) {
+                String valueParam = opType.startsWith("Multi") ?
+                        ", final $typeName ... value" :
+                        opType.startsWith("Bi") ?
+                                ", final $typeName value" :
+                                ""
 
-                    String applyOp = opType.startsWith("Multi") ?
-                            "op.apply(current, value)" :
-                            opType.startsWith("Bi") ?
-                                    "op.apply(current, value)" :
-                                    "op.apply(current)"
+                String applyOp = opType.startsWith("Multi") ?
+                        "op.apply(current, value)" :
+                        opType.startsWith("Bi") ?
+                                "op.apply(current, value)" :
+                                "op.apply(current)"
 
-                    String applyOpMulti = opType.startsWith("Multi") ?
-                            ", value" :
-                            opType.startsWith("Bi") ?
-                                    ", value" :
-                                    ""
+                String applyOpMulti = opType.startsWith("Multi") ?
+                        ", value" :
+                        opType.startsWith("Bi") ?
+                                ", value" :
+                                ""
 
-                    buffer.append("""
+                buffer.append("""
+    public final $typeName getAndUpdate(
+        final ${indexTypeName} index, final ${opType}$generic op$valueParam) {
+        return ($typeName) getAndUpdate(index, buffer, op${applyOpMulti});
+    }
+
     public final $generic $typeName getAndUpdate(
         final ${indexTypeName} index, final $typeName[] buffer, final ${opType}$generic op$valueParam) {
         return ($typeName) getAndUpdate(this.SAFE, index, buffer, op${applyOpMulti});
     }
 
     public static $generic $typeName getAndUpdate(
-        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${opType}$generic op$valueParam) {
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${
+                    opType
+                }$generic op$valueParam) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
         $typeName current;
@@ -420,13 +518,20 @@ public final class ArrayAccess {
         return current;
     }
 
+    public final $typeName updateAndGet(
+        final ${indexTypeName} index, final ${opType}$generic op$valueParam) {
+        return updateAndGet(index, buffer, op${applyOpMulti});
+    }
+
     public final $generic $typeName updateAndGet(
         final ${indexTypeName} index, final $typeName[] buffer, final ${opType}$generic op$valueParam) {
         return updateAndGet(this.SAFE, index, buffer, op${applyOpMulti});
     }
 
     public static $generic $typeName updateAndGet(
-        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${opType}$generic op$valueParam) {
+        final boolean SAFE, final ${indexTypeName} index, final $typeName[] buffer, final ${
+                    opType
+                }$generic op$valueParam) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
         $typeName current;
@@ -441,7 +546,6 @@ public final class ArrayAccess {
         return newValue;
     }
 """)
-                }
             }
         }
     }
@@ -450,16 +554,23 @@ public final class ArrayAccess {
 }
 
 void arrayAccessGen() {
+    Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
+
     File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\")
     p.mkdirs()
 
-    File f = new File(p, "ArrayAccess.java")
-    f.createNewFile()
+    for (Class<?> type : types) {
+        String mutabilityPrefix = mutable ? "Mutable" : "Immutable"
+        String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
 
-    PrintWriter pw = f.newPrintWriter()
-    pw.print(arrayAccess())
-    pw.flush()
-    pw.close()
+        File f = new File(p, "${mutabilityPrefix}WrappedArrayAccess${typeSuffix}.java")
+        f.createNewFile()
+
+        PrintWriter pw = f.newPrintWriter()
+        pw.print(arrayAccess())
+        pw.flush()
+        pw.close()
+    }
 }
 
 arrayAccessGen()

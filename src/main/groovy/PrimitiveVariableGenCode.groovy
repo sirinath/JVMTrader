@@ -16,7 +16,7 @@
 
 String upcase1st(String str) {
     if (str == null || str.length() == 0)
-    return ""
+        return ""
 
     return str.substring(0, 1).toUpperCase() + str.substring(1)
 }
@@ -57,10 +57,12 @@ String genClass(boolean mutable, Class<?> type) {
     boolean isEnum = type.isEnum()
 
     buffer.append("""
-package com.susico.utils.primitives.${packageName};
+package com.susico.utils.box.${packageName};
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+
+import com.susico.utils.functions.*;
 
 /**
  * Wrapper class
@@ -68,18 +70,10 @@ import sun.misc.Unsafe;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number implements BoxOnce<PV${typeSuffix}${generic}> {
+public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number implements BoxOnce<PV${typeSuffix}${
+        generic
+    }> {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
-
-    @FunctionalInterface
-    public static interface BiOp${typeSuffix} {
-        $typeName apply($typeName x, $typeName y);
-    }
-
-    @FunctionalInterface
-    public static interface MultiOp${typeSuffix} {
-        $typeName apply($typeName x, $typeName ... values);
-    }
 
     protected final static valueFieldOffset =
         UNSAFE.objectFieldOffset(${classPrefix}${typeSuffix}.class.getField("value"));
@@ -156,16 +150,20 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
                 type.equals(Object.class)) {
 
             String valTransform = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                    type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" : "Float.floatToRawIntBits"
+                    type.equals(Double.TYPE) ? "Double.doubleToRawLongBits" :
+                            type.equals(Float.TYPE) ? "Float.floatToRawIntBits" :
+                                    ""
             String transformBack = type.equals(Integer.TYPE) || type.equals(Long.TYPE) ? "" :
-                    type.equals(Double.TYPE) ? "Double.longBitsToDouble" : "Float.intBitsToFloat"
+                    type.equals(Double.TYPE) ? "Double.longBitsToDouble" :
+                            type.equals(Float.TYPE) ? "Float.intBitsToFloat" :
+                                    ""
             String sameSizeNum = type.equals(Integer.TYPE) ? "Int" :
                     type.equals(Long.TYPE) ? "Long" :
                             type.equals(Float.TYPE) ? "Int" :
                                     type.equals(Double.TYPE) ? "Long" : "Object"
 
             buffer.append("""
-    public static $generic $typeName[] setValueOrdered(
+    public final $generic $typeName[] setValueOrdered(
         final $typeName value) {
             UNSAFE.putOrdered${sameSizeNum}(this, valueFieldOffset, ${valTransform}(value));
 
@@ -179,7 +177,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
             ${valTransform}(expected), ${valTransform}(value));
     }
 
-    public static $generic $typeName getAndSetValue(
+    public final $generic $typeName getAndSetValue(
         final $typeName value) {
         return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             valueFieldOffset,
@@ -187,14 +185,18 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     }
         """)
 
-            if (!type.equals(Object.class)) {
-                String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+            String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
 
-                for (String opType : opTypes) {
-                    String valueTypeName = opType.startsWith("Multi") ? "$typeName ... " : typeName
+            for (String opType : opTypes) {
+                String valueParam = opType.startsWith("Multi") ?
+                        ", final $typeName ... value" :
+                        opType.startsWith("Bi") ?
+                                ", final $typeName value" :
+                                ""
 
-                    buffer.append("""
-    public static $generic $typeName getAndUpdateValue(final ${opType} op, final $valueTypeName value) {
+
+                buffer.append("""
+    public final $generic $typeName getAndUpdateValue(final ${opType} op$valueParam) {
         $typeName current;
 
         do {
@@ -205,7 +207,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         return current;
     }
 
-    public static $generic $typeName updateAndGetValue(final ${opType} op, final $valueTypeName value) {
+    public final $generic $typeName updateAndGetValue(final ${opType} op$valueParam) {
         $typeName current;
         $typeName newValue;
 
@@ -218,7 +220,6 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         return newValue;
     }
 """)
-                }
             }
         }
     }
@@ -268,7 +269,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         else if (otherValue instanceof Comparable)
             return - otherValue.compareTo(value);
         else
-            throw IllegalStateException(value + " cannot be compaired with: " + otherValue + " as neither Object impliments Comparable");
+            throw IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
     }
 
     public final int compareTo(final ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
@@ -280,7 +281,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         else if (otherValue instanceof Comparable)
             return - otherValue.compareTo(value);
         else
-            throw IllegalStateException(value + " cannot be compaired with: " + otherValue + " as neither Object impliments Comparable");
+            throw IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
     }
 """)
     } else if (isEnum) {
@@ -339,6 +340,25 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 
 
 genClass() {
-    boolean[] mutable = [false, true]
+    boolean[] mutables = [false, true]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class, Enum.class]
+
+    File p = new File(".\\..\\java\\com\\susico\\utils\\box\\")
+    p.mkdirs()
+
+    for (boolean mutable : mutables) {
+        for (Class<?> type : types) {
+            String packageName = mutable ? "mutable" : "immutable"
+            String classPrefix = upcase1st(packageName)
+            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Reference"
+
+            File f = new File(p, "${classPrefix}${typeSuffix}.java")
+            f.createNewFile()
+
+            PrintWriter pw = f.newPrintWriter()
+            pw.print(genClass(mutable, type))
+            pw.flush()
+            pw.close()
+        }
+    }
 }
