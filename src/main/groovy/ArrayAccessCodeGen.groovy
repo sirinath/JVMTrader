@@ -39,7 +39,7 @@ String arrayAccess() {
  * limitations under the License.
  */
 
-package com.susico.utils.arrays;
+package com.susico.utils.arrays.access;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
@@ -450,7 +450,7 @@ public final class ArrayAccess {
 }
 
 void arrayAccessGen() {
-    File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\")
+    File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\access\\")
     p.mkdirs()
 
     File f = new File(p, "ArrayAccess.java")

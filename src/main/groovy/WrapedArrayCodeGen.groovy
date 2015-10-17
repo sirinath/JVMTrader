@@ -46,7 +46,7 @@ String arrayAccess(Class<?> type, boolean mutable) {
  * limitations under the License.
  */
 
-package com.susico.utils.arrays;
+package com.susico.utils.arrays.access;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
@@ -555,21 +555,24 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
 void arrayAccessGen() {
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
+    boolean[] mutableStates = [false, true]
 
-    File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\")
+    File p = new File(".\\..\\java\\com\\susico\\utils\\arrays\\access\\")
     p.mkdirs()
 
     for (Class<?> type : types) {
-        String mutabilityPrefix = mutable ? "Mutable" : "Immutable"
-        String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
+        for (boolean mutable : mutableStates) {
+            String mutabilityPrefix = mutable ? "Mutable" : "Immutable"
+            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
 
-        File f = new File(p, "${mutabilityPrefix}WrappedArrayAccess${typeSuffix}.java")
-        f.createNewFile()
+            File f = new File(p, "${mutabilityPrefix}WrappedArrayAccess${typeSuffix}.java")
+            f.createNewFile()
 
-        PrintWriter pw = f.newPrintWriter()
-        pw.print(arrayAccess())
-        pw.flush()
-        pw.close()
+            PrintWriter pw = f.newPrintWriter()
+            pw.print(arrayAccess(type, mutable))
+            pw.flush()
+            pw.close()
+        }
     }
 }
 

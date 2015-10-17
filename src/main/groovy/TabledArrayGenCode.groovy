@@ -41,7 +41,7 @@ String tableArrayBase() {
 
 package com.susico.utils.arrays.tabled;
 
-import com.susico.utils.arrays.ArrayAccess;
+import com.susico.utils.arrays.access.ArrayAccess;
 
 import com.susico.utils.functions.*;
 
@@ -544,7 +544,7 @@ String tabledArray0001(boolean mutable, Class<?> type) {
 
 package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerCase()};
 
-import com.susico.utils.arrays.ArrayAccess;
+import com.susico.utils.arrays.access.ArrayAccess;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
@@ -978,7 +978,7 @@ String tabledArray(boolean mutable, Class<?> type, int start) {
 
 package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerCase()};
 
-import com.susico.utils.arrays.ArrayAccess;
+import com.susico.utils.arrays.access.ArrayAccess;
 
 import com.susico.utils.functions.*;
 
