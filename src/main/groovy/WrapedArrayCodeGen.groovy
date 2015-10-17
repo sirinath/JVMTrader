@@ -110,8 +110,20 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return index;
     }
 
+    public long getIndexWeak() {
+        return UNSAFE.getLong(this, indexFieldOffset);
+    }
+
     public void setIndex(final long value) {
         index = value;
+    }
+
+    public void putIndexWeak(final long value) {
+        return UNSAFE.putLong(this, indexFieldOffset, value);
+    }
+
+    public void putOrderedIndex(final long value) {
+        UNSAFE.putOrderedLong(this, indexFieldOffset, value);
     }
 
     public void resetIndex() {
