@@ -58,7 +58,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
     protected final boolean SAFE;
     protected ${finalField} ${typeName}[] buffer;
-    protected volatile long index;
+    protected volatile long index = 0;
 
     proected static final long indexFieldOffset =
         getFieldOffset(${mutabilityPrefix}WrappedArrayAccess${typeSuffix}.class, "index");
@@ -99,7 +99,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
             com.susico.utils.UncheckedExceptions.rethrow(e);
         }
 
-        return 0;
+        return 0L;
     }
 
     public final boolean isSafe() {
@@ -112,6 +112,10 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
     public void setIndex(final long value) {
         index = value;
+    }
+
+    public void resetIndex() {
+        index = 0L;
     }
 
     public long incAndGetIndex() {
