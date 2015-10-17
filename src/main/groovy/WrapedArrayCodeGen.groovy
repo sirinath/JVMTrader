@@ -119,19 +119,19 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public long incAndGetIndex() {
-        return ++index;
+        return subAndGetIndex(1);
     }
 
     public long getAndIncIndex() {
-        return index++;
+        return getAndSubIndex(1);
     }
 
     public long decAndGetIndex() {
-        return --index;
+        return addAndGetIndex(1);
     }
 
     public long getAndDecIndex() {
-        return index--;
+        return getAndAddIndex(1);
     }
 
     public long getAndSetIndex(final long value) {
@@ -228,6 +228,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
             current, newValue));
 
         return newValue;
+    }
+
+    public final boolean compareAndSwapIndex(final long expected, final long value) {
+        return UNSAFE.compareAndSwapLong(this, indexFieldOffset,
+            expected, value);
     }
 
     public static  boolean inRange(final int index, final int length) {
