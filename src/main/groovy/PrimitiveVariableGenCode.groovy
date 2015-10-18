@@ -41,20 +41,20 @@ String genClass(boolean mutable, Class<?> type) {
 
 """)
 
-    String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Object"
-    String genericClassSuffix = type.isPrimitive() ? "" : type.isEnum() ? "<T extends Enum<T>>" : "<T>"
+    boolean isEnum = type.getSimpleName().contains("Enum")
+    boolean isObject = type.equals(Object.class)
+    boolean isBoolean = type.equals(Boolean.TYPE)
+    String typeName = type.isPrimitive() ? type.getSimpleName() : (isEnum ? "Enum" : "T")
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : isEnum ? "Enum" : "Object"
+    String genericClassSuffix = type.isPrimitive() ? "" : isEnum ? "<T extends Enum<T>>" : "<T>"
     String generic = type.isPrimitive() ? "" : "<T>"
     String packageName = mutable ? "mutable" : "immutable"
     String classPrefix = upcase1st(packageName)
     String comparativeOtherClassPrefix = upcase1st(!mutable ? "mutable" : "immutable")
     String finalValue = mutable ? "" : "final"
-    String boxedTypeStatic = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : "Objects"
-    String boxedType = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : type.isEnum() ? "Enum" : "Object"
+    String boxedTypeStatic = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : isEnum ? "Enum" : "Object"
+    String boxedType = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : isEnum ? "Enum" : "Object"
     String equalsComparison = type.isPrimitive() ? "((${boxedType}) other)." + type.getSimpleName() + "Value() == value" : "other.equals(value)"
-    boolean isObject = type.equals(Object.class)
-    boolean isBoolean = type.equals(Boolean.TYPE)
-    boolean isEnum = type.isEnum()
 
     buffer.append("""
 package com.susico.utils.box.${packageName};
@@ -324,8 +324,6 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 """)
     } else if (isObject) {
         buffer.append("""
-    // Object
-
     @Override
     public final int compareTo(final @NotNull ${classPrefix}${typeSuffix}${generic} other) {
         final @NotNull ${typeName} otherValue = other.getValue;
@@ -405,8 +403,9 @@ void genClass() {
         p.mkdirs()
 
         for (Class<?> type : types) {
+            boolean isEnum = type.getSimpleName().contains("Enum")
             String classPrefix = upcase1st(packageName)
-            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Object"
+            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : isEnum ? "Enum" : "Object"
 
             File f = new File(p, "${classPrefix}${typeSuffix}.java")
             f.createNewFile()
