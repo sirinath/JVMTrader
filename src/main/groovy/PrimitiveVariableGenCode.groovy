@@ -324,6 +324,8 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 """)
     } else if (isObject) {
         buffer.append("""
+    // Object
+
     @Override
     public final int compareTo(final @NotNull ${classPrefix}${typeSuffix}${generic} other) {
         final @NotNull ${typeName} otherValue = other.getValue;
@@ -362,6 +364,8 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 """)
 
         buffer.append("""
+    // Others
+
     @Override
     public final int intValue() {
         return (int) value;
