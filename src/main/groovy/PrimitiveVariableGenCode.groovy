@@ -362,6 +362,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 """)
 
         buffer.append("""
+    // Rest
     @Override
     public final int intValue() {
         return (int) value;
