@@ -22,7 +22,7 @@ String upcase1st(String str) {
 }
 
 String genClass(boolean mutable, Class<?> type) {
-    StringBuilder buffer = new StringBuffer("""
+    StringBuilder buffer = new StringBuilder("""
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -42,16 +42,16 @@ String genClass(boolean mutable, Class<?> type) {
 """)
 
     String typeName = type.isPrimitive() ? type.getSimpleName() : "T"
-    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Reference"
+    String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Object"
     String genericClassSuffix = type.isPrimitive() ? "" : type.isEnum() ? "<T extends Enum<T>>" : "<T>"
     String generic = type.isPrimitive() ? "" : "<T>"
     String packageName = mutable ? "mutable" : "immutable"
     String classPrefix = upcase1st(packageName)
     String comparativeOtherClassPrefix = upcase1st(!mutable ? "mutable" : "immutable")
-    String finalValue = mutable ? "final" : ""
-    String boxedTypeStatic = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : upcase1st(type.getSimpleName())) : "Objects"
-    String boxedType = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : upcase1st(type.getSimpleName())) : type.isEnum() ? "Enum" : "Object"
-    String equalsComparison = type.isPrimitive() ? "(${boxedType} other)." + type.getSimpleName() + "Value()" : "other.equals(value)"
+    String finalValue = mutable ? "" : "final"
+    String boxedTypeStatic = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : "Objects"
+    String boxedType = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : type.isEnum() ? "Enum" : "Object"
+    String equalsComparison = type.isPrimitive() ? "((${boxedType}) other)." + type.getSimpleName() + "Value() == value" : "other.equals(value)"
     boolean isObject = type.equals(Object.class)
     boolean isBoolean = type.equals(Boolean.TYPE)
     boolean isEnum = type.isEnum()
@@ -59,11 +59,17 @@ String genClass(boolean mutable, Class<?> type) {
     buffer.append("""
 package com.susico.utils.box.${packageName};
 
+import java.util.Objects;
+
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
 
 import com.susico.utils.functions.*;
-import package com.susico.utils.box.*;
+import com.susico.utils.box.*;
+import com.susico.utils.box.immutable.*;
+import com.susico.utils.box.mutable.*;
+
+import org.jetbrains.annotations.*;
 
 /**
  * Wrapper class
@@ -72,11 +78,20 @@ import package com.susico.utils.box.*;
  */
 @SuppressWarnings("serial")
 public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number
-    implements BoxOnce<PV${typeSuffix}${generic}> {
+    implements BoxOnce<${classPrefix}${typeSuffix}${genericClassSuffix}> {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
-    protected final static valueFieldOffset =
-        UNSAFE.objectFieldOffset(${classPrefix}${typeSuffix}.class.getField("value"));
+    protected final static long valueFieldOffset = getFieldOffset(${classPrefix}${typeSuffix}.class, "value");
+
+    protected static long getFieldOffset(final @NotNull Class<?> cls, final @NotNull String field) {
+        try {
+            return UNSAFE.objectFieldOffset(cls.getField(field));
+        } catch (NoSuchFieldException e) {
+            com.susico.utils.UncheckedExceptions.rethrow(e);
+        }
+
+        return 0;
+    }
 
     /**
      * Value
@@ -92,7 +107,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 
     @Override
     public final ${classPrefix}${typeSuffix}${generic} clone() throws CloneNotSupportedException {
-        return new PV${typeSuffix}${generic}(value);
+        return new ${classPrefix}${typeSuffix}${genericClassSuffix}(value);
     }
 
     @Override
@@ -105,28 +120,16 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         return ${boxedTypeStatic}.hashCode(value);
     }
 
-    @Override
-    public final boolean equals(Object other) {
-        if (other instanceof ${classPrefix}${typeSuffix}${generic})
-            return value == ((${classPrefix}${typeSuffix}${generic}) other).getValue();
-        else if (other instanceof ${comparativeOtherClassPrefix}${typeSuffix}${generic})
-            return value == ((${comparativeOtherClassPrefix}${typeSuffix}${generic}) other).getValue();
-        else if (other instanceof ${boxedType})
-            return ${equalsComparison};
-        else
-            return false;
-    }
-
     public final @NotNull ${typeName} getValue() {
-        return value;
+        return (${typeName}) value;
     }
 
     public final @NotNull ${typeName} get() {
-        return value;
+        return (${typeName}) value;
     }
 
     public final @NotNull $typeName getValueVolatile() {
-        return UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
+        return (${typeName}) UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
     }
     """)
 
@@ -141,7 +144,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     }
 
     public final void setValueVolatile(final @NotNull $typeName value) {
-        return UNSAFE.put${typeSuffix}Volatile(this, valueFieldOffset, value);
+        UNSAFE.put${typeSuffix}Volatile(this, valueFieldOffset, value);
     }
 """)
 
@@ -163,21 +166,19 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
                                     type.equals(Double.TYPE) ? "Long" : "Object"
 
             buffer.append("""
-    public final $generic $typeName[] setValueOrdered(
+    public final void setValueOrdered(
         final @NotNull $typeName value) {
             UNSAFE.putOrdered${sameSizeNum}(this, valueFieldOffset, ${valTransform}(value));
-
-        return buffer;
     }
 
-    public final $generic boolean compareAndSwapValue(final @NotNull $typeName expected,
+    public final boolean compareAndSwapValue(final @NotNull $typeName expected,
         final @NotNull $typeName value) {
         return UNSAFE.compareAndSwap${sameSizeNum}(this,
             valueFieldOffset,
             ${valTransform}(expected), ${valTransform}(value));
     }
 
-    public final $generic $typeName getAndSetValue(
+    public final $typeName getAndSetValue(
         final @NotNull $typeName value) {
         return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             valueFieldOffset,
@@ -194,26 +195,31 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
                                 ", final @NotNull $typeName value" :
                                 ""
 
+                String applyOp = opType.startsWith("Multi") ?
+                        "op.apply(current, value)" :
+                        opType.startsWith("Bi") ?
+                                "op.apply(current, value)" :
+                                "op.apply(current)"
 
                 buffer.append("""
-    public final $generic $typeName getAndUpdateValue(final @NotNull ${opType} op$valueParam) {
+    public final $typeName getAndUpdateValue(final @NotNull ${opType} op$valueParam) {
         $typeName current;
 
         do {
             current = UNSAFE.get${typeSuffix}Volatile(this,
                 valueFieldOffset);
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, valueFieldOffset,
-            ${valTransform}(current), ${valTransform}(op.apply(current, value))));
+            ${valTransform}(current), ${valTransform}(${applyOp})));
         return current;
     }
 
-    public final $generic $typeName updateAndGetValue(final @NotNull ${opType} op$valueParam) {
+    public final $typeName updateAndGetValue(final @NotNull ${opType} op$valueParam) {
         $typeName current;
         $typeName newValue;
 
         do {
             current = UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
-            newValue = op.apply(current, value);
+            newValue = ${applyOp};
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, valueFieldOffset,
             ${valTransform}(current), ${valTransform}(newValue)));
 
@@ -222,6 +228,34 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 """)
             }
         }
+    }
+
+    if (isObject) {
+        buffer.append("""
+    @Override
+    public final boolean equals(Object other) {
+        if (other instanceof ${classPrefix}${typeSuffix})
+            return value.equals(((${classPrefix}${typeSuffix}${generic}) other).getValue());
+        else if (other instanceof ${comparativeOtherClassPrefix}${typeSuffix})
+            return value.equals(((${comparativeOtherClassPrefix}${typeSuffix}) other).getValue());
+        else if (other instanceof ${boxedType})
+            return ${equalsComparison};
+        else
+            return false;
+    }""")
+    } else {
+        buffer.append("""
+    @Override
+    public final boolean equals(Object other) {
+        if (other instanceof ${classPrefix}${typeSuffix})
+            return value == ((${classPrefix}${typeSuffix}${generic}) other).getValue();
+        else if (other instanceof ${comparativeOtherClassPrefix}${typeSuffix})
+            return value == ((${comparativeOtherClassPrefix}${typeSuffix}) other).getValue();
+        else if (other instanceof ${boxedType})
+            return ${equalsComparison};
+        else
+            return false;
+    }""")
     }
 
     if (isBoolean) {
@@ -237,6 +271,8 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 """)
 
         buffer.append("""
+    // Boolean
+
     @Override
     public final int intValue() {
         return value ? 1 : 0;
@@ -255,6 +291,35 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     @Override
     public final double doubleValue() {
         return value ? 1.0D : 0.0D;
+    }
+""")
+    } else if (isEnum) {
+        buffer.append("""
+    // Enum
+
+    @Override
+    public final int intValue() {
+        return (int) value.ordinal();
+    }
+
+    @Override
+    public final long longValue() {
+        return (long) value.ordinal();
+    }
+
+    @Override
+    public final float floatValue() {
+        return (float) value.ordinal();
+    }
+
+    @Override
+    public final double doubleValue() {
+        return (double) value.ordinal();
+    }
+
+    @Override
+    public final int hashCode() {
+        return value.hashCode();
     }
 """)
     } else if (isObject) {
@@ -284,34 +349,18 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
             throw IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
     }
 """)
-    } else if (isEnum) {
+    } else {
         buffer.append("""
     @Override
-    public final int intValue() {
-        return (int) value.ordinal();
+    public final int compareTo(final @NotNull ${classPrefix}${typeSuffix}${generic} other) {
+        return value == other.getValue() ? 0 : (value < other.getValue() ? -1 : 1);
     }
 
-    @Override
-    public final long longValue() {
-        return (long) value.ordinal();
-    }
-
-    @Override
-    public final float floatValue() {
-        return (float) value.ordinal();
-    }
-
-    @Override
-    public final double doubleValue() {
-        return (double) value.ordinal();
-    }
-
-    @Override
-    public final int hashCode() {
-        return value.hashCode();
+    public final int compareTo(final @NotNull ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
+        return value == other.getValue() ? 0 : (value < other.getValue() ? -1 : 1);
     }
 """)
-    } else {
+
         buffer.append("""
     @Override
     public final int intValue() {
@@ -338,19 +387,22 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     return buffer.append("}").toString()
 }
 
-
-genClass() {
+void genClass() {
     boolean[] mutables = [false, true]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class, Enum.class]
 
-    File p = new File(".\\..\\java\\com\\susico\\utils\\box\\")
-    p.mkdirs()
+    File b = new File(".\\..\\java\\com\\susico\\utils\\box\\")
+    b.mkdirs()
 
     for (boolean mutable : mutables) {
+        String packageName = mutable ? "mutable" : "immutable"
+
+        File p = new File(b, "${packageName}\\")
+        p.mkdirs()
+
         for (Class<?> type : types) {
-            String packageName = mutable ? "mutable" : "immutable"
             String classPrefix = upcase1st(packageName)
-            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Reference"
+            String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : type.isEnum() ? "Enum" : "Object"
 
             File f = new File(p, "${classPrefix}${typeSuffix}.java")
             f.createNewFile()
@@ -362,3 +414,5 @@ genClass() {
         }
     }
 }
+
+genClass()
