@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.utils.primitives.variable;
+package com.susico.utils.box;
 
 import java.io.Serializable;
 

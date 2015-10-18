@@ -17,6 +17,8 @@
 package com.susico.utils.primitives.variable;
 
 
+import com.susico.utils.box.BoxOnce;
+
 /**
  * Wrapper class
  *

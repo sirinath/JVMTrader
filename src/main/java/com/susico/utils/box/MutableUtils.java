@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package com.susico.utils.primitives.variable;
+package com.susico.utils.box;
 
+
+import com.susico.utils.primitives.variable.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Help instantiate boxing
  *
  * @author sirinath
  */
-public class PrimitiveUtils {
+public class MutableUtils {
     /**
      * @param v value to be boxed
      * @return boxed value
@@ -92,7 +95,7 @@ public class PrimitiveUtils {
      * @param v   value to be boxed
      * @return boxed value
      */
-    public static <T extends Enum<T>> PVEnum<T> Box(final T v) {
+    public static <T extends Enum<T>> PVEnum<T> Box(final @NotNull T v) {
         return new PVEnum<T>(v);
     }
 }

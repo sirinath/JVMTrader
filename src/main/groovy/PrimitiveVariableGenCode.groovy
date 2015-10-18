@@ -63,6 +63,7 @@ import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
 
 import com.susico.utils.functions.*;
+import package com.susico.utils.box.*;
 
 /**
  * Wrapper class
@@ -70,9 +71,8 @@ import com.susico.utils.functions.*;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number implements BoxOnce<PV${typeSuffix}${
-        generic
-    }> {
+public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number
+    implements BoxOnce<PV${typeSuffix}${generic}> {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
     protected final static valueFieldOffset =
@@ -86,7 +86,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     /**
      * @param i Parameter
      */
-    public ${classPrefix}${typeSuffix}(final ${typeName} i) {
+    public ${classPrefix}${typeSuffix}(final @NotNull ${typeName} i) {
         value = i;
     }
 
@@ -117,30 +117,30 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
             return false;
     }
 
-    public final ${typeName} getValue() {
+    public final @NotNull ${typeName} getValue() {
         return value;
     }
 
-    public final ${typeName} get() {
+    public final @NotNull ${typeName} get() {
         return value;
     }
 
-    public final $typeName getValueVolatile() {
+    public final @NotNull $typeName getValueVolatile() {
         return UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
     }
     """)
 
     if (mutable) {
         buffer.append("""
-    public final void setValue(final ${typeName} value) {
+    public final void setValue(final @NotNull ${typeName} value) {
         this.value = value;
     }
 
-    public final void set(final ${typeName} value) {
+    public final void set(final @NotNull ${typeName} value) {
         this.value = value;
     }
 
-    public final void setValueVolatile(final $typeName value) {
+    public final void setValueVolatile(final @NotNull $typeName value) {
         return UNSAFE.put${typeSuffix}Volatile(this, valueFieldOffset, value);
     }
 """)
@@ -164,21 +164,21 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 
             buffer.append("""
     public final $generic $typeName[] setValueOrdered(
-        final $typeName value) {
+        final @NotNull $typeName value) {
             UNSAFE.putOrdered${sameSizeNum}(this, valueFieldOffset, ${valTransform}(value));
 
         return buffer;
     }
 
-    public final $generic boolean compareAndSwapValue(final $typeName expected,
-        final $typeName value) {
+    public final $generic boolean compareAndSwapValue(final @NotNull $typeName expected,
+        final @NotNull $typeName value) {
         return UNSAFE.compareAndSwap${sameSizeNum}(this,
             valueFieldOffset,
             ${valTransform}(expected), ${valTransform}(value));
     }
 
     public final $generic $typeName getAndSetValue(
-        final $typeName value) {
+        final @NotNull $typeName value) {
         return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             valueFieldOffset,
             ${valTransform}(value)));
@@ -189,14 +189,14 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 
             for (String opType : opTypes) {
                 String valueParam = opType.startsWith("Multi") ?
-                        ", final $typeName ... value" :
+                        ", final @NotNull $typeName ... value" :
                         opType.startsWith("Bi") ?
-                                ", final $typeName value" :
+                                ", final @NotNull $typeName value" :
                                 ""
 
 
                 buffer.append("""
-    public final $generic $typeName getAndUpdateValue(final ${opType} op$valueParam) {
+    public final $generic $typeName getAndUpdateValue(final @NotNull ${opType} op$valueParam) {
         $typeName current;
 
         do {
@@ -207,7 +207,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         return current;
     }
 
-    public final $generic $typeName updateAndGetValue(final ${opType} op$valueParam) {
+    public final $generic $typeName updateAndGetValue(final @NotNull ${opType} op$valueParam) {
         $typeName current;
         $typeName newValue;
 
@@ -227,11 +227,11 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     if (isBoolean) {
         buffer.append("""
     @Override
-    public final int compareTo(final ${classPrefix}${typeSuffix}${generic} other) {
+    public final int compareTo(final @NotNull ${classPrefix}${typeSuffix}${generic} other) {
         return value == other.getValue() ? 0 : (other.getValue() ? -1 : 1);
     }
 
-    public final int compareTo(final ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
+    public final int compareTo(final @NotNull ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
         return value == other.getValue() ? 0 : (other.getValue() ? -1 : 1);
     }
 """)
@@ -260,8 +260,8 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     } else if (isObject) {
         buffer.append("""
     @Override
-    public final int compareTo(final ${classPrefix}${typeSuffix}${generic} other) {
-        final ${typeName} otherValue = other.getValue;
+    public final int compareTo(final @NotNull ${classPrefix}${typeSuffix}${generic} other) {
+        final @NotNull ${typeName} otherValue = other.getValue;
         if (value instanceof Comparable)
             return value.compareTo(otherValue);
         else if (value == otherValue || (value != null && value.equals(otherValue)))
@@ -272,8 +272,8 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
             throw IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
     }
 
-    public final int compareTo(final ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
-        final ${typeName} otherValue = other.getValue;
+    public final int compareTo(final @NotNull ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
+        final @NotNull ${typeName} otherValue = other.getValue;
         if (value instanceof Comparable)
             return value.compareTo(otherValue);
         else if (value == otherValue || (value != null && value.equals(otherValue)))

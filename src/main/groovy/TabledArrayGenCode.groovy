@@ -48,6 +48,8 @@ import com.susico.utils.functions.*;
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
 
+import org.jetbrains.annotations.*;
+
 """)
 
     StringBuffer theImports = new StringBuffer()
@@ -58,7 +60,7 @@ import sun.misc.Unsafe;
     protected final int targetLength;
     protected final int definedAsValues;
 
-    protected static long getFieldOffset(Class<?> cls, String field) {
+    protected static long getFieldOffset(final @NotNull Class<?> cls, final @NotNull String field) {
         try {
             return UNSAFE.objectFieldOffset(cls.getField(field));
         } catch (NoSuchFieldException e) {
@@ -101,7 +103,7 @@ import sun.misc.Unsafe;
 
             str.append("""
     public static $generic ${mutability}TabledArray${typeSuffix}$generic get${mutability}${typeSuffix}Array(
-        final boolean checked, final int length, final $typeName ... values) {
+        final boolean checked, final int length, final @NotNull $typeName ... values) {
         return ${mutability}TabledArray${typeSuffix}.${generic}getInstance(checked, length, values);
     }
 """)
@@ -149,56 +151,58 @@ import com.susico.utils.arrays.tabled.array${packageName}.immutable.ImmutableTab
 
 import com.susico.utils.functions.*;
 
+import org.jetbrains.annotations.*;
+
 public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTabledArray$typeSuffix$generic {
-    protected MutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+    protected MutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final @NotNull $typeName ... values) {
         super(checked, definedAsValues, length, values);
     }
 
-    protected final void putToRest(final int index, final $typeName value) {
+    protected final void putToRest(final int index, final @NotNull $typeName value) {
         ARRAY_ACCESS.${generic}put(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
-    protected final void putVolatileToRest(final int index, final $typeName value) {
+    protected final void putVolatileToRest(final int index, final @NotNull $typeName value) {
         ARRAY_ACCESS.${generic}putVolatile(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
-    public abstract void put(final int index, final $typeName value);
+    public abstract void put(final int index, final @NotNull $typeName value);
 
-    public abstract void putUnsafe(final int index, final $typeName value);
+    public abstract void putUnsafe(final int index, final @NotNull $typeName value);
 
-    public abstract void putVolatile(final int index, final $typeName value);
+    public abstract void putVolatile(final int index, final @NotNull $typeName value);
 """)
 
         if (type.equals(Object.class) || type.equals(Float.TYPE) || type.equals(Double.TYPE) ||
                 type.equals(Integer.TYPE) || type.equals(Long.TYPE)) {
             str.append("""
-    protected final void putOrderedToRest(final int index, final $typeName value) {
+    protected final void putOrderedToRest(final int index, final @NotNull $typeName value) {
         ARRAY_ACCESS.${generic}putOrdered(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
-    protected final $typeName getAndSetFromRest(final int index, final $typeName value) {
+    protected final @NotNull $typeName getAndSetFromRest(final int index, final @NotNull $typeName value) {
         return ARRAY_ACCESS.${generic}getAndSet(index - definedAsValues, ($typeName[]) rest, ($typeName) value);
     }
 
-    public abstract void putOrdered(final int index, final $typeName value);
+    public abstract void putOrdered(final int index, final @NotNull $typeName value);
 
-    public abstract $typeName getAndSet(final int index, final $typeName value);
+    public abstract $typeName getAndSet(final int index, final @NotNull $typeName value);
 
-    protected final boolean compareAndSwapFromRest(final int index, final $typeName expected, final $typeName value) {
+    protected final boolean compareAndSwapFromRest(final int index, final @NotNull $typeName expected, final @NotNull $typeName value) {
         return ARRAY_ACCESS.${generic}compareAndSwap(
             index - definedAsValues, ($typeName[]) rest, ($typeName) expected, ($typeName) value);
     }
 
-    public abstract boolean compareAndSwap(final int index, final $typeName expected, final $typeName value);
+    public abstract boolean compareAndSwap(final int index, final @NotNull $typeName expected, final @NotNull $typeName value);
 """)
 
             String[] opTypes = ["BiOp${opSuffix}", "UnaryOp${opSuffix}", "MultiOp${opSuffix}"]
 
             for (String opType : opTypes) {
                 String valueParam = opType.startsWith("Multi") ?
-                        ", final $typeName ... value" :
+                        ", final @NotNull $typeName ... value" :
                         opType.startsWith("Bi") ?
-                                ", final $typeName value" :
+                                ", final @NotNull $typeName value" :
                                 ""
 
                 String applyOpMulti = opType.startsWith("Multi") ?
@@ -208,17 +212,17 @@ public abstract class MutableTabledArray$typeSuffix$generic extends ImmutableTab
                                 ""
 
                 str.append("""
-    protected final $typeName updateAndGetFromRest(final int index, final ${opType}$generic op$valueParam) {
+    protected final @NotNull $typeName updateAndGetFromRest(final int index, final @NotNull ${opType}$generic op$valueParam) {
         return ARRAY_ACCESS.${generic}updateAndGet(index - definedAsValues, ($typeName[]) rest, op${applyOpMulti});
     }
 
-    protected final $typeName getAndUpdateFromRest(final int index, final ${opType}$generic op$valueParam) {
+    protected final @NotNull $typeName getAndUpdateFromRest(final int index, final @NotNull ${opType}$generic op$valueParam) {
         return ARRAY_ACCESS.${generic}getAndUpdate(index - definedAsValues, ($typeName[]) rest, op${applyOpMulti});
     }
 
-    public abstract $typeName updateAndGet(final int index, final ${opType}$generic op$valueParam);
+    public abstract $typeName updateAndGet(final int index, final @NotNull ${opType}$generic op$valueParam);
 
-    public abstract $typeName getAndUpdate(final int index, final ${opType}$generic op$valueParam);
+    public abstract $typeName getAndUpdate(final int index, final @NotNull ${opType}$generic op$valueParam);
 """)
             }
         }
@@ -250,7 +254,7 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
     protected final $erasedType[] rest;
     protected final int actualLength;
 
-    protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+    protected ImmutableTabledArray$typeSuffix(final boolean checked, final int definedAsValues, final int length, final @NotNull $typeName ... values) {
         super(checked, definedAsValues, length);
 
         final int effectiveLength = Math.max(length, values.length);
@@ -268,11 +272,11 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
         return actualLength;
     }
 
-    protected final $typeName getFromRest(final int index) {
+    protected final @NotNull $typeName getFromRest(final int index) {
         return ($typeName) ARRAY_ACCESS.${generic}get(index - definedAsValues, rest);
     }
 
-    protected final $typeName getVolatileFromRest(final int index) {
+    protected final @NotNull $typeName getVolatileFromRest(final int index) {
         return ($typeName) ARRAY_ACCESS.${generic}getVolatile(index - definedAsValues, rest);
     }
 
@@ -288,7 +292,7 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
 
     str.append("""
     public static $generic ${mutability}TabledArray${typeSuffix}$generic getInstance(
-        final boolean checked, final int length, final $typeName ... values) {
+        final boolean checked, final int length, final @NotNull $typeName ... values) {
         switch (length) {
             case 0:
                 return ${mutability}TabledArray0000${typeSuffix}.${generic}getInstance(checked, length, values);
@@ -360,43 +364,43 @@ package com.susico.utils.arrays.tabled.array${packageName}.mutable;
 import com.susico.utils.functions.*;
 
 public abstract class MutableTabledArray0000${typeSuffix}${generic} extends MutableTabledArray${typeSuffix}${generic} {
-    protected MutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final $typeName ... values) {
+    protected MutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final @NotNull $typeName ... values) {
         this(checked, 0, length, values);
     }
 
     protected MutableTabledArray0000${typeSuffix}(
-        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+        final boolean checked, final int definedAsValues, final int length, final @NotNull $typeName ... values) {
         super(checked, definedAsValues, length, values);
     }
 
     public static ${generic} MutableTabledArray0000${typeSuffix}${generic} getInstance(
-            final boolean checked, final int length, final $typeName ... values) {
+            final boolean checked, final int length, final @NotNull $typeName ... values) {
         return new MutableTabledArray0000${typeSuffix}${generic}(checked, length, values) {
             @Override
-            public final void put(final int index, final $typeName value) {
+            public final void put(final int index, final @NotNull $typeName value) {
                 putToRest(index, value);
             }
 
-            public final void putUnsafe(final int index, final $typeName value) {
+            public final void putUnsafe(final int index, final @NotNull $typeName value) {
                 putToRest(index, value);
             }
 
-            public final void putVolatile(final int index, final $typeName value) {
+            public final void putVolatile(final int index, final @NotNull $typeName value) {
                 putVolatileToRest(index, value);
             }
 
             @Override
-            public final $typeName get(final int index) {
+            public final @NotNull $typeName get(final int index) {
                 return getFromRest(index);
             }
 
             @Override
-            public final $typeName getUnsafe(final int index) {
+            public final @NotNull $typeName getUnsafe(final int index) {
                 return getFromRest(index);
             }
 
             @Override
-            public final $typeName getVolatile(final int index) {
+            public final @NotNull $typeName getVolatile(final int index) {
                 return getVolatileFromRest(index);
             }
 """)
@@ -407,17 +411,17 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
 
             buffer.append("""
             public final void putOrdered(
-                final int index, final $typeName value) {
+                final int index, final @NotNull $typeName value) {
                     putOrderedToRest(index, value);
             }
 
             public final boolean compareAndSwap(
-                final int index, final $typeName expected, final $typeName value) {
+                final int index, final @NotNull $typeName expected, final @NotNull $typeName value) {
                 return compareAndSwapFromRest(index, expected, value);
             }
 
-            public final $typeName getAndSet(
-                final int index, final $typeName value) {
+            public final @NotNull $typeName getAndSet(
+                final int index, final @NotNull $typeName value) {
                 return getAndSetFromRest(index, value);
             }
         """)
@@ -426,9 +430,9 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
 
             for (String opType : opTypes) {
                 String valueParam = opType.startsWith("Multi") ?
-                        ", final $typeName ... value" :
+                        ", final @NotNull $typeName ... value" :
                         opType.startsWith("Bi") ?
-                                ", final $typeName value" :
+                                ", final @NotNull $typeName value" :
                                 ""
 
                 String applyOpMulti = opType.startsWith("Multi") ?
@@ -438,13 +442,13 @@ public abstract class MutableTabledArray0000${typeSuffix}${generic} extends Muta
                                 ""
 
                 buffer.append("""
-            public final $typeName getAndUpdate(
-                final int index, final ${opType}$generic op${valueParam}) {
+            public final @NotNull $typeName getAndUpdate(
+                final int index, final @NotNull ${opType}$generic op${valueParam}) {
                 return getAndUpdateFromRest(index, op${applyOpMulti});
             }
 
-            public final $typeName updateAndGet(
-                final int index, final ${opType}$generic op${valueParam}) {
+            public final @NotNull $typeName updateAndGet(
+                final int index, final @NotNull ${opType}$generic op${valueParam}) {
                 return updateAndGetFromRest(index, op${applyOpMulti});
             }
 """)
@@ -481,30 +485,30 @@ import com.susico.utils.functions.*;
 
 public abstract class ImmutableTabledArray0000${typeSuffix}${generic}
     extends ImmutableTabledArray${typeSuffix}${generic} {
-    protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final $typeName ... values) {
+    protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final @NotNull $typeName ... values) {
         this(checked, 0, length, values);
     }
 
     protected ImmutableTabledArray0000${typeSuffix}(
-        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+        final boolean checked, final int definedAsValues, final int length, final @NotNull $typeName ... values) {
         super(checked, definedAsValues, length, values);
     }
 
     public static ${generic} ImmutableTabledArray0000${typeSuffix}${generic} getInstance(
-        final boolean checked, final int length, final $typeName ... values) {
+        final boolean checked, final int length, final @NotNull $typeName ... values) {
         return new ImmutableTabledArray0000${typeSuffix}${generic}(checked, length, values) {
             @Override
-            public final $typeName get(final int index) {
+            public final @NotNull $typeName get(final int index) {
                 return getFromRest(index);
             }
 
             @Override
-            public final $typeName getUnsafe(final int index) {
+            public final @NotNull $typeName getUnsafe(final int index) {
                 return getFromRest(index);
             }
 
             @Override
-            public final $typeName getVolatile(final int index) {
+            public final @NotNull $typeName getVolatile(final int index) {
                 return getVolatileFromRest(index);
             }
         };
@@ -567,21 +571,21 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 """)
         } else {
             tmp.append("""
-    protected final $typeName value0000;
+    protected final @NotNull $typeName value0000;
 """)
         }
 
 
         tmp.append("""
-    public final $typeName getValue0000() {
+    public final @NotNull $typeName getValue0000() {
         return value0000;
     }
 
-    public final $typeName getValue0000Volatile() {
+    public final @NotNull $typeName getValue0000Volatile() {
         return ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this, value0000FieldOffset);
     }
 
-    public final $typeName getValue0000Unsafe() {
+    public final @NotNull $typeName getValue0000Unsafe() {
         return ($typeName) UNSAFE.get${unsafeSuffix}(this, value0000FieldOffset);
     }
     """)
@@ -589,15 +593,15 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
         if (mutable) {
             tmp.append("""
-    public final void setValue0000(final $typeName value0000) {
+    public final void setValue0000(final @NotNull $typeName value0000) {
         this.value0000 = value0000;
     }
 
-    public final void putValue0000Volatile(final $typeName value0000) {
+    public final void putValue0000Volatile(final @NotNull $typeName value0000) {
          UNSAFE.put${unsafeSuffix}Volatile(this, value0000FieldOffset, value0000);
     }
 
-    public final void putValue0000Unsafe(final $typeName value0000) {
+    public final void putValue0000Unsafe(final @NotNull $typeName value0000) {
         UNSAFE.put${unsafeSuffix}(this, value0000FieldOffset, value0000);
     }
     """)
@@ -619,19 +623,19 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                 tmp.append("""
     public final void putValue0000Ordered(
-        final $typeName value0000) {
+        final @NotNull $typeName value0000) {
             UNSAFE.putOrdered${sameSizeNum}(this, value0000FieldOffset, ${valTransform}(value0000));
     }
 
-    public final boolean compareAndSwapValue0000(final $typeName expected,
-        final $typeName value0000) {
+    public final boolean compareAndSwapValue0000(final @NotNull $typeName expected,
+        final @NotNull $typeName value0000) {
         return UNSAFE.compareAndSwap${sameSizeNum}(this,
             value0000FieldOffset,
             ${valTransform}(expected), ${valTransform}(value0000));
     }
 
-    public final $typeName getAndSetValue0000(
-        final $typeName value0000) {
+    public final @NotNull $typeName getAndSetValue0000(
+        final @NotNull $typeName value0000) {
         return ($typeName) ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             value0000FieldOffset,
             ${valTransform}(value0000)));
@@ -642,9 +646,9 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                 for (String opType : opTypes) {
                     String valueParam = opType.startsWith("Multi") ?
-                            ", final $typeName ... value0000" :
+                            ", final @NotNull $typeName ... value0000" :
                             opType.startsWith("Bi") ?
-                                    ", final $typeName value0000" :
+                                    ", final @NotNull $typeName value0000" :
                                     ""
 
                     String applyOp = opType.startsWith("Multi") ?
@@ -654,7 +658,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
                                     "op.apply(current)"
 
                     tmp.append("""
-    public final $typeName getAndUpdateValue0000(final ${opType}$generic op${valueParam}) {
+    public final @NotNull $typeName getAndUpdateValue0000(final @NotNull ${opType}$generic op${valueParam}) {
         $typeName current;
 
         do {
@@ -665,7 +669,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
         return current;
     }
 
-    public final $typeName updateAndGetValue0000(final ${opType}$generic op${valueParam}) {
+    public final @NotNull $typeName updateAndGetValue0000(final @NotNull ${opType}$generic op${valueParam}) {
         $typeName current;
         $typeName newValue;
 
@@ -685,12 +689,12 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
         return tmp.toString()
     }
     protected ${mutability}TabledArray0001$typeSuffix(
-        final boolean checked, final int length, final $typeName ... values) {
+        final boolean checked, final int length, final @NotNull $typeName ... values) {
         this(checked, 0, length, values);
     }
 
     protected ${mutability}TabledArray0001$typeSuffix(
-        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+        final boolean checked, final int definedAsValues, final int length, final @NotNull $typeName ... values) {
         super(checked, definedAsValues + 1, length, values);
 
         if (values.length >= 1) {
@@ -702,7 +706,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     }
 
     public static ${generic} ${mutability}TabledArray0001$typeSuffix getInstance(
-        final boolean checked, final int length, final $typeName ... values) {
+        final boolean checked, final int length, final @NotNull $typeName ... values) {
         return new ${mutability}TabledArray0001$typeSuffix$generic(checked, length, values) {
     ${
         StringBuilder put = new StringBuilder()
@@ -710,7 +714,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
         if (mutable) {
             put.append("""
             @Override
-            public final void put(final int index, final $typeName value) {
+            public final void put(final int index, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -729,7 +733,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
             put.append("""
             @Override
-            public final void putUnsafe(final int index, final $typeName value) {
+            public final void putUnsafe(final int index, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -748,7 +752,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
             put.append("""
             @Override
-            public final void putVolatile(final int index, final $typeName value) {
+            public final void putVolatile(final int index, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -771,7 +775,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                 put.append("""
             @Override
-            public final void putOrdered(final int index, final $typeName value) {
+            public final void putOrdered(final int index, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -790,7 +794,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                 put.append("""
             @Override
-            public final boolean compareAndSwap(final int index, final $typeName expected, final $typeName value) {
+            public final boolean compareAndSwap(final int index, final @NotNull $typeName expected, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -808,7 +812,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                 put.append("""
             @Override
-            public final $typeName getAndSet(final int index, final $typeName value) {
+            public final @NotNull $typeName getAndSet(final int index, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -828,9 +832,9 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                 for (String opType : opTypes) {
                     String valueParam = opType.startsWith("Multi") ?
-                            ", final $typeName ... value" :
+                            ", final @NotNull $typeName ... value" :
                             opType.startsWith("Bi") ?
-                                    ", final $typeName value" :
+                                    ", final @NotNull $typeName value" :
                                     ""
 
                     String applyOpMulti = opType.startsWith("Multi") ?
@@ -841,7 +845,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                     put.append("""
             @Override
-            public final $typeName getAndUpdate(final int index, final ${opType}$generic op${valueParam}) {
+            public final @NotNull $typeName getAndUpdate(final int index, final @NotNull ${opType}$generic op${valueParam}) {
                 switch (index) {
                 """)
 
@@ -859,7 +863,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
                     put.append("""
             @Override
-            public final $typeName updateAndGet(final int index, final ${opType}$generic op${valueParam}) {
+            public final @NotNull $typeName updateAndGet(final int index, final @NotNull ${opType}$generic op${valueParam}) {
                 switch (index) {
                 """)
 
@@ -884,7 +888,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
         StringBuilder get = new StringBuilder()
         get.append("""
             @Override
-            public final $typeName get(final int index) {
+            public final @NotNull $typeName get(final int index) {
                 switch (index) {
         """)
 
@@ -902,7 +906,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
         get.append("""
             @Override
-            public final $typeName getUnsafe(final int index) {
+            public final @NotNull $typeName getUnsafe(final int index) {
                 switch (index) {
         """)
 
@@ -920,7 +924,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
         get.append("""
             @Override
-            public final $typeName getVolatile(final int index) {
+            public final @NotNull $typeName getVolatile(final int index) {
                 switch (index) {
         """)
 
@@ -1000,7 +1004,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 """)
             } else {
                 tmp.append("""
-    protected final $typeName value${formatI};
+    protected final @NotNull $typeName value${formatI};
 """)
             }
         }
@@ -1012,15 +1016,15 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
             String formatI = String.format("%04d", i)
 
             tmp.append("""
-    public final $typeName getValue${formatI}() {
+    public final @NotNull $typeName getValue${formatI}() {
         return value${formatI};
     }
 
-    public final $typeName getValue${formatI}Unsafe() {
+    public final @NotNull $typeName getValue${formatI}Unsafe() {
         return ($typeName) UNSAFE.get${unsafeSuffix}(this, value${formatI}FieldOffset);
     }
 
-    public final $typeName getValue${formatI}Volatile() {
+    public final @NotNull $typeName getValue${formatI}Volatile() {
         return ($typeName) UNSAFE.get${unsafeSuffix}Volatile(this, value${formatI}FieldOffset);
     }
     """)
@@ -1032,15 +1036,15 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
                 String formatI = String.format("%04d", i)
 
                 tmp.append("""
-    public final void setValue${formatI}(final $typeName value${formatI}) {
+    public final void setValue${formatI}(final @NotNull $typeName value${formatI}) {
         this.value${formatI} = value${formatI};
     }
 
-    public final void putValue${formatI}Unsafe(final $typeName value${formatI}) {
+    public final void putValue${formatI}Unsafe(final @NotNull $typeName value${formatI}) {
         UNSAFE.put${unsafeSuffix}(this, value${formatI}FieldOffset, value${formatI});
     }
 
-    public final void putValue${formatI}Volatile(final $typeName value${formatI}) {
+    public final void putValue${formatI}Volatile(final @NotNull $typeName value${formatI}) {
         UNSAFE.put${unsafeSuffix}Volatile(this, value${formatI}FieldOffset, value${formatI});
     }
     """)
@@ -1063,19 +1067,19 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                     tmp.append("""
     public final void putValue${formatI}Ordered(
-        final $typeName value${formatI}) {
+        final @NotNull $typeName value${formatI}) {
             UNSAFE.putOrdered${sameSizeNum}(this, value${formatI}FieldOffset, ${valTransform}(value${formatI}));
     }
 
-    public final boolean compareAndSwapValue${formatI}(final $typeName expected,
-        final $typeName value${formatI}) {
+    public final boolean compareAndSwapValue${formatI}(final @NotNull $typeName expected,
+        final @NotNull $typeName value${formatI}) {
         return UNSAFE.compareAndSwap${sameSizeNum}(this,
             value${formatI}FieldOffset,
             ${valTransform}(expected), ${valTransform}(value${formatI}));
     }
 
-    public final $typeName getAndSetValue${formatI}(
-        final $typeName value${formatI}) {
+    public final @NotNull $typeName getAndSetValue${formatI}(
+        final @NotNull $typeName value${formatI}) {
         return ($typeName) ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             value0000FieldOffset,
             ${valTransform}(value${formatI})));
@@ -1086,9 +1090,9 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                     for (String opType : opTypes) {
                         String valueParam = opType.startsWith("Multi") ?
-                                ", final $typeName ... value${formatI}" :
+                                ", final @NotNull $typeName ... value${formatI}" :
                                 opType.startsWith("Bi") ?
-                                        ", final $typeName value${formatI}" :
+                                        ", final @NotNull $typeName value${formatI}" :
                                         ""
 
                         String applyOp = opType.startsWith("Multi") ?
@@ -1098,7 +1102,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
                                         "op.apply(current)"
 
                         tmp.append("""
-    public final $typeName getAndUpdateValue${formatI}(final ${opType}$generic op${valueParam}) {
+    public final @NotNull $typeName getAndUpdateValue${formatI}(final @NotNull ${opType}$generic op${valueParam}) {
         $typeName current;
 
         do {
@@ -1109,7 +1113,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
         return current;
     }
 
-    public final $typeName updateAndGetValue${formatI}(final ${opType}$generic op${valueParam}) {
+    public final @NotNull $typeName updateAndGetValue${formatI}(final @NotNull ${opType}$generic op${valueParam}) {
         $typeName current;
         $typeName newValue;
 
@@ -1130,12 +1134,12 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
         return tmp.toString()
     }
     protected ${mutability}TabledArray${classEnding}$typeSuffix(
-        final boolean checked, final int length, final $typeName ... values) {
+        final boolean checked, final int length, final @NotNull $typeName ... values) {
         this(checked, 0, length, values);
     }
 
     protected ${mutability}TabledArray${classEnding}$typeSuffix(
-        final boolean checked, final int definedAsValues, final int length, final $typeName ... values) {
+        final boolean checked, final int definedAsValues, final int length, final @NotNull $typeName ... values) {
         super(checked, definedAsValues + ${end - start}, length, values);
         final int len = values.length;
 
@@ -1159,14 +1163,14 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
     }
 
     public static ${generic} ${mutability}TabledArray${classEnding}${typeSuffix}${generic} getInstance(
-        final boolean checked, final int length, final $typeName ... values) {
+        final boolean checked, final int length, final @NotNull $typeName ... values) {
         return new ${mutability}TabledArray${classEnding}$typeSuffix$generic(checked, length, values) {
     ${
         StringBuilder put = new StringBuilder()
         if (mutable) {
             put.append("""
             @Override
-            public final void put(final int index, final $typeName value) {
+            public final void put(final int index, final @NotNull $typeName value) {
                 switch (index) {
                     """)
 
@@ -1188,7 +1192,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
             put.append("""
             @Override
-            public final void putVolatile(final int index, final $typeName value) {
+            public final void putVolatile(final int index, final @NotNull $typeName value) {
                 switch (index) {
                     """)
 
@@ -1210,7 +1214,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
             put.append("""
             @Override
-            public final void putUnsafe(final int index, final $typeName value) {
+            public final void putUnsafe(final int index, final @NotNull $typeName value) {
                 switch (index) {
                     """)
 
@@ -1237,7 +1241,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                 put.append("""
             @Override
-            public final void putOrdered(final int index, final $typeName value) {
+            public final void putOrdered(final int index, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -1259,7 +1263,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                 put.append("""
             @Override
-            public final boolean compareAndSwap(final int index, final $typeName expected, final $typeName value) {
+            public final boolean compareAndSwap(final int index, final @NotNull $typeName expected, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -1280,7 +1284,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                 put.append("""
             @Override
-            public final $typeName getAndSet(final int index, final $typeName value) {
+            public final @NotNull $typeName getAndSet(final int index, final @NotNull $typeName value) {
                 switch (index) {
                 """)
 
@@ -1303,9 +1307,9 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                 for (String opType : opTypes) {
                     String valueParam = opType.startsWith("Multi") ?
-                            ", final $typeName ... value" :
+                            ", final @NotNull $typeName ... value" :
                             opType.startsWith("Bi") ?
-                                    ", final $typeName value" :
+                                    ", final @NotNull $typeName value" :
                                     ""
 
                     String applyOpMulti = opType.startsWith("Multi") ?
@@ -1316,7 +1320,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                     put.append("""
             @Override
-            public final $typeName getAndUpdate(final int index, final ${opType}$generic op${valueParam}) {
+            public final @NotNull $typeName getAndUpdate(final int index, final @NotNull ${opType}$generic op${valueParam}) {
                 switch (index) {
                 """)
 
@@ -1337,7 +1341,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
                     put.append("""
             @Override
-            public final $typeName updateAndGet(final int index, final ${opType}$generic op${valueParam}) {
+            public final @NotNull $typeName updateAndGet(final int index, final @NotNull ${opType}$generic op${valueParam}) {
                 switch (index) {
                 """)
 
@@ -1365,7 +1369,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
         StringBuilder get = new StringBuilder()
         get.append("""
             @Override
-            public final $typeName get(final int index) {
+            public final @NotNull $typeName get(final int index) {
                 switch (index) {
                 """)
 
@@ -1387,7 +1391,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
         get.append("""
             @Override
-            public final $typeName getUnsafe(final int index) {
+            public final @NotNull $typeName getUnsafe(final int index) {
                 switch (index) {
                 """)
 
@@ -1408,7 +1412,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
         get.append("""
             @Override
-            public final $typeName getVolatile(final int index) {
+            public final @NotNull $typeName getVolatile(final int index) {
                 switch (index) {
                 """)
 
