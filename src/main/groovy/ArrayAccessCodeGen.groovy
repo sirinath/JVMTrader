@@ -253,7 +253,8 @@ public final class ArrayAccess {
         return getVolatile(this.SAFE, index, buffer);
     }
 
-    public static $generic @NotNull $typeName getVolatile(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
+    public static $generic @NotNull $typeName getVolatile(
+        final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         if (SAFE)
             return buffer[(int) index];
         else
@@ -267,7 +268,8 @@ public final class ArrayAccess {
     }
 
     public static $generic @NotNull $typeName[] putVolatile(
-        final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
+        final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer,
+        final @NotNull $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
         else
@@ -277,7 +279,8 @@ public final class ArrayAccess {
         return buffer;
     }
 
-    public final $generic @NotNull $typeName[] copy(final ${indexTypeName} index, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
+    public final $generic @NotNull $typeName[] copy(
+        final ${indexTypeName} index, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
         return copy(this.SAFE, index, destination, source);
     }
 
@@ -296,15 +299,15 @@ public final class ArrayAccess {
         return destination;
     }
 
-    public final $generic @NotNull $typeName[] copy(final ${indexTypeName} length, final ${
-                indexTypeName
-            } indexDestination, final @NotNull $typeName[] destination, final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
+    public final $generic @NotNull $typeName[] copy(
+        final ${indexTypeName} length, final ${indexTypeName} indexDestination, final @NotNull $typeName[] destination,
+        final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
         return copy(this.SAFE, length, indexDestination, destination, indexSource, source);
     }
 
-    public static $generic @NotNull $typeName[] copy(final boolean SAFE, final ${indexTypeName} length, final ${
-                indexTypeName
-            } indexDestination, final @NotNull $typeName[] destination, final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
+    public static $generic @NotNull $typeName[] copy(
+        final boolean SAFE, final ${indexTypeName} length, final ${indexTypeName} indexDestination,
+        final @NotNull $typeName[] destination, final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
         if (SAFE)
             System.arraycopy(source, (int) indexSource, destination, (int) indexDestination, (int) length);
         else

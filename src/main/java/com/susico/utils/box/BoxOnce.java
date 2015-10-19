@@ -19,7 +19,7 @@ package com.susico.utils.box;
 import java.io.Serializable;
 
 /**
- * Box Once market interface
+ * boxed Once market interface
  *
  * @param <T> Type
  * @author sirinath

@@ -61,21 +61,41 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     protected final boolean SAFE;
     protected ${finalField} ${typeName}[] buffer;
     protected volatile long index = 0;
+    protected volatile long offset = 0;
+    protected volatile long inc = 1;
 
-    proected static final long indexFieldOffset =
+    protected static final long indexFieldOffset =
         getFieldOffset(${mutabilityPrefix}WrappedArrayAccess${typeSuffix}.class, "index");
+    protected static final long offsetFieldOffset =
+        getFieldOffset(${mutabilityPrefix}WrappedArrayAccess${typeSuffix}.class, "offset");
+    protected static final long incFieldOffset =
+        getFieldOffset(${mutabilityPrefix}WrappedArrayAccess${typeSuffix}.class, "inc");
 
-    public ArrayAccess(final boolean SAFE, final ${typeName}[] array) {
+    public ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}(final boolean SAFE, final ${typeName}[] array) {
         this.SAFE = SAFE;
         this.buffer = array;
     }
 
     ${
         mutable ? """
-    public final ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic wrap(final @NotNull ${typeName}[] array) {
-        this.buffer = array
+    private boolean volatility wrapGuard = false;
 
-        return this;
+    public final ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic wrap(final @NotNull ${typeName}[] array) {
+        try {
+            while (wrapGuard)
+                LockSupport.parkNanos(1);
+
+            this.wrapGuard = true;
+
+            this.buffer = array
+            this.index = 0L;
+            this.offset = 0L;
+            this.inc = 1L;
+
+            return this;
+        } finally {
+            this.wrapGuard = false;
+        }
     }""" : ""
     }
 
@@ -108,48 +128,166 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return SAFE;
     }
 
-    public long getIndex() {
+    public final long getIncrementCounter() {
         return index;
     }
 
-    public long getIndexWeak() {
+    public final long getIndex() {
+        return index;
+    }
+
+    public final long getOffset() {
+        return offset;
+    }
+
+    public final long getIncrementCounterWeak() {
+        return UNSAFE.getLong(this, incFieldOffset);
+    }
+
+    public final long getIndexWeak() {
         return UNSAFE.getLong(this, indexFieldOffset);
     }
 
-    public void setIndex(final long value) {
+    public final long getOffseWeak() {
+        return UNSAFE.getLong(this, offsetFieldOffset);
+    }
+
+    public final void setIncrementCounter(final long value) {
+        inc = value;
+    }
+
+    public final void setIndex(final long value) {
         index = value;
     }
 
-    public void putIndexWeak(final long value) {
+    public final void setOffset(final long value) {
+        offset = value;
+    }
+
+    public final void putIncrementCounterWeak(final long value) {
+        return UNSAFE.putLong(this, incFieldOffset, value);
+    }
+
+    public final void putOrderedIncrementCounter(final long value) {
+        UNSAFE.putOrderedLong(this, incFieldOffset, value);
+    }
+
+    public final void putOffsetWeak(final long value) {
+        return UNSAFE.putLong(this, offsetFieldOffset, value);
+    }
+
+    public final void putOrderedOffset(final long value) {
+        UNSAFE.putOrderedLong(this, offsetFieldOffset, value);
+    }
+
+    public final void putIndexWeak(final long value) {
         return UNSAFE.putLong(this, indexFieldOffset, value);
     }
 
-    public void putOrderedIndex(final long value) {
+    public final void putOrderedIndex(final long value) {
         UNSAFE.putOrderedLong(this, indexFieldOffset, value);
     }
 
-    public void resetIndex() {
+    public final void resetIndex() {
         index = 0L;
     }
 
-    public long incAndGetIndex() {
+    public final void resetOffset() {
+        offset = 0L;
+    }
+
+    public final void resetIncrementCounter() {
+        inc = 0L;
+    }
+
+    public final void resetIndexToLast() {
+        index = buffer.length - 1;
+    }
+
+    public final long incAndGetIndex() {
+        return subAndGetIndex(inc);
+    }
+
+    public final long getAndIncIndex() {
+        return getAndSubIndex(inc);
+    }
+
+    public final long decAndGetIndex() {
+        return addAndGetIndex(inc);
+    }
+
+    public final long getAndDecIndex() {
+        return getAndAddIndex(inc);
+    }
+
+    public final long incBy1AndGetIndex() {
         return subAndGetIndex(1);
     }
 
-    public long getAndIncIndex() {
+    public final long getAndIncBy1Index() {
         return getAndSubIndex(1);
     }
 
-    public long decAndGetIndex() {
+    public final long decBy1AndGetIndex() {
         return addAndGetIndex(1);
     }
 
-    public long getAndDecIndex() {
+    public final long getAndDecBy1Index() {
         return getAndAddIndex(1);
     }
 
-    public long getAndSetIndex(final long value) {
+    public final long incAndGetOffset() {
+        return subAndGetOffset(inc);
+    }
+
+    public final long getAndIncOffset() {
+        return getAndSubOffset(inc);
+    }
+
+    public final long decAndGetOffset() {
+        return addAndGetOffset(inc);
+    }
+
+    public final long getAndDecOffset() {
+        return getAndAddOffset(inc);
+    }
+
+    public final long incBy1AndGetOffset() {
+        return subAndGetOffset(1);
+    }
+
+    public final long getAndIncBy1Offset() {
+        return getAndSubOffset(1);
+    }
+
+    public final long decBy1AndGetOffset() {
+        return addAndGetOffset(1);
+    }
+
+    public final long getAndDecBy1Offset() {
+        return getAndAddOffset(1);
+    }
+
+    public final long getAndSetOffset(final long value) {
+        UNSAFE.getAndSetLong(this, offsetFieldOffset, value);
+    }
+
+    public final long getAndSetIndex(final long value) {
         UNSAFE.getAndSetLong(this, indexFieldOffset, value);
+    }
+
+    public final long getAndSetIncrementCounter(final long value) {
+        UNSAFE.getAndSetLong(this, incFieldOffset, value);
+    }
+
+    public final long getAndAddOffset(final long value) {
+        long current;
+
+        do {
+            current = offset;
+        } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
+            current, current + value));
+        return current;
     }
 
     public final long getAndAddIndex(final long value) {
@@ -160,6 +298,29 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
             current, current + value));
         return current;
+    }
+
+    public final long getAndAddIncrementCounter(final long value) {
+        long current;
+
+        do {
+            current = inc;
+        } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
+            current, current + value));
+        return current;
+    }
+
+    public final long addAndGetOffset(final long value) {
+        long current;
+        long newValue;
+
+        do {
+            current = offset;
+            newValue = current + value;
+        } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
+            current, newValue));
+
+        return newValue;
     }
 
     public final long addAndGetIndex(final long value) {
@@ -175,6 +336,29 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return newValue;
     }
 
+    public final long addAndGetIncrementCounter(final long value) {
+        long current;
+        long newValue;
+
+        do {
+            current = inc;
+            newValue = current + value;
+        } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
+            current, newValue));
+
+        return newValue;
+    }
+
+    public final long getAndSubOffset(final long value) {
+        long current;
+
+        do {
+            current = offset;
+        } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
+            current, current - value));
+        return current;
+    }
+
     public final long getAndSubIndex(final long value) {
         long current;
 
@@ -183,6 +367,32 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
             current, current - value));
         return current;
+    }
+
+    public final long subAndGetIncrementCounter(final long value) {
+        long current;
+        long newValue;
+
+        do {
+            current = inc;
+            newValue = current - value;
+        } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
+            current, newValue));
+
+        return newValue;
+    }
+
+    public final long subAndGetOffset(final long value) {
+        long current;
+        long newValue;
+
+        do {
+            current = offset;
+            newValue = current - value;
+        } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
+            current, newValue));
+
+        return newValue;
     }
 
     public final long subAndGetIndex(final long value) {
@@ -198,54 +408,159 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return newValue;
     }
 
-    public final long getAndHalveIndex() {
+    public final long getAndBiDivIncrementCounter(final int level) {
+        long current;
+
+        do {
+            current = inc;
+        } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
+            current, buffer.length >>> level));
+        return current;
+    }
+
+    public final long getAndBiDivIndex(final int level, final int slice) {
         long current;
 
         do {
             current = index;
         } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
-            current, current >>> 1));
+            current, (buffer.length >>> level) * slice));
         return current;
     }
 
-    public final long halveAndGetIndex() {
+    public final long biDivAndGetIncrementCounter(final int value) {
+        long current;
+        long newValue;
+
+        do {
+            current = inc;
+            newValue = buffer.length >>> level;
+        } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
+            current, newValue));
+
+        return newValue;
+    }
+
+    public final long biDivAndGetIndex(final int value, final int slice) {
         long current;
         long newValue;
 
         do {
             current = index;
-            newValue = current >>> 1;
+            newValue = (buffer.length >>> level) * slice;
+        } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
+            current, newValue));
+
+        return newValue;
+    }
+    """)
+
+    String[] opTypes = ["BiOpLong", "UnaryOpLong", "MultiOpLong"]
+
+    for (String opType : opTypes) {
+        String valueParam = opType.startsWith("Multi") ?
+                ", final @NotNull long ... value" :
+                opType.startsWith("Bi") ?
+                        ", final long value" :
+                        ""
+
+        String applyOp = opType.startsWith("Multi") ?
+                "op.apply(current, value)" :
+                opType.startsWith("Bi") ?
+                        "op.apply(current, value)" :
+                        "op.apply(current)"
+
+        buffer.append("""
+    public  final long getAndUpdateIndex(
+        final @NotNull ${opType} op$valueParam) {
+
+        $typeName current;
+        do {
+            current = index;
+        } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
+            current, ${applyOp}));
+        return current;
+    }
+
+    public  final long updateAndGetIndex(
+        final @NotNull ${opType} op$valueParam) {
+
+        $typeName current;
+        $typeName newValue;
+        do {
+            current = index;
+            newValue = ${applyOp};
         } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
             current, newValue));
 
         return newValue;
     }
 
-    public final long getAndDivIndex(final long value) {
-        long current;
+    public  final long getAndUpdateOffset(
+        final @NotNull ${opType} op$valueParam) {
 
+        $typeName current;
         do {
-            current = index;
-        } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
-            current, current / value));
+            current = offset;
+        } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
+            current, ${applyOp}));
         return current;
     }
 
-    public final long divAndGetIndex(final long value) {
-        long current;
-        long newValue;
+    public  final long updateAndGetOffset(
+        final @NotNull ${opType} op$valueParam) {
 
+        $typeName current;
+        $typeName newValue;
         do {
-            current = index;
-            newValue = current / value;
-        } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
+            current = offset;
+            newValue = ${applyOp};
+        } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
             current, newValue));
 
         return newValue;
     }
 
+    public  final long getAndUpdateIncrementCounter(
+        final @NotNull ${opType} op$valueParam) {
+
+        $typeName current;
+        do {
+            current = inc;
+        } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
+            current, ${applyOp}));
+        return current;
+    }
+
+    public  final long updateAndGetIncrementCounter(
+        final @NotNull ${opType} op$valueParam) {
+
+        $typeName current;
+        $typeName newValue;
+        do {
+            current = inc;
+            newValue = ${applyOp};
+        } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
+            current, newValue));
+
+        return newValue;
+    }
+""")
+    }
+
+    buffer.append("""
     public final boolean compareAndSwapIndex(final long expected, final long value) {
         return UNSAFE.compareAndSwapLong(this, indexFieldOffset,
+            expected, value);
+    }
+
+    public final boolean compareAndSwapOffset(final long expected, final long value) {
+        return UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
+            expected, value);
+    }
+
+    public final boolean compareAndSwapIncrementCounter(final long expected, final long value) {
+        return UNSAFE.compareAndSwapLong(this, incFieldOffset,
             expected, value);
     }
 
@@ -262,7 +577,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final  boolean inRange(final long length) {
-        return index < length && index >= 0;
+        final long theIndex = index + this.offset + offset;
+        return theIndex < length && theIndex >= 0;
+    }
+
+    public final  boolean inRangeAtIndex(final long length) {
+        final long theIndex = index + offset;
+        return theIndex < length && theIndex >= 0;
     }
 
     public static  boolean inRange(final int index, final int offset, final int length) {
@@ -286,6 +607,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final  boolean inRange(final int offset, final int length) {
+        final long indexEnd = index + this.offset + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
+    }
+
+    public final  boolean inRangeAtIndex(final int offset, final int length) {
         final long indexEnd = index + offset;
         return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
@@ -296,6 +622,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final  boolean inRange(final long offset, final int length) {
+        final long indexEnd = index + this.offset + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
+    }
+
+    public final  boolean inRangeAtIndex(final long offset, final int length) {
         final long indexEnd = index + offset;
         return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
@@ -306,6 +637,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final  boolean inRange(final long offset, final long length) {
+        final long indexEnd = index + this.offset + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
+    }
+
+    public final  boolean inRangeAtIndex(final long offset, final long length) {
         final long indexEnd = index + offset;
         return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
@@ -386,8 +722,17 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final boolean inRange() {
+        return inRange(index + offset);
+    }
+
+    public final boolean inRangeAtIndex(final long offset) {
+        return inRange(index, offset, buffer);
+    }
+
+    public final boolean inRangeAtIndex() {
         return inRange(index);
-    } """ : ""
+    }
+    """ : ""
         }
 
     public final boolean inRange(final ${indexTypeName} index) {
@@ -401,8 +746,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final void checkIndex() {
+        checkIndex(index + offset);
+    }
+
+    public final void checkIndexAtIndex() {
         checkIndex(index);
-    }""" : ""
+    }
+    """ : ""
         }
 
     public final void checkIndex(final ${indexTypeName} index) {
@@ -417,8 +767,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final void checkIndexIfSafeOn() {
+        checkIndexIfSafeOn(index + offset);
+    }
+
+    public final void checkIndexIfSafeOnAtIndex() {
         checkIndexIfSafeOn(index);
-    }""" : ""
+    }
+    """ : ""
         }
 
     public final void checkIndexIfSafeOn(final ${indexTypeName} index) {
@@ -437,8 +792,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final boolean inRange(final long length) {
+        return inRange(index + offset, length);
+    }
+
+    public final boolean inRangeAtIndex(final long length) {
         return inRange(index, length);
-    } """ : ""
+    }
+    """ : ""
         }
 
     public final boolean inRange(final ${indexTypeName} index, final long length) {
@@ -452,8 +812,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final void checkIndex(final long length) {
-        checkIndex(index, length);
-    }""" : ""
+        checkIndex(index + offset, length);
+    }
+
+    public final void checkIndexAtIndex(final long length) {
+        checkIndex(index + offset, length);
+    }
+    """ : ""
         }
 
     public final void checkIndex(final ${indexTypeName} index, final long length) {
@@ -469,12 +834,17 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final void checkIndexIfSafeOn(final long length) {
+        checkIndexIfSafeOn(index + offset, length);
+    }
+
+    public final void checkIndexIfSafeOnAtIndex(final long length) {
         checkIndexIfSafeOn(index, length);
-    }""" : ""
+    }
+    """ : ""
         }
 
     public final void checkIndexIfSafeOn(final ${indexTypeName} index, final long length) {
-        checkIndexIfSafeOn(index, length);
+        checkIndexIfSafeOn(index, length, buffer);
     }
 
     public final $generic void checkIndexIfSafeOn(final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
@@ -490,8 +860,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName get() {
-        return get(index);
-    }""" : ""
+        return get(index + offset);
+    }
+
+    public final @NotNull $typeName getAtIndex() {
+        return get(index + offset);
+    }
+    """ : ""
         }
 
     public final @NotNull $typeName get(final ${indexTypeName} index) {
@@ -513,8 +888,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName[] put(final @NotNull $typeName value) {
+        return put(index + offset, value);
+    }
+
+    public final @NotNull $typeName[] putAtIndex(final @NotNull $typeName value) {
         return put(index, value);
-    }""" : ""
+    }
+    """ : ""
         }
 
     public final @NotNull $typeName[] put(final ${indexTypeName} index, final @NotNull $typeName value) {
@@ -539,8 +919,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName getVolatile() {
+        return getVolatile(index + offset);
+    }
+
+    public final @NotNull $typeName getVolatileAtIndex() {
         return getVolatile(index);
-    }""" : ""
+    }
+    """ : ""
         }
 
     public final @NotNull $typeName getVolatile(final ${indexTypeName} index) {
@@ -562,8 +947,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName[] putVolatile(final @NotNull $typeName value) {
+        return putVolatile(index + offset, value);
+    }
+
+    public final @NotNull $typeName[] putVolatileAtIndex(final @NotNull $typeName value) {
         return putVolatile(index, value);
-    } """ : ""
+    }
+    """ : ""
         }
 
     public final @NotNull $typeName[] putVolatile(
@@ -590,21 +980,28 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName[] copy(final @NotNull $typeName ... source) {
+        return copy(index + offset, source);
+    }
+
+    public final @NotNull $typeName[] copyAtIndex(final @NotNull $typeName ... source) {
         return copy(index, source);
-    }""" : ""
+    }
+    """ : ""
         }
 
-    public final @NotNull $typeName[] copy(final ${indexTypeName} index, final @NotNull $typeName ... source) {
+    public final @NotNull $typeName[] copy(
+        final ${indexTypeName} index, final @NotNull $typeName ... source) {
         return copy(index, buffer, source);
     }
 
-    public final $generic @NotNull $typeName[] copy(final ${indexTypeName} index, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
+    public final $generic @NotNull $typeName[] copy(
+        final ${indexTypeName} index, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
         return copy(this.SAFE, index, destination, source);
     }
 
-    public static $generic $typeName[] copy(final boolean SAFE, final ${
-            indexTypeName
-        } index, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
+    public static $generic $typeName[] copy(
+        final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] destination,
+        final @NotNull $typeName ... source) {
         if (SAFE)
             System.arraycopy(source, 0, destination, (int) index, source.length);
         else
@@ -620,7 +1017,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public final @NotNull $typeName[] copy(
         final ${indexTypeName} length,
         final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
-        return copy(length, indexDestination, indexSource, source);
+        return copy(length, index + offset, buffer, indexSource, source);
+    }
+
+    public final @NotNull $typeName[] copyAtIndex(
+        final ${indexTypeName} length,
+        final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
+        return copy(length, index, buffer, indexSource, source);
     }
 
     public final @NotNull $typeName[] copy(
@@ -630,7 +1033,8 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final $generic @NotNull $typeName[] copy(
-        final ${indexTypeName} length, final ${indexTypeName} indexDestination, final @NotNull $typeName[] destination,
+        final ${indexTypeName} length, final ${indexTypeName} indexDestination,
+        final @NotNull $typeName[] destination,
         final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
         return copy(this.SAFE, length, indexDestination, destination, indexSource, source);
     }
@@ -672,8 +1076,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
                 indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName[] putOrdered(
         final @NotNull $typeName value) {
+        return putOrdered(index + offset, value);
+    }
+
+    public final @NotNull $typeName[] putOrderedAtIndex(
+        final @NotNull $typeName value) {
         return putOrdered(index, value);
-    } """ : ""
+    }
+    """ : ""
             }
 
     public final @NotNull $typeName[] putOrdered(
@@ -702,8 +1112,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
                 indexTypes.equals(Long.TYPE) ? """
     public final boolean compareAndSwap(
         final @NotNull $typeName expected, final @NotNull $typeName value) {
+        return compareAndSwap(index + offset, expected, value);
+    }
+
+    public final boolean compareAndSwapAtIndex(
+        final @NotNull $typeName expected, final @NotNull $typeName value) {
         return compareAndSwap(index, expected, value);
-    }""" : ""
+    }
+    """ : ""
             }
 
     public final boolean compareAndSwap(
@@ -730,8 +1146,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
                 indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName getAndSet(
         final @NotNull $typeName value) {
+        return ($typeName) getAndSet(index + offset, value);
+    }
+
+    public final @NotNull $typeName getAndSetAtIndex(
+        final @NotNull $typeName value) {
         return ($typeName) getAndSet(index, value);
-    }""" : ""
+    }
+    """ : ""
             }
 
     public final @NotNull $typeName getAndSet(
@@ -754,7 +1176,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
         """)
 
-            String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+            opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
 
             for (String opType : opTypes) {
                 String valueParam = opType.startsWith("Multi") ?
@@ -780,8 +1202,15 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
                     indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName getAndUpdate(
         final @NotNull ${opType}$generic op$valueParam) {
+        return ($typeName) getAndUpdate(index + offset, op${applyOpMulti});
+    }
+
+
+    public final @NotNull $typeName getAndUpdateAtIndex(
+        final @NotNull ${opType}$generic op$valueParam) {
         return ($typeName) getAndUpdate(index, op${applyOpMulti});
-    }""" : ""
+    }
+    """ : ""
                 }
 
     public final @NotNull $typeName getAndUpdate(
@@ -812,8 +1241,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
                     indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName updateAndGet(
         final @NotNull ${opType}$generic op$valueParam) {
+        return updateAndGet(index + offset, op${applyOpMulti});
+    }
+
+    public final @NotNull $typeName updateAndGetAtIndex(
+        final @NotNull ${opType}$generic op$valueParam) {
         return updateAndGet(index, op${applyOpMulti});
-    }""" : ""
+    }
+    """ : ""
                 }
 
 
@@ -823,14 +1258,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final $generic @NotNull $typeName updateAndGet(
-        final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull ${opType}$generic op$valueParam) {
+        final ${indexTypeName} index, final @NotNull $typeName[] buffer,
+        final @NotNull ${opType}$generic op$valueParam) {
         return updateAndGet(this.SAFE, index, buffer, op${applyOpMulti});
     }
 
     public static $generic $typeName updateAndGet(
-        final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final ${
-                    opType
-                }$generic op$valueParam) {
+        final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer,
+        final ${opType}$generic op$valueParam) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
         $typeName current;

@@ -47,6 +47,7 @@ String genClass(boolean mutable, Class<?> type) {
     String typeName = type.isPrimitive() ? type.getSimpleName() : (isEnum ? "Enum" : "T")
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : isEnum ? "Enum" : "Object"
     String genericClassSuffix = type.isPrimitive() ? "" : isEnum ? "<T extends Enum<T>>" : "<T>"
+    String genericParentClass = type.isPrimitive() ? "" : "<T>"
     String generic = type.isPrimitive() ? "" : "<T>"
     String packageName = mutable ? "mutable" : "immutable"
     String classPrefix = upcase1st(packageName)
@@ -78,7 +79,7 @@ import org.jetbrains.annotations.*;
  */
 @SuppressWarnings("serial")
 public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number
-    implements BoxOnce<${classPrefix}${typeSuffix}${genericClassSuffix}> {
+    implements BoxOnce<${classPrefix}${typeSuffix}${genericParentClass}> {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
     protected final static long valueFieldOffset = getFieldOffset(${classPrefix}${typeSuffix}.class, "value");

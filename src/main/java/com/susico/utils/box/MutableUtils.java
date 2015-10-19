@@ -30,7 +30,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableBoolean Box(final boolean v) {
+    public static MutableBoolean boxed(final boolean v) {
         return new MutableBoolean(v);
     }
 
@@ -38,7 +38,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableByte Box(final byte v) {
+    public static MutableByte boxed(final byte v) {
         return new MutableByte(v);
     }
 
@@ -46,7 +46,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableChar Box(final char v) {
+    public static MutableChar boxed(final char v) {
         return new MutableChar(v);
     }
 
@@ -54,7 +54,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableDouble Box(final double v) {
+    public static MutableDouble boxed(final double v) {
         return new MutableDouble(v);
     }
 
@@ -62,7 +62,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableFloat Box(final float v) {
+    public static MutableFloat boxed(final float v) {
         return new MutableFloat(v);
     }
 
@@ -70,7 +70,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableInt Box(final int v) {
+    public static MutableInt boxed(final int v) {
         return new MutableInt(v);
     }
 
@@ -78,7 +78,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableLong Box(final long v) {
+    public static MutableLong boxed(final long v) {
         return new MutableLong(v);
     }
 
@@ -86,7 +86,7 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static MutableShort Box(final short v) {
+    public static MutableShort boxed(final short v) {
         return new MutableShort(v);
     }
 
@@ -95,7 +95,7 @@ public class MutableUtils {
      * @param v   value to be boxed
      * @return boxed value
      */
-    public static <T extends Enum<T>> MutableEnum<T> Box(final @NotNull T v) {
+    public static <T extends Enum<T>> MutableEnum<T> boxed(final @NotNull T v) {
         return new MutableEnum<T>(v);
     }
 }

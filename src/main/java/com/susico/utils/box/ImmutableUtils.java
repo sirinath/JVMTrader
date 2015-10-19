@@ -30,7 +30,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableBoolean Box(final boolean v) {
+    public static ImmutableBoolean boxed(final boolean v) {
         return new ImmutableBoolean(v);
     }
 
@@ -38,7 +38,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableByte Box(final byte v) {
+    public static ImmutableByte boxed(final byte v) {
         return new ImmutableByte(v);
     }
 
@@ -46,7 +46,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableChar Box(final char v) {
+    public static ImmutableChar boxed(final char v) {
         return new ImmutableChar(v);
     }
 
@@ -54,7 +54,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableDouble Box(final double v) {
+    public static ImmutableDouble boxed(final double v) {
         return new ImmutableDouble(v);
     }
 
@@ -62,7 +62,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableFloat Box(final float v) {
+    public static ImmutableFloat boxed(final float v) {
         return new ImmutableFloat(v);
     }
 
@@ -70,7 +70,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableInt Box(final int v) {
+    public static ImmutableInt boxed(final int v) {
         return new ImmutableInt(v);
     }
 
@@ -78,7 +78,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableLong Box(final long v) {
+    public static ImmutableLong boxed(final long v) {
         return new ImmutableLong(v);
     }
 
@@ -86,7 +86,7 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static ImmutableShort Box(final short v) {
+    public static ImmutableShort boxed(final short v) {
         return new ImmutableShort(v);
     }
 
@@ -95,7 +95,7 @@ public class ImmutableUtils {
      * @param v   value to be boxed
      * @return boxed value
      */
-    public static <T extends Enum<T>> ImmutableEnum<T> Box(final @NotNull T v) {
+    public static <T extends Enum<T>> ImmutableEnum<T> boxed(final @NotNull T v) {
         return new ImmutableEnum<T>(v);
     }
 }
