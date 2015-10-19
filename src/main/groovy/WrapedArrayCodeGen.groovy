@@ -563,88 +563,6 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return UNSAFE.compareAndSwapLong(this, incFieldOffset,
             expected, value);
     }
-
-    public static  boolean inRange(final int index, final int length) {
-        return index < length && index >= 0;
-    }
-
-    public static  boolean inRange(final int index, final long length) {
-        return index < length && index >= 0;
-    }
-
-    public static  boolean inRange(final long index, final long length) {
-        return index < length && index >= 0;
-    }
-
-    public final  boolean inRange(final long length) {
-        final long theIndex = index + this.offset + offset;
-        return theIndex < length && theIndex >= 0;
-    }
-
-    public final  boolean inRangeAtIndex(final long length) {
-        final long theIndex = index + offset;
-        return theIndex < length && theIndex >= 0;
-    }
-
-    public static  boolean inRange(final int index, final int offset, final int length) {
-        final int indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final int index, final long offset, final long length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final int index, final long offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final long index, final int offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public final  boolean inRange(final int offset, final int length) {
-        final long indexEnd = index + this.offset + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public final  boolean inRangeAtIndex(final int offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final long index, final long offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public final  boolean inRange(final long offset, final int length) {
-        final long indexEnd = index + this.offset + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public final  boolean inRangeAtIndex(final long offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final long index, final long offset, final long length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public final  boolean inRange(final long offset, final long length) {
-        final long indexEnd = index + this.offset + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public final  boolean inRangeAtIndex(final long offset, final long length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
 """)
 
     buffer.append("""
@@ -719,21 +637,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         String indexTypeName = indexType.getSimpleName();
 
         buffer.append("""
-    ${
-            indexTypes.equals(Long.TYPE) ? """
-    public final boolean inRange() {
-        return inRange(index + offset);
+    public static  boolean inRange(final ${indexTypeName} index, final int length) {
+        return index < length && index >= 0;
     }
 
-    public final boolean inRangeAtIndex(final long offset) {
-        return inRange(index, offset, buffer);
+    public static  boolean inRange(final ${indexTypeName} index, final long length) {
+        return index < length && index >= 0;
     }
-
-    public final boolean inRangeAtIndex() {
-        return inRange(index);
-    }
-    """ : ""
-        }
 
     public final boolean inRange(final ${indexTypeName} index) {
         return inRange(index, buffer);
@@ -743,20 +653,8 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return inRange(index, buffer.length);
     }
 
-    ${
-            indexTypes.equals(Long.TYPE) ? """
-    public final void checkIndex() {
-        checkIndex(index + offset);
-    }
-
-    public final void checkIndexAtIndex() {
+    public static $generic void checkIndex(final ${indexTypeName} index) {
         checkIndex(index);
-    }
-    """ : ""
-        }
-
-    public final void checkIndex(final ${indexTypeName} index) {
-        checkIndex(index, buffer);
     }
 
     public static $generic void checkIndex(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
@@ -764,19 +662,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
             new ArrayIndexOutOfBoundsException(String.format("index %d not in range of 0 and array length %d", index, buffer.length));
     }
 
-    ${
-            indexTypes.equals(Long.TYPE) ? """
-    public final void checkIndexIfSafeOn() {
-        checkIndexIfSafeOn(index + offset);
-    }
-
-    public final void checkIndexIfSafeOnAtIndex() {
-        checkIndexIfSafeOn(index);
-    }
-    """ : ""
-        }
-
-    public final void checkIndexIfSafeOn(final ${indexTypeName} index) {
+    public final $generic void checkIndexIfSafeOn(final ${indexTypeName} index) {
         checkIndexIfSafeOn(index, buffer);
     }
 
@@ -791,70 +677,92 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
     ${
             indexTypes.equals(Long.TYPE) ? """
-    public final boolean inRange(final long length) {
-        return inRange(index + offset, length);
+    public final boolean inRangeWithOffset() {
+        return inRangeWithOffset(index, offset);
     }
 
-    public final boolean inRangeAtIndex(final long length) {
-        return inRange(index, length);
+    public final boolean inRangeWithOffsetAtIndex() {
+        return inRange(index);
+    }
+
+    public final boolean inRangeWithOffsetAtIndex(final long offset) {
+        return inRangeWithOffset(index, offset);
     }
     """ : ""
         }
 
-    public final boolean inRange(final ${indexTypeName} index, final long length) {
+    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final long length) {
+        final long indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
+    }
+
+    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final int length) {
+        final long indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
+    }
+
+    public final boolean inRangeWithOffset(final ${indexTypeName} index, final long offset) {
         return inRange(index, length, buffer);
     }
 
-    public static $generic boolean inRange(final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
-        return inRange(index, length, buffer.length);
+    public static $generic boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
+        return inRange(index, offset, buffer.length);
     }
 
     ${
             indexTypes.equals(Long.TYPE) ? """
-    public final void checkIndex(final long length) {
-        checkIndex(index + offset, length);
+    public final void checkIndexWithOffset() {
+        checkIndexWithOffset(index, offset);
     }
 
-    public final void checkIndexAtIndex(final long length) {
-        checkIndex(index + offset, length);
+    public final void checkIndexWithOffsetAtIndex() {
+        checkIndex(index);
+    }
+
+    public final void checkIndexWithOffsetAtIndex(final long offset) {
+        checkIndexWithOffset(index, offset);
     }
     """ : ""
         }
 
-    public final void checkIndex(final ${indexTypeName} index, final long length) {
-        checkIndex(index, length, buffer);
+    public final void checkIndexWithOffset(final ${indexTypeName} index, final long offset) {
+        checkIndex(index, offset, buffer);
     }
 
-    public static $generic void checkIndex(final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
-        if (inRange(index, length, buffer))
+    public static $generic void checkIndexWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
+        if (inRange(index, offset, buffer))
             new ArrayIndexOutOfBoundsException(String.format(
                 "index range %d and %d of length %d is not in range of 0 and array length %d", index, index + length, length, buffer.length));
     }
 
     ${
             indexTypes.equals(Long.TYPE) ? """
-    public final void checkIndexIfSafeOn(final long length) {
-        checkIndexIfSafeOn(index + offset, length);
+    public final void checkIndexIfSafeOnWithOffset() {
+        checkIndexIfSafeOnWithOffset(index, offset);
     }
 
-    public final void checkIndexIfSafeOnAtIndex(final long length) {
-        checkIndexIfSafeOn(index, length);
+    public final void checkIndexIfSafeOnWithOffsetAtIndex() {
+        checkIndexIfSafeOn(index);
+    }
+
+    public final void checkIndexIfSafeOnWithOffsetAtIndex(final long offset) {
+        checkIndexIfSafeOnWithOffset(index, offset);
     }
     """ : ""
         }
 
-    public final void checkIndexIfSafeOn(final ${indexTypeName} index, final long length) {
-        checkIndexIfSafeOn(index, length, buffer);
+    public final void checkIndexIfSafeOnWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset) {
+        checkIndexIfSafeOn(index, offset, buffer);
     }
 
-    public final $generic void checkIndexIfSafeOn(final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
+    public final $generic void checkIndexIfSafeOnWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
         checkIndexIfSafeOn(this.SAFE, index, buffer);
     }
 
-    public static void checkIndexIfSafeOn(
-        final boolean SAFE, final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
+    public static void checkIndexIfSafeOnWithOffset(
+        final boolean SAFE, final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
         if (SAFE)
-            checkIndex(index, length, buffer);
+            checkIndex(index, offset, buffer);
     }
 
     ${
@@ -863,8 +771,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return get(index + offset);
     }
 
-    public final @NotNull $typeName getAtIndex() {
+    public final @NotNull $typeName getAtIndex(final long offset) {
         return get(index + offset);
+    }
+
+    public final @NotNull $typeName getAtIndex() {
+        return get(index);
     }
     """ : ""
         }

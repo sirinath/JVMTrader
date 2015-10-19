@@ -75,48 +75,6 @@ public final class ArrayAccess {
     public static ArrayAccess unchecked() {
         return UNCHECKED;
     }
-
-    public static  boolean inRange(final int index, final int length) {
-        return index < length && index >= 0;
-    }
-
-    public static  boolean inRange(final int index, final long length) {
-        return index < length && index >= 0;
-    }
-
-    public static  boolean inRange(final long index, final long length) {
-        return index < length && index >= 0;
-    }
-
-    public static  boolean inRange(final int index, final int offset, final int length) {
-        final int indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final int index, final long offset, final long length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final int index, final long offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final long index, final int offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final long index, final long offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
-
-    public static  boolean inRange(final long index, final long offset, final long length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
-    }
 """)
 
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
@@ -183,6 +141,14 @@ public final class ArrayAccess {
             String indexTypeName = indexType.getSimpleName();
 
             buffer.append("""
+    public static  boolean inRange(final ${indexTypeName} index, final int length) {
+        return index < length && index >= 0;
+    }
+
+    public static  boolean inRange(final ${indexTypeName} index, final long length) {
+        return index < length && index >= 0;
+    }
+
     public static $generic boolean inRange(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         return inRange(index, buffer.length);
     }
@@ -201,25 +167,31 @@ public final class ArrayAccess {
             checkIndex(index, buffer);
     }
 
-    public static $generic boolean inRange(final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
-        return inRange(index, length, buffer.length);
+    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final long length) {
+        final long indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
     }
 
-    public static $generic void checkIndex(final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
-        if (inRange(index, length, buffer))
+    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final int length) {
+        final long indexEnd = index + offset;
+        return indexEnd < length && index >= 0 && indexEnd >= 0;
+    }
+
+    public static $generic void checkIndexWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
+        if (inRangeWithOffset(index, offset, buffer))
             new ArrayIndexOutOfBoundsException(String.format(
-                "index range %d and %d of length %d is not in range of 0 and array length %d", index, index + length, length, buffer.length));
+                "index range %d and %d of length %d is not in range of 0 and array offset %d", index, index + offset, offset, buffer.length));
     }
 
-    public final $generic void checkIndexIfSafeOn(
-        final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
-        checkIndexIfSafeOn(this.SAFE, index, buffer);
+    public final $generic void checkIndexIfSafeOnWithOffset(
+        final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
+        checkIndexIfSafeOnWithOffset(this.SAFE, index, offset, buffer);
     }
 
-    public static $generic void checkIndexIfSafeOn(
-        final boolean SAFE, final ${indexTypeName} index, final long length, final @NotNull $typeName ... buffer) {
+    public static $generic void checkIndexIfSafeOnWithOffset(
+        final boolean SAFE, final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
         if (SAFE)
-            checkIndex(index, length, buffer);
+            checkIndexWithOffset(index, offset, buffer);
     }
 
     public final $generic @NotNull $typeName get(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
