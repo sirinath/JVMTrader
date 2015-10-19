@@ -17,7 +17,7 @@
 package com.susico.utils.box;
 
 
-import com.susico.utils.primitives.variable.*;
+import com.susico.utils.box.immutable.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,64 +30,64 @@ public class ImmutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVBool Box(final boolean v) {
-        return new PVBool(v);
+    public static ImmutableBoolean Box(final boolean v) {
+        return new ImmutableBoolean(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVByte Box(final byte v) {
-        return new PVByte(v);
+    public static ImmutableByte Box(final byte v) {
+        return new ImmutableByte(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVChar Box(final char v) {
-        return new PVChar(v);
+    public static ImmutableChar Box(final char v) {
+        return new ImmutableChar(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVDouble Box(final double v) {
-        return new PVDouble(v);
+    public static ImmutableDouble Box(final double v) {
+        return new ImmutableDouble(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVFloat Box(final float v) {
-        return new PVFloat(v);
+    public static ImmutableFloat Box(final float v) {
+        return new ImmutableFloat(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVInt Box(final int v) {
-        return new PVInt(v);
+    public static ImmutableInt Box(final int v) {
+        return new ImmutableInt(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVLong Box(final long v) {
-        return new PVLong(v);
+    public static ImmutableLong Box(final long v) {
+        return new ImmutableLong(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVShort Box(final short v) {
-        return new PVShort(v);
+    public static ImmutableShort Box(final short v) {
+        return new ImmutableShort(v);
     }
 
     /**
@@ -95,7 +95,7 @@ public class ImmutableUtils {
      * @param v   value to be boxed
      * @return boxed value
      */
-    public static <T extends Enum<T>> PVEnum<T> Box(final @NotNull T v) {
-        return new PVEnum<T>(v);
+    public static <T extends Enum<T>> ImmutableEnum<T> Box(final @NotNull T v) {
+        return new ImmutableEnum<T>(v);
     }
 }

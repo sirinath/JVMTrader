@@ -17,7 +17,7 @@
 package com.susico.utils.box;
 
 
-import com.susico.utils.primitives.variable.*;
+import com.susico.utils.box.mutable.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,64 +30,64 @@ public class MutableUtils {
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVBool Box(final boolean v) {
-        return new PVBool(v);
+    public static MutableBoolean Box(final boolean v) {
+        return new MutableBoolean(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVByte Box(final byte v) {
-        return new PVByte(v);
+    public static MutableByte Box(final byte v) {
+        return new MutableByte(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVChar Box(final char v) {
-        return new PVChar(v);
+    public static MutableChar Box(final char v) {
+        return new MutableChar(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVDouble Box(final double v) {
-        return new PVDouble(v);
+    public static MutableDouble Box(final double v) {
+        return new MutableDouble(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVFloat Box(final float v) {
-        return new PVFloat(v);
+    public static MutableFloat Box(final float v) {
+        return new MutableFloat(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVInt Box(final int v) {
-        return new PVInt(v);
+    public static MutableInt Box(final int v) {
+        return new MutableInt(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVLong Box(final long v) {
-        return new PVLong(v);
+    public static MutableLong Box(final long v) {
+        return new MutableLong(v);
     }
 
     /**
      * @param v value to be boxed
      * @return boxed value
      */
-    public static PVShort Box(final short v) {
-        return new PVShort(v);
+    public static MutableShort Box(final short v) {
+        return new MutableShort(v);
     }
 
     /**
@@ -95,7 +95,7 @@ public class MutableUtils {
      * @param v   value to be boxed
      * @return boxed value
      */
-    public static <T extends Enum<T>> PVEnum<T> Box(final @NotNull T v) {
-        return new PVEnum<T>(v);
+    public static <T extends Enum<T>> MutableEnum<T> Box(final @NotNull T v) {
+        return new MutableEnum<T>(v);
     }
 }
