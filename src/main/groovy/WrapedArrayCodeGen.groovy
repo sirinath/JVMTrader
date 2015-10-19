@@ -645,6 +645,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return index < length && index >= 0;
     }
 
+    ${
+            indexTypes.equals(Long.TYPE) ? """
+    public final boolean inRangeAtIndex() {
+        return inRange(index, buffer);
+    }
+    """ : ""
+        }
+
     public final boolean inRange(final ${indexTypeName} index) {
         return inRange(index, buffer);
     }
@@ -652,6 +660,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public static $generic boolean inRange(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         return inRange(index, buffer.length);
     }
+
+    ${
+            indexTypes.equals(Long.TYPE) ? """
+    public static $generic void checkIndexAtIndex() {
+        checkIndex(index);
+    }
+    """ : ""
+        }
 
     public static $generic void checkIndex(final ${indexTypeName} index) {
         checkIndex(index);
@@ -661,6 +677,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         if (inRange(index, buffer))
             new ArrayIndexOutOfBoundsException(String.format("index %d not in range of 0 and array length %d", index, buffer.length));
     }
+
+    ${
+            indexTypes.equals(Long.TYPE) ? """
+    public final $generic void checkIndexIfSafeOnAtIndex() {
+        checkIndexIfSafeOn(index, buffer);
+    }
+    """ : ""
+        }
 
     public final $generic void checkIndexIfSafeOn(final ${indexTypeName} index) {
         checkIndexIfSafeOn(index, buffer);
@@ -803,6 +827,10 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return put(index + offset, value);
     }
 
+    public final @NotNull $typeName[] putAtIndex(final long offset, final @NotNull $typeName value) {
+        return put(index + offset, value);
+    }
+
     public final @NotNull $typeName[] putAtIndex(final @NotNull $typeName value) {
         return put(index, value);
     }
@@ -834,6 +862,10 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return getVolatile(index + offset);
     }
 
+    public final @NotNull $typeName getVolatileAtIndex(final long offset) {
+        return getVolatile(index + offset);
+    }
+
     public final @NotNull $typeName getVolatileAtIndex() {
         return getVolatile(index);
     }
@@ -859,6 +891,10 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     ${
             indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName[] putVolatile(final @NotNull $typeName value) {
+        return putVolatile(index + offset, value);
+    }
+
+    public final @NotNull $typeName[] putVolatileAtIndex(final long offset, final @NotNull $typeName value) {
         return putVolatile(index + offset, value);
     }
 
@@ -895,6 +931,10 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return copy(index + offset, source);
     }
 
+    public final @NotNull $typeName[] copyAtIndex(final long offset, final @NotNull $typeName ... source) {
+        return copy(index + offset, source);
+    }
+
     public final @NotNull $typeName[] copyAtIndex(final @NotNull $typeName ... source) {
         return copy(index, source);
     }
@@ -928,6 +968,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
     public final @NotNull $typeName[] copy(
         final ${indexTypeName} length,
+        final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
+        return copy(length, index + offset, buffer, indexSource, source);
+    }
+
+    public final @NotNull $typeName[] copyAtIndex(
+        final long offset, final ${indexTypeName} length,
         final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
         return copy(length, index + offset, buffer, indexSource, source);
     }
@@ -992,6 +1038,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final @NotNull $typeName[] putOrderedAtIndex(
+        final long offset, final @NotNull $typeName value) {
+        return putOrdered(index + offset, value);
+    }
+
+    public final @NotNull $typeName[] putOrderedAtIndex(
         final @NotNull $typeName value) {
         return putOrdered(index, value);
     }
@@ -1028,6 +1079,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final boolean compareAndSwapAtIndex(
+        final long offset, final @NotNull $typeName expected, final @NotNull $typeName value) {
+        return compareAndSwap(index + offset, expected, value);
+    }
+
+    public final boolean compareAndSwapAtIndex(
         final @NotNull $typeName expected, final @NotNull $typeName value) {
         return compareAndSwap(index, expected, value);
     }
@@ -1058,6 +1114,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
                 indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName getAndSet(
         final @NotNull $typeName value) {
+        return ($typeName) getAndSet(index + offset, value);
+    }
+
+    public final @NotNull $typeName getAndSetAtIndex(
+        final long offset, final @NotNull $typeName value) {
         return ($typeName) getAndSet(index + offset, value);
     }
 
@@ -1117,6 +1178,10 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return ($typeName) getAndUpdate(index + offset, op${applyOpMulti});
     }
 
+    public final @NotNull $typeName getAndUpdateAtIndex(
+        final long offset, final @NotNull ${opType}$generic op$valueParam) {
+        return ($typeName) getAndUpdate(index + offset, op${applyOpMulti});
+    }
 
     public final @NotNull $typeName getAndUpdateAtIndex(
         final @NotNull ${opType}$generic op$valueParam) {
@@ -1153,6 +1218,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
                     indexTypes.equals(Long.TYPE) ? """
     public final @NotNull $typeName updateAndGet(
         final @NotNull ${opType}$generic op$valueParam) {
+        return updateAndGet(index + offset, op${applyOpMulti});
+    }
+
+    public final @NotNull $typeName updateAndGetAtIndex(
+        final long offset, final @NotNull ${opType}$generic op$valueParam) {
         return updateAndGet(index + offset, op${applyOpMulti});
     }
 
