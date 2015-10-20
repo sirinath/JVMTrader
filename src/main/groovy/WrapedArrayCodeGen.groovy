@@ -78,7 +78,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
     ${
         mutable ? """
-    private boolean volatility wrapGuard = false;
+    private boolean volatile wrapGuard = false;
 
     public final ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic wrap(final @NotNull ${typeName}[] array) {
         try {
@@ -114,20 +114,20 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return checked(false, array);
     }
 
-    public static long rollIndex(final long index, final long length) {
-        return (value % length) & Long.MAX_VALUE;
+    public static long rollIndex(final long index, final int length) {
+        return (index % length) & Long.MAX_VALUE;
     }
 
-    public static long rollIndex(final long index) {
-        return rollIndex(value, buffer.length);
+    public final long rollIndex(final long index) {
+        return rollIndex(index, buffer.length);
     }
 
-    public static long rollOffset(final long index, final long offset, final long length) {
+    public static long rollOffset(final long index, final long offset, final int length) {
         return (((index + offset) % length) & Long.MAX_VALUE) - index;
     }
 
     public final long rollOffset(final long index, final long offset) {
-        return rollIndex(index, offset, buffer.length);
+        return rollOffset(index, offset, buffer.length);
     }
 
     public final boolean isSafe() {
@@ -171,7 +171,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final void putIncrementCounterWeak(final long value) {
-        return UNSAFE.putLong(this, incFieldOffset, value);
+        UNSAFE.putLong(this, incFieldOffset, value);
     }
 
     public final void putOrderedIncrementCounter(final long value) {
@@ -179,7 +179,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final void putOffsetWeak(final long value) {
-        return UNSAFE.putLong(this, offsetFieldOffset, rollOffset(index, value));
+        UNSAFE.putLong(this, offsetFieldOffset, rollOffset(index, value));
     }
 
     public final void putOrderedOffset(final long value) {
@@ -187,7 +187,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final void putIndexWeak(final long value) {
-        return UNSAFE.putLong(this, indexFieldOffset, rollIndex(value));
+        UNSAFE.putLong(this, indexFieldOffset, rollIndex(value));
     }
 
     public final void putOrderedIndex(final long value) {
@@ -294,10 +294,6 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return addAndGetOffset(inc);
     }
 
-    public final long incAndGetOffset() {
-        return addAndGetOffset(inc);
-    }
-
     public final long getAndIncOffset() {
         return getAndSubOffset(inc);
     }
@@ -327,15 +323,15 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final long getAndSetOffset(final long value) {
-        UNSAFE.getAndSetLong(this, offsetFieldOffset, value);
+        return UNSAFE.getAndSetLong(this, offsetFieldOffset, value);
     }
 
     public final long getAndSetIndex(final long value) {
-        UNSAFE.getAndSetLong(this, indexFieldOffset, rollIndex(value));
+        return UNSAFE.getAndSetLong(this, indexFieldOffset, rollIndex(value));
     }
 
     public final long getAndSetIncrementCounter(final long value) {
-        UNSAFE.getAndSetLong(this, incFieldOffset, value);
+        return UNSAFE.getAndSetLong(this, incFieldOffset, value);
     }
 
     public final long getAndAddOffset(final long value) {
@@ -510,7 +506,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return current;
     }
 
-    public final long biDivAndGetIncrementCounter(final int value) {
+    public final long biDivAndGetIncrementCounter(final int level) {
         long current;
         long newValue;
 
@@ -523,7 +519,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return newValue;
     }
 
-    public final long biDivAndGetIndex(final int value, final int slice) {
+    public final long biDivAndGetIndex(final int level, final int slice) {
         long current;
         long newValue;
 
@@ -556,7 +552,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public  final long getAndUpdateIndex(
         final @NotNull ${opType} op$valueParam) {
 
-        $typeName current;
+        long current;
         do {
             current = index;
         } while (!UNSAFE.compareAndSwapLong(this, indexFieldOffset,
@@ -567,8 +563,8 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public  final long updateAndGetIndex(
         final @NotNull ${opType} op$valueParam) {
 
-        $typeName current;
-        $typeName newValue;
+        long current;
+        long newValue;
         do {
             current = index;
             newValue = rollIndex(${applyOp});
@@ -597,7 +593,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public  final long getAndUpdateOffset(
         final @NotNull ${opType} op$valueParam) {
 
-        $typeName current;
+        long current;
         do {
             current = offset;
         } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
@@ -608,8 +604,8 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public  final long updateAndGetOffset(
         final @NotNull ${opType} op$valueParam) {
 
-        $typeName current;
-        $typeName newValue;
+        long current;
+        long newValue;
         do {
             current = offset;
             newValue = rollOffset(index, ${applyOp});
@@ -622,7 +618,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public  final long getAndUpdateIncrementCounter(
         final @NotNull ${opType} op$valueParam) {
 
-        $typeName current;
+        long current;
         do {
             current = inc;
         } while (!UNSAFE.compareAndSwapLong(this, incFieldOffset,
@@ -633,8 +629,8 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public  final long updateAndGetIncrementCounter(
         final @NotNull ${opType} op$valueParam) {
 
-        $typeName current;
-        $typeName newValue;
+        long current;
+        long newValue;
         do {
             current = inc;
             newValue = ${applyOp};
@@ -824,11 +820,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final boolean inRangeWithOffset(final ${indexTypeName} index, final long offset) {
-        return inRange(index, length, buffer);
+        return inRangeWithOffset(index, offset, buffer);
     }
 
     public static $generic boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
-        return inRange(index, offset, buffer.length);
+        return inRangeWithOffset(index, offset, buffer.length);
     }
 
     ${
@@ -847,12 +843,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     """ : ""
         }
 
-    public final void checkIndexWithOffset(final ${indexTypeName} index, final long offset) {
-        checkIndex(index, offset, buffer);
+    public final void checkIndexWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset) {
+        checkIndexWithOffset(index, offset, buffer);
     }
 
     public static $generic void checkIndexWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
-        if (inRange(index, offset, buffer))
+        if (inRangeWithOffset(index, offset, buffer))
             new ArrayIndexOutOfBoundsException(String.format(
                 "index range %d and %d of length %d is not in range of 0 and array length %d", index, index + length, length, buffer.length));
     }
@@ -874,17 +870,17 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         }
 
     public final void checkIndexIfSafeOnWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset) {
-        checkIndexIfSafeOn(index, offset, buffer);
+        checkIndexIfSafeOnWithOffset(index, offset, buffer);
     }
 
     public final $generic void checkIndexIfSafeOnWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
-        checkIndexIfSafeOn(this.SAFE, index, buffer);
+        checkIndexIfSafeOnWithOffset(this.SAFE, index, buffer);
     }
 
     public static void checkIndexIfSafeOnWithOffset(
         final boolean SAFE, final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
         if (SAFE)
-            checkIndex(index, offset, buffer);
+            checkIndexWithOffset(index, offset, buffer);
     }
 
     ${
@@ -943,7 +939,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return put(this.SAFE, index, buffer, value);
     }
 
-    public static $generic $typeName[] put(
+    public static $generic @NotNull $typeName[] put(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
@@ -978,7 +974,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return getVolatile(this.SAFE, index, buffer);
     }
 
-    public static $generic $typeName getVolatile(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
+    public static $generic @NotNull $typeName getVolatile(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         if (SAFE)
             return buffer[(int) index];
         else
@@ -1012,7 +1008,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return putVolatile(this.SAFE, index, buffer, value);
     }
 
-    public static $generic $typeName[] putVolatile(
+    public static $generic @NotNull $typeName[] putVolatile(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
@@ -1049,7 +1045,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return copy(this.SAFE, index, destination, source);
     }
 
-    public static $generic $typeName[] copy(
+    public static $generic @NotNull $typeName[] copy(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] destination,
         final @NotNull $typeName ... source) {
         if (SAFE)
@@ -1095,7 +1091,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return copy(this.SAFE, length, indexDestination, destination, indexSource, source);
     }
 
-    public static $generic $typeName[] copy(
+    public static $generic @NotNull $typeName[] copy(
         final boolean SAFE, final ${indexTypeName} length, final ${indexTypeName} indexDestination,
         final @NotNull $typeName[] destination, final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
         if (SAFE)
@@ -1157,7 +1153,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return putOrdered(this.SAFE, index, buffer, value);
     }
 
-    public static $generic $typeName[] putOrdered(
+    public static $generic @NotNull $typeName[] putOrdered(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
@@ -1237,7 +1233,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return ($typeName) getAndSet(this.SAFE, index, buffer, value);
     }
 
-    public static $generic $typeName getAndSet(
+    public static $generic @NotNull $typeName getAndSet(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
@@ -1298,7 +1294,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return ($typeName) getAndUpdate(this.SAFE, index, buffer, op${applyOpMulti});
     }
 
-    public static $generic $typeName getAndUpdate(
+    public static $generic @NotNull $typeName getAndUpdate(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer,
         final @NotNull ${opType}$generic op$valueParam) {
         checkIndexIfSafeOn(SAFE, index, buffer);
@@ -1343,7 +1339,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return updateAndGet(this.SAFE, index, buffer, op${applyOpMulti});
     }
 
-    public static $generic $typeName updateAndGet(
+    public static $generic @NotNull $typeName updateAndGet(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer,
         final ${opType}$generic op$valueParam) {
         checkIndexIfSafeOn(SAFE, index, buffer);
