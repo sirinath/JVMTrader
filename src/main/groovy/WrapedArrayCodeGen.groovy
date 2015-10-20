@@ -211,9 +211,15 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final long incAndGetIndexWeak() {
-        index = roll(index + inc);
+        index = rollIndex(index + inc);
 
         return index;
+    }
+
+    public final long incAndGetOffsetWeak() {
+        offset = rollOffset(index, offset + inc);
+
+        return offset;
     }
 
     public final long incAndGetIndex() {
@@ -225,9 +231,15 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final long decAndGetIndexWeak() {
-        index = roll(index - inc);
+        index = rollIndex(index - inc);
 
         return index;
+    }
+
+    public final long decAndGetOffsetWeak() {
+        offset = rollOffset(index, offset - inc);
+
+        return offset;
     }
 
     public final long decAndGetIndex() {
@@ -255,15 +267,27 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final long incBy1AndGetIndexWeak() {
-        index = roll(index + 1);
+        index = rollIndex(index + 1);
 
         return index;
     }
 
     public final long decBy1AndGetIndexWeak() {
-        index = roll(index - 1);
+        index = rollIndex(index - 1);
 
         return index;
+    }
+
+    public final long incBy1AndGetOffsetWeak() {
+        offset = rollOffset(index, offset + 1);
+
+        return offset;
+    }
+
+    public final long decBy1AndGetOffsetWeak() {
+        offset = rollOffset(index, offset - 1);
+
+        return offset;
     }
 
     public final long incAndGetOffset() {
@@ -370,6 +394,18 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return newValue;
     }
 
+    public final long addAndGetIndexWeak(final long value) {
+        index = rollIndex(index + value);
+
+        return index;
+    }
+
+    public final long addAndGetOffsetWeak(final long value) {
+        offset = rollOffset(index, offset + value);
+
+        return offset;
+    }
+
     public final long addAndGetIncrementCounter(final long value) {
         long current;
         long newValue;
@@ -427,6 +463,18 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
             current, newValue));
 
         return newValue;
+    }
+
+    public final long subAndGetIndexWeak(final long value) {
+        index = rollIndex(index - value);
+
+        return index;
+    }
+
+    public final long subAndGetOffsetWeak(final long value) {
+        offset = rollOffset(index, offset - value);
+
+        return offset;
     }
 
     public final long subAndGetIndex(final long value) {
@@ -528,6 +576,22 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
             current, newValue));
 
         return newValue;
+    }
+
+    public  final long updateAndGetIndexWeak(
+        final @NotNull ${opType} op$valueParam) {
+        final long current = index;
+        index = rollIndex(${applyOp});
+
+        return index;
+    }
+
+    public  final long updateAndGetOffsetWeak(
+        final @NotNull ${opType} op$valueParam) {
+        final long current = offset;
+        offset = rollOffset(index, ${applyOp});
+
+        return offset;
     }
 
     public  final long getAndUpdateOffset(
