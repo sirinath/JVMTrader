@@ -710,11 +710,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return copy(destination, buffer);
     }
 
-    public final $generic @NotNull $typeName[] copy(final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
+    public final @NotNull $generic $typeName[] copy(final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
         return copy(this.SAFE, destination, source);
     }
 
-    public static $generic $typeName[] copy(final boolean SAFE, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
+    public static @NotNull $generic $typeName[] copy(final boolean SAFE, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
         if (SAFE)
             System.arraycopy(source, 0, destination, 0, source.length);
         else
@@ -905,11 +905,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return get(index, buffer);
     }
 
-    public final $generic @NotNull $typeName get(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
+    public final @NotNull $generic $typeName get(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         return get(this.SAFE, index, buffer);
     }
 
-    public static $generic $typeName get(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
+    public static @NotNull $generic $typeName get(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         if (SAFE)
             return buffer[(int) index];
         else
@@ -937,11 +937,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return put(index, buffer, value);
     }
 
-    public final $generic @NotNull $typeName[] put(final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
+    public final @NotNull $generic $typeName[] put(final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         return put(this.SAFE, index, buffer, value);
     }
 
-    public static $generic @NotNull $typeName[] put(
+    public static @NotNull $generic $typeName[] put(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
@@ -972,11 +972,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return getVolatile(index, buffer);
     }
 
-    public final $generic @NotNull $typeName getVolatile(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
+    public final @NotNull $generic $typeName getVolatile(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         return getVolatile(this.SAFE, index, buffer);
     }
 
-    public static $generic @NotNull $typeName getVolatile(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
+    public static @NotNull $generic $typeName getVolatile(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         if (SAFE)
             return buffer[(int) index];
         else
@@ -1005,12 +1005,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return putVolatile(index, buffer, value);
     }
 
-    public final $generic @NotNull $typeName[] putVolatile(
+    public final @NotNull $generic $typeName[] putVolatile(
         final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         return putVolatile(this.SAFE, index, buffer, value);
     }
 
-    public static $generic @NotNull $typeName[] putVolatile(
+    public static @NotNull $generic $typeName[] putVolatile(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
@@ -1042,12 +1042,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return copy(index, buffer, source);
     }
 
-    public final $generic @NotNull $typeName[] copy(
+    public final @NotNull $generic $typeName[] copy(
         final ${indexTypeName} index, final @NotNull $typeName[] destination, final @NotNull $typeName ... source) {
         return copy(this.SAFE, index, destination, source);
     }
 
-    public static $generic @NotNull $typeName[] copy(
+    public static @NotNull $generic $typeName[] copy(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] destination,
         final @NotNull $typeName ... source) {
         if (SAFE)
@@ -1086,14 +1086,14 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return copy(length, indexDestination, buffer, indexSource, source);
     }
 
-    public final $generic @NotNull $typeName[] copy(
+    public final @NotNull $generic $typeName[] copy(
         final ${indexTypeName} length, final ${indexTypeName} indexDestination,
         final @NotNull $typeName[] destination,
         final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
         return copy(this.SAFE, length, indexDestination, destination, indexSource, source);
     }
 
-    public static $generic @NotNull $typeName[] copy(
+    public static @NotNull $generic $typeName[] copy(
         final boolean SAFE, final ${indexTypeName} length, final ${indexTypeName} indexDestination,
         final @NotNull $typeName[] destination, final ${indexTypeName} indexSource, final @NotNull $typeName ... source) {
         if (SAFE)
@@ -1150,12 +1150,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return putOrdered(index, buffer, value);
     }
 
-    public final $generic @NotNull $typeName[] putOrdered(
+    public final @NotNull $generic $typeName[] putOrdered(
         final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         return putOrdered(this.SAFE, index, buffer, value);
     }
 
-    public static $generic @NotNull $typeName[] putOrdered(
+    public static @NotNull $generic $typeName[] putOrdered(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         if (SAFE)
             buffer[(int) index] = value;
@@ -1230,12 +1230,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return ($typeName) getAndSet(index, buffer, value);
     }
 
-    public final $generic @NotNull $typeName getAndSet(
+    public final @NotNull $generic $typeName getAndSet(
         final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         return ($typeName) getAndSet(this.SAFE, index, buffer, value);
     }
 
-    public static $generic @NotNull $typeName getAndSet(
+    public static @NotNull $generic $typeName getAndSet(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull $typeName value) {
         checkIndexIfSafeOn(SAFE, index, buffer);
 
@@ -1291,12 +1291,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return ($typeName) getAndUpdate(index, buffer, op${applyOpMulti});
     }
 
-    public final $generic @NotNull $typeName getAndUpdate(
+    public final @NotNull $generic $typeName getAndUpdate(
         final ${indexTypeName} index, final @NotNull $typeName[] buffer, final @NotNull ${opType}$generic op$valueParam) {
         return ($typeName) getAndUpdate(this.SAFE, index, buffer, op${applyOpMulti});
     }
 
-    public static $generic @NotNull $typeName getAndUpdate(
+    public static @NotNull $generic $typeName getAndUpdate(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer,
         final @NotNull ${opType}$generic op$valueParam) {
         checkIndexIfSafeOn(SAFE, index, buffer);
@@ -1335,13 +1335,13 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return updateAndGet(index, buffer, op${applyOpMulti});
     }
 
-    public final $generic @NotNull $typeName updateAndGet(
+    public final @NotNull $generic $typeName updateAndGet(
         final ${indexTypeName} index, final @NotNull $typeName[] buffer,
         final @NotNull ${opType}$generic op$valueParam) {
         return updateAndGet(this.SAFE, index, buffer, op${applyOpMulti});
     }
 
-    public static $generic @NotNull $typeName updateAndGet(
+    public static @NotNull $generic $typeName updateAndGet(
         final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName[] buffer,
         final ${opType}$generic op$valueParam) {
         checkIndexIfSafeOn(SAFE, index, buffer);
