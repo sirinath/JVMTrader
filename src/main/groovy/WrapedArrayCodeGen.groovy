@@ -89,7 +89,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
             this.wrapGuard = true;
 
-            this.buffer = array
+            this.buffer = array;
             this.index = 0L;
             this.offset = 0L;
             this.inc = 1L;
