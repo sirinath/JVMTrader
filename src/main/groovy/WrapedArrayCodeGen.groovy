@@ -210,12 +210,24 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         index = buffer.length - 1;
     }
 
+    public final long incAndGetIndexWeak() {
+        index = roll(index + inc);
+
+        return index;
+    }
+
     public final long incAndGetIndex() {
         return subAndGetIndex(inc);
     }
 
     public final long getAndIncIndex() {
         return getAndSubIndex(inc);
+    }
+
+    public final long decAndGetIndexWeak() {
+        index = roll(index - inc);
+
+        return index;
     }
 
     public final long decAndGetIndex() {
@@ -227,7 +239,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final long incBy1AndGetIndex() {
-        return subAndGetIndex(1);
+        return addAndGetIndex(1);
     }
 
     public final long getAndIncBy1Index() {
@@ -242,8 +254,24 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return getAndAddIndex(1);
     }
 
+    public final long incBy1AndGetIndexWeak() {
+        index = roll(index + 1);
+
+        return index;
+    }
+
+    public final long decBy1AndGetIndexWeak() {
+        index = roll(index - 1);
+
+        return index;
+    }
+
     public final long incAndGetOffset() {
-        return subAndGetOffset(inc);
+        return addAndGetOffset(inc);
+    }
+
+    public final long incAndGetOffset() {
+        return addAndGetOffset(inc);
     }
 
     public final long getAndIncOffset() {
