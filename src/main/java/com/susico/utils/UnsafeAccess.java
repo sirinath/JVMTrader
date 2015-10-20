@@ -16,6 +16,7 @@
 
 package com.susico.utils;
 
+import org.jetbrains.annotations.NotNull;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
@@ -30,6 +31,7 @@ public class UnsafeAccess {
 
     static {
         Unsafe unsafe = null;
+
         try {
             final PrivilegedExceptionAction<Unsafe> action = () -> {
                 final Field f = Unsafe.class.getDeclaredField("theUnsafe");
@@ -44,5 +46,15 @@ public class UnsafeAccess {
         }
 
         UNSAFE = unsafe;
+    }
+
+    public static long getFieldOffset(final @NotNull Class<?> cls, final @NotNull String field) {
+        try {
+            return UNSAFE.objectFieldOffset(cls.getField(field));
+        } catch (NoSuchFieldException e) {
+            com.susico.utils.UncheckedExceptions.rethrow(e);
+        }
+
+        return 0L;
     }
 }

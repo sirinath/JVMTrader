@@ -82,17 +82,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     implements BoxOnce<${classPrefix}${typeSuffix}${genericParentClass}> {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
-    protected final static long valueFieldOffset = getFieldOffset(${classPrefix}${typeSuffix}.class, "value");
-
-    protected static long getFieldOffset(final @NotNull Class<?> cls, final @NotNull String field) {
-        try {
-            return UNSAFE.objectFieldOffset(cls.getField(field));
-        } catch (NoSuchFieldException e) {
-            com.susico.utils.UncheckedExceptions.rethrow(e);
-        }
-
-        return 0;
-    }
+    protected final static long valueFieldOffset = UnsafeAccess.getFieldOffset(${classPrefix}${typeSuffix}.class, "value");
 
     /**
      * Value
@@ -390,12 +380,265 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     return buffer.append("}").toString()
 }
 
+String boxOnce() {
+    return """
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.box;
+
+import java.io.Serializable;
+
+/**
+ * boxed Once market interface
+ *
+ * @param <T> Type
+ * @author sirinath
+ */
+public interface BoxOnce<T> extends Comparable<T>, Cloneable, Serializable {
+}
+"""
+}
+
+String immutableUtils() {
+    return """
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.box;
+
+
+import com.susico.utils.box.immutable.*;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Help instantiate boxing
+ *
+ * @author sirinath
+ */
+public class ImmutableUtils {
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableBoolean boxed(final boolean v) {
+        return new ImmutableBoolean(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableByte boxed(final byte v) {
+        return new ImmutableByte(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableChar boxed(final char v) {
+        return new ImmutableChar(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableDouble boxed(final double v) {
+        return new ImmutableDouble(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableFloat boxed(final float v) {
+        return new ImmutableFloat(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableInt boxed(final int v) {
+        return new ImmutableInt(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableLong boxed(final long v) {
+        return new ImmutableLong(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static ImmutableShort boxed(final short v) {
+        return new ImmutableShort(v);
+    }
+
+    /**
+     * @param <T> Enum type
+     * @param v   value to be boxed
+     * @return boxed value
+     */
+    public static <T extends Enum<T>> ImmutableEnum<T> boxed(final @NotNull T v) {
+        return new ImmutableEnum<T>(v);
+    }
+}
+"""
+}
+
+String mutableUtils() {
+    return """
+/*
+ * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.susico.utils.box;
+
+
+import com.susico.utils.box.mutable.*;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Help instantiate boxing
+ *
+ * @author sirinath
+ */
+public class MutableUtils {
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableBoolean boxed(final boolean v) {
+        return new MutableBoolean(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableByte boxed(final byte v) {
+        return new MutableByte(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableChar boxed(final char v) {
+        return new MutableChar(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableDouble boxed(final double v) {
+        return new MutableDouble(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableFloat boxed(final float v) {
+        return new MutableFloat(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableInt boxed(final int v) {
+        return new MutableInt(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableLong boxed(final long v) {
+        return new MutableLong(v);
+    }
+
+    /**
+     * @param v value to be boxed
+     * @return boxed value
+     */
+    public static MutableShort boxed(final short v) {
+        return new MutableShort(v);
+    }
+
+    /**
+     * @param <T> Enum type
+     * @param v   value to be boxed
+     * @return boxed value
+     */
+    public static <T extends Enum<T>> MutableEnum<T> boxed(final @NotNull T v) {
+        return new MutableEnum<T>(v);
+    }
+}
+"""
+}
+
 void genClass() {
     boolean[] mutables = [false, true]
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class, Enum.class]
 
     File b = new File(".\\..\\java\\com\\susico\\utils\\box\\")
     b.mkdirs()
+
+    File f = new File(b, "BoxOnce.java")
+    f.createNewFile()
+
+    PrintWriter pw = f.newPrintWriter()
+    pw.print(boxOnce())
+    pw.flush()
+    pw.close()
 
     for (boolean mutable : mutables) {
         String packageName = mutable ? "mutable" : "immutable"
@@ -408,15 +651,31 @@ void genClass() {
             String classPrefix = upcase1st(packageName)
             String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : isEnum ? "Enum" : "Object"
 
-            File f = new File(p, "${classPrefix}${typeSuffix}.java")
+            f = new File(p, "${classPrefix}${typeSuffix}.java")
             f.createNewFile()
 
-            PrintWriter pw = f.newPrintWriter()
+            pw = f.newPrintWriter()
             pw.print(genClass(mutable, type))
             pw.flush()
             pw.close()
         }
     }
+
+    f = new File(b, "ImmutableUtils.java")
+    f.createNewFile()
+
+    pw = f.newPrintWriter()
+    pw.print(immutableUtils())
+    pw.flush()
+    pw.close()
+
+    f = new File(b, "MutableUtils.java")
+    f.createNewFile()
+
+    pw = f.newPrintWriter()
+    pw.print(mutableUtils())
+    pw.flush()
+    pw.close()
 }
 
 genClass()

@@ -60,16 +60,6 @@ import org.jetbrains.annotations.*;
     protected final int targetLength;
     protected final int definedAsValues;
 
-    protected static long getFieldOffset(final @NotNull Class<?> cls, final @NotNull String field) {
-        try {
-            return UNSAFE.objectFieldOffset(cls.getField(field));
-        } catch (NoSuchFieldException e) {
-            com.susico.utils.UncheckedExceptions.rethrow(e);
-        }
-
-        return 0;
-    }
-
     protected TabledArray(final boolean checked, final int definedAsValues, final int length) {
         this.ARRAY_ACCESS = ArrayAccess.checked(checked);
         this.targetLength = length;
@@ -561,7 +551,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
         StringBuilder tmp = new StringBuilder()
 
         tmp.append("""
-    protected final static long value0000FieldOffset = getFieldOffset(
+    protected final static long value0000FieldOffset = UnsafeAccess.getFieldOffset(
         ${mutability}TabledArray0001${typeSuffix}.class, "value0000");
 """)
 
@@ -994,7 +984,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
         for (int i = start; i < end; i++) {
             String formatI = String.format("%04d", i)
             tmp.append("""
-    protected final static long value${formatI}FieldOffset = getFieldOffset(
+    protected final static long value${formatI}FieldOffset = UnsafeAccess.getFieldOffset(
         ${mutability}TabledArray${classEnding}${typeSuffix}.class, "value${formatI}");
 """)
 
