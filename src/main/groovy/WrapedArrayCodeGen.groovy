@@ -114,60 +114,20 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         return checked(false, array);
     }
 
-    public static long rollIndex(final long value, final long length) {
-        long tmp = value;
-
-        final boolean loop1 = tmp >= length;
-        while (loop1) {
-            tmp -= length;
-
-            if (tmp < length) {
-                return tmp;
-            }
-        }
-
-        final boolean loop2 = tmp < 0;
-        while (loop2) {
-            tmp += length;
-
-            if (tmp >= 0) {
-                return tmp;
-            }
-        }
-
-        return tmp;
+    public static long rollIndex(final long index, final long length) {
+        return (value % length) & Long.MAX_VALUE;
     }
 
-    public static long rollIndex(final long value) {
+    public static long rollIndex(final long index) {
         return rollIndex(value, buffer.length);
     }
 
-    public static long rollOffset(final long value, final long offset, final long length) {
-        long tmp = value + offset;
-
-        final boolean loop1 = tmp >= length;
-        while (loop1) {
-            tmp -= length;
-
-            if (tmp < length) {
-                return tmp - offset;
-            }
-        }
-
-        final boolean loop2 = tmp < 0;
-        while (loop2) {
-            tmp += length;
-
-            if (tmp >= 0) {
-                return tmp - offset;
-            }
-        }
-
-        return offset;
+    public static long rollOffset(final long index, final long offset, final long length) {
+        return (((index + offset) % length) & Long.MAX_VALUE) - index;
     }
 
-    public final long rollOffset(final long value, final long offset) {
-        return rollIndex(value, offset, buffer.length);
+    public final long rollOffset(final long index, final long offset) {
+        return rollIndex(index, offset, buffer.length);
     }
 
     public final boolean isSafe() {
@@ -207,7 +167,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final void setOffset(final long value) {
-        offset = value;
+        offset = rollOffset(index, value);
     }
 
     public final void putIncrementCounterWeak(final long value) {
@@ -219,11 +179,11 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final void putOffsetWeak(final long value) {
-        return UNSAFE.putLong(this, offsetFieldOffset, value);
+        return UNSAFE.putLong(this, offsetFieldOffset, rollOffset(index, value));
     }
 
     public final void putOrderedOffset(final long value) {
-        UNSAFE.putOrderedLong(this, offsetFieldOffset, value);
+        UNSAFE.putOrderedLong(this, offsetFieldOffset, rollOffset(index, value));
     }
 
     public final void putIndexWeak(final long value) {
@@ -332,7 +292,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         do {
             current = offset;
         } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
-            current, current + value));
+            current, rollOffset(index, current + value)));
         return current;
     }
 
@@ -362,7 +322,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
         do {
             current = offset;
-            newValue = current + value;
+            newValue = rollOffset(index, current + value);
         } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
             current, newValue));
 
@@ -401,7 +361,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         do {
             current = offset;
         } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
-            current, current - value));
+            current, rollOffset(index, current - value)));
         return current;
     }
 
@@ -434,7 +394,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
         do {
             current = offset;
-            newValue = current - value;
+            newValue = rollOffset(index, current - value);
         } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
             current, newValue));
 
@@ -549,7 +509,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         do {
             current = offset;
         } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
-            current, ${applyOp}));
+            current, rollOffset(index, ${applyOp})));
         return current;
     }
 
@@ -560,7 +520,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         $typeName newValue;
         do {
             current = offset;
-            newValue = ${applyOp};
+            newValue = rollOffset(index, ${applyOp});
         } while (!UNSAFE.compareAndSwapLong(this, offsetFieldOffset,
             current, newValue));
 
