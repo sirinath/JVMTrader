@@ -55,6 +55,8 @@ import com.susico.utils.functions.*;
 
 import org.jetbrains.annotations.*;
 
+import java.util.concurrent.locks.LockSupport;
+
 public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
@@ -78,7 +80,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
     ${
         mutable ? """
-    private boolean volatile wrapGuard = false;
+    private volatile boolean wrapGuard = false;
 
     public final ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic wrap(final @NotNull ${typeName}[] array) {
         try {
@@ -850,7 +852,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     public static $generic void checkIndexWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
         if (inRangeWithOffset(index, offset, buffer))
             new ArrayIndexOutOfBoundsException(String.format(
-                "index range %d and %d of length %d is not in range of 0 and array length %d", index, index + length, length, buffer.length));
+                "index range %d and %d of length %d is not in range of 0 and array length %d", index, index + offset, offset, buffer.length));
     }
 
     ${
@@ -874,7 +876,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
     }
 
     public final $generic void checkIndexIfSafeOnWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
-        checkIndexIfSafeOnWithOffset(this.SAFE, index, buffer);
+        checkIndexIfSafeOnWithOffset(this.SAFE, index, offset, buffer);
     }
 
     public static void checkIndexIfSafeOnWithOffset(
