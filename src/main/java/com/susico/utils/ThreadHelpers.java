@@ -28,14 +28,40 @@ import java.util.concurrent.locks.LockSupport;
 public class ThreadHelpers {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
-    public static final boolean isThreadSafe(final Thread safeThread) {
+    public static final boolean isInSafeThread(final Thread safeThread) {
         return Thread.currentThread().equals(safeThread);
+    }
+
+    public static void runSynchronizedWithGuard(final long guardFieldOffset, Object obj, final Runnable codeToRun) {
+        try {
+            while (UNSAFE.getBooleanVolatile(obj, guardFieldOffset))
+                LockSupport.parkNanos(1);
+
+            UNSAFE.putBooleanVolatile(obj, guardFieldOffset, true);
+
+            codeToRun.run();
+        } finally {
+            UNSAFE.putBooleanVolatile(obj, guardFieldOffset, false);
+        }
+    }
+
+    public static void runSynchronizedWithGuard(final long guardFieldOffset, Object obj, final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
+        if (singleThreadedOrThreadSafe)
+            codeToRun.run();
+        else
+            runSynchronizedWithGuard(guardFieldOffset, obj, codeToRun);
+    }
+
+    public static void runSynchronizedWithGuard(final long guardFieldOffset, Object obj, final Thread safeThread, final Runnable codeToRun) {
+        runSynchronizedWithGuard(guardFieldOffset, obj, isInSafeThread(safeThread), codeToRun);
     }
 
     public static void runSynchronizedWithGuard(final AtomicBoolean guard, final Runnable codeToRun) {
         try {
             while (guard.get())
                 LockSupport.parkNanos(1);
+
+            guard.set(true);
 
             codeToRun.run();
         } finally {
@@ -51,7 +77,7 @@ public class ThreadHelpers {
     }
 
     public static void runSynchronizedWithGuard(final AtomicBoolean guard, final Thread safeThread, final Runnable codeToRun) {
-        runSynchronizedWithGuard(guard, isThreadSafe(safeThread), codeToRun);
+        runSynchronizedWithGuard(guard, isInSafeThread(safeThread), codeToRun);
     }
 
     public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun) {
@@ -77,7 +103,7 @@ public class ThreadHelpers {
     }
 
     public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Thread safeThread, final Runnable codeToRun) {
-        runThreadSafeSynchronized(synchronizationTarget, isThreadSafe(safeThread), codeToRun);
+        runThreadSafeSynchronized(synchronizationTarget, isInSafeThread(safeThread), codeToRun);
     }
 
     public static void runThreadSafeSynchronized(final Thread safeThread, final Runnable codeToRun) {
@@ -113,6 +139,6 @@ public class ThreadHelpers {
     }
 
     public static void runThreadSafeFenced(final Thread safeThread, final Runnable codeToRun) {
-        runThreadSafeFenced(isThreadSafe(safeThread), codeToRun);
+        runThreadSafeFenced(isInSafeThread(safeThread), codeToRun);
     }
 }
