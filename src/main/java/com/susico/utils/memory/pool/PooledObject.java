@@ -16,7 +16,8 @@
 
 package com.susico.utils.memory.pool;
 
-import com.susico.utils.ThreadHelpers;
+import com.susico.utils.threading.ThreadHelpers;
+import com.susico.utils.UnsafeAccess;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.ConcurrentHashMap;
@@ -84,6 +85,6 @@ public abstract class PooledObject implements AutoCloseable {
     }
 
     protected final void runThreadSafe(Runnable code) {
-        ThreadHelpers.runThreadSafeSynchronized(this, createdIn, code);
+        ThreadHelpers.runSynchronizedWithGuard(createdIn, code);
     }
 }

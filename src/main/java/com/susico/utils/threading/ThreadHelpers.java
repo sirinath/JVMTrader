@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.susico.utils;
+package com.susico.utils.threading;
 
 
+import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
 
+import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 
@@ -31,6 +34,22 @@ public class ThreadHelpers {
     public static final boolean isInSafeThread(final Thread safeThread) {
         return Thread.currentThread().equals(safeThread);
     }
+
+    public static final class ThreadLocks extends WeakHashMap<Object, AtomicBoolean> {
+        @Override
+        public final AtomicBoolean get(final Object key) {
+            AtomicBoolean value = super.get(key);
+
+            if (value == null) {
+                value = new AtomicBoolean(false);
+                put(Thread.currentThread(), value);
+            }
+
+            return value;
+        }
+    }
+
+    protected static final ThreadLocks threadLocks = new ThreadLocks();
 
     public static void runSynchronizedWithGuard(final long guardFieldOffset, Object obj, final Runnable codeToRun) {
         try {
@@ -78,6 +97,18 @@ public class ThreadHelpers {
 
     public static void runSynchronizedWithGuard(final AtomicBoolean guard, final Thread safeThread, final Runnable codeToRun) {
         runSynchronizedWithGuard(guard, isInSafeThread(safeThread), codeToRun);
+    }
+
+    public static void runSynchronizedWithGuard(final Object synchronizationTarget, final Runnable codeToRun) {
+        runSynchronizedWithGuard(threadLocks.get(synchronizationTarget), codeToRun);
+    }
+
+    public static void runSynchronizedWithGuard(final Object synchronizationTarget, final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
+        runSynchronizedWithGuard(threadLocks.get(synchronizationTarget), singleThreadedOrThreadSafe, codeToRun);
+    }
+
+    public static void runSynchronizedWithGuard(final Object synchronizationTarget, final Thread safeThread, final Runnable codeToRun) {
+        runSynchronizedWithGuard(threadLocks.get(synchronizationTarget), isInSafeThread(safeThread), codeToRun);
     }
 
     public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun) {

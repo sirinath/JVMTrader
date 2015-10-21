@@ -22,7 +22,7 @@ import com.susico.utils.memory.pool.PooledObject;
  * Created by sirin_000 on 06/10/2015.
  */
 public final class MemoryRange extends PooledObject {
-    public static MemoryRange getInstance() {
+    public static MemoryRange getInstance(final long poss, final long size) {
         return getFromPoolOrSupplierIfAbsent(MemoryRange.class, MemoryRange::new);
     }
 }
