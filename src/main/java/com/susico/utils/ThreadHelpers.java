@@ -19,6 +19,9 @@ package com.susico.utils;
 
 import sun.misc.Unsafe;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.LockSupport;
+
 /**
  * Created by sirin_000 on 07/10/2015.
  */
@@ -29,25 +32,56 @@ public class ThreadHelpers {
         return Thread.currentThread().equals(safeThread);
     }
 
-    public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun, final Thread safeThread) {
-        runThreadSafeSynchronized(synchronizationTarget, codeToRun, isThreadSafe(safeThread));
+    public static void runThreadSafeGuard(final AtomicBoolean guard, final Runnable codeToRun) {
+        try {
+            while (guard.get())
+                LockSupport.parkNanos(1);
+
+            codeToRun.run();
+        } finally {
+            guard.set(false);
+        }
     }
 
-    public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun, final boolean singleThreadedOrThreadSafe) {
+    public static void runThreadSafeGuard(final AtomicBoolean guard, final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
         if (singleThreadedOrThreadSafe)
             codeToRun.run();
         else
-            synchronized (synchronizationTarget) {
-                codeToRun.run();
-            }
+            runThreadSafeGuard(guard, codeToRun);
     }
 
-    public static void runThreadSafeSynchronized(final Runnable codeToRun, final boolean singleThreadedOrThreadSafe) {
-        runThreadSafeSynchronized(codeToRun, codeToRun, singleThreadedOrThreadSafe);
+    public static void runThreadSafeGuard(final AtomicBoolean guard, final Thread safeThread, final Runnable codeToRun) {
+        runThreadSafeGuard(guard, isThreadSafe(safeThread), codeToRun);
     }
 
-    public static void runThreadSafeSynchronized(final Runnable codeToRun, final Thread safeThread) {
-        runThreadSafeSynchronized(codeToRun, codeToRun, safeThread);
+    public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun) {
+        synchronized (synchronizationTarget) {
+            codeToRun.run();
+        }
+    }
+
+    public static void runThreadSafeSynchronized(final Runnable codeToRun) {
+        runThreadSafeSynchronized(codeToRun, codeToRun);
+    }
+
+    public static void runThreadSafeSynchronized(final Object synchronizationTarget, final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
+        if (singleThreadedOrThreadSafe) {
+            codeToRun.run();
+        } else {
+            runThreadSafeSynchronized(synchronizationTarget, codeToRun);
+        }
+    }
+
+    public static void runThreadSafeSynchronized(final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
+        runThreadSafeSynchronized(codeToRun, singleThreadedOrThreadSafe, codeToRun);
+    }
+
+    public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Thread safeThread, final Runnable codeToRun) {
+        runThreadSafeSynchronized(synchronizationTarget, isThreadSafe(safeThread), codeToRun);
+    }
+
+    public static void runThreadSafeSynchronized(final Thread safeThread, final Runnable codeToRun) {
+        runThreadSafeSynchronized(codeToRun, safeThread, codeToRun);
     }
 
     public static void fullFence() {
@@ -62,19 +96,23 @@ public class ThreadHelpers {
         UNSAFE.storeFence();
     }
 
-    public static void runThreadSafeFenced(final Runnable codeToRun, final boolean singleThreadedOrThreadSafe) {
+    public static void runThreadSafeFenced(final Runnable codeToRun) {
+        UNSAFE.fullFence();
+
+        codeToRun.run();
+
+        UNSAFE.fullFence();
+    }
+
+    public static void runThreadSafeFenced(final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
         if (singleThreadedOrThreadSafe)
             codeToRun.run();
         else {
-            UNSAFE.fullFence();
-
-            codeToRun.run();
-
-            UNSAFE.fullFence();
+            runThreadSafeFenced(codeToRun);
         }
     }
 
-    public static void runThreadSafeFenced(final Runnable codeToRun, final Thread safeThread) {
-        runThreadSafeFenced(codeToRun, isThreadSafe(safeThread));
+    public static void runThreadSafeFenced(final Thread safeThread, final Runnable codeToRun) {
+        runThreadSafeFenced(isThreadSafe(safeThread), codeToRun);
     }
 }

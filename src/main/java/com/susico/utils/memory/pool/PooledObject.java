@@ -84,6 +84,6 @@ public abstract class PooledObject implements AutoCloseable {
     }
 
     protected final void runThreadSafe(Runnable code) {
-        ThreadHelpers.runThreadSafeSynchronized(this, code, createdIn);
+        ThreadHelpers.runThreadSafeSynchronized(this, createdIn, code);
     }
 }
