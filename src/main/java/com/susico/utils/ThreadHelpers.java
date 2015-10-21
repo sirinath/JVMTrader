@@ -32,7 +32,7 @@ public class ThreadHelpers {
         return Thread.currentThread().equals(safeThread);
     }
 
-    public static void runThreadSafeGuard(final AtomicBoolean guard, final Runnable codeToRun) {
+    public static void runSynchronizedWithGuard(final AtomicBoolean guard, final Runnable codeToRun) {
         try {
             while (guard.get())
                 LockSupport.parkNanos(1);
@@ -43,15 +43,15 @@ public class ThreadHelpers {
         }
     }
 
-    public static void runThreadSafeGuard(final AtomicBoolean guard, final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
+    public static void runSynchronizedWithGuard(final AtomicBoolean guard, final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
         if (singleThreadedOrThreadSafe)
             codeToRun.run();
         else
-            runThreadSafeGuard(guard, codeToRun);
+            runSynchronizedWithGuard(guard, codeToRun);
     }
 
-    public static void runThreadSafeGuard(final AtomicBoolean guard, final Thread safeThread, final Runnable codeToRun) {
-        runThreadSafeGuard(guard, isThreadSafe(safeThread), codeToRun);
+    public static void runSynchronizedWithGuard(final AtomicBoolean guard, final Thread safeThread, final Runnable codeToRun) {
+        runSynchronizedWithGuard(guard, isThreadSafe(safeThread), codeToRun);
     }
 
     public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun) {
