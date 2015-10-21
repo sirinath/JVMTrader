@@ -879,7 +879,7 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
         checkIndexIfSafeOnWithOffset(this.SAFE, index, offset, buffer);
     }
 
-    public static void checkIndexIfSafeOnWithOffset(
+    public static $generic void checkIndexIfSafeOnWithOffset(
         final boolean SAFE, final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
         if (SAFE)
             checkIndexWithOffset(index, offset, buffer);
