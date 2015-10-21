@@ -84,7 +84,11 @@ public abstract class PooledObject implements AutoCloseable {
         return ThreadHelpers.isInSafeThread(createdIn);
     }
 
+    protected long guardFiledOffset = UnsafeAccess.getFieldOffset(this.getClass(), "guard");
+
+    protected boolean guard = false;
+
     protected final void runThreadSafe(Runnable code) {
-        ThreadHelpers.runSynchronizedWithGuard(createdIn, code);
+        ThreadHelpers.runSynchronizedWithGuard(guardFiledOffset, this, createdIn, code);
     }
 }
