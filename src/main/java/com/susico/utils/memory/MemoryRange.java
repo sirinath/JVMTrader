@@ -17,12 +17,49 @@
 package com.susico.utils.memory;
 
 import com.susico.utils.memory.pool.PooledObject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by sirin_000 on 06/10/2015.
  */
 public final class MemoryRange extends PooledObject {
-    public static MemoryRange getInstance(final long poss, final long size) {
+    protected long address;
+    protected long size;
+    protected long end;
+
+    protected MemoryRange() {}
+
+    public static MemoryRange getInstance(final long address, final long size) {
         return getFromPoolOrSupplierIfAbsent(MemoryRange.class, MemoryRange::new);
+    }
+
+    public void set(final long address, final long size) {
+        this.address = address;
+        this.size = size;
+        this.end = address + size;
+
+    }
+
+    public final long getAddress() {
+        return this.address;
+    }
+
+    public final long getEnd() {
+        return this.end;
+    }
+
+    public final long getSize() {
+        return this.size;
+    }
+
+    @Override
+    public int hashCode() {
+        final long tmp = end ^ address;
+        return (int)((tmp >>> Integer.SIZE) ^ tmp);
+    }
+
+    @Override
+    public boolean equals(final @NotNull Object obj) {
+        return obj instanceof MemoryRange && ((MemoryRange) obj).getAddress() == address && ((MemoryRange) obj).getSize() == size;
     }
 }

@@ -16,6 +16,10 @@
 
 package com.susico.utils.memory.offheap;
 
+import com.susico.utils.memory.MemoryRange;
+
+import java.io.IOException;
+
 /**
  * Created by sirin_000 on 03/09/2015.
  */
@@ -54,18 +58,11 @@ public final class WindowedBuffer<T> {
             return sharedBuffer.map(index * stride, size);
     }
 
-    public final void unmapIfRCZero(final long index) {
+    public final void unmap(final long index) {
         if (pow2)
-            sharedBuffer.unmapIfRCZero(index << shift, size);
+            sharedBuffer.unmap(index << shift, size);
         else
-            sharedBuffer.unmapIfRCZero(index * stride, size);
-    }
-
-    public final void forceUnmap(final long index) {
-        if (pow2)
-            sharedBuffer.forceUnmap(index << shift, size);
-        else
-            sharedBuffer.forceUnmap(index * stride, size);
+            sharedBuffer.unmap(index * stride, size);
     }
 }
 

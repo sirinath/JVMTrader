@@ -16,6 +16,8 @@
 
 package com.susico.utils.memory.offheap;
 
+import com.susico.utils.memory.MemoryRange;
+
 import java.io.Closeable;
 
 /**
@@ -24,7 +26,11 @@ import java.io.Closeable;
 public interface SharedBuffer<T> extends Closeable {
     T map(long position, long size);
 
-    boolean unmapIfRCZero(long position, long size);
+    boolean unmap(final MemoryRange memoryRange);
 
-    boolean forceUnmap(long position, long size);
+    default boolean unmap(final long position, final long size) {
+        final MemoryRange memoryRange = MemoryRange.getInstance(position, size);
+
+        return unmap(memoryRange);
+    }
 }

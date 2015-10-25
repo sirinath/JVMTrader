@@ -19,7 +19,12 @@ package com.susico.utils.threading;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
 
+import java.lang.invoke.MethodHandleInfo;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -110,6 +115,22 @@ public class ThreadHelpers {
     public static void runSynchronizedWithGuard(final Object synchronizationTarget, final Thread safeThread, final Runnable codeToRun) {
         runSynchronizedWithGuard(threadLocks.get(synchronizationTarget), isInSafeThread(safeThread), codeToRun);
     }
+
+    @CallerSensitive
+    public static void runSynchronizedWithGuard(final Runnable codeToRun) {
+        runSynchronizedWithGuard(Reflection.getCallerClass(), codeToRun);
+    }
+
+    @CallerSensitive
+    public static void runSynchronizedWithGuard(final boolean singleThreadedOrThreadSafe, final Runnable codeToRun) {
+        runSynchronizedWithGuard(Reflection.getCallerClass(), singleThreadedOrThreadSafe, codeToRun);
+    }
+
+    @CallerSensitive
+    public static void runSynchronizedWithGuard(final Thread safeThread, final Runnable codeToRun) {
+        runSynchronizedWithGuard(Reflection.getCallerClass(), isInSafeThread(safeThread), codeToRun);
+    }
+
 
     public static void runThreadSafeSynchronized(final Object synchronizationTarget, final Runnable codeToRun) {
         synchronized (synchronizationTarget) {

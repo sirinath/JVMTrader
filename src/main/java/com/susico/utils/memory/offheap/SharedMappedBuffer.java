@@ -17,12 +17,13 @@
 package com.susico.utils.memory.offheap;
 
 import com.susico.utils.io.IOUtils;
+import com.susico.utils.memory.MemoryRange;
+import com.susico.utils.memory.heap.rc.RCObject;
 import uk.co.real_logic.agrona.collections.Long2ObjectHashMap;
 
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
-import java.util.ArrayDeque;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -31,8 +32,7 @@ import java.util.concurrent.locks.LockSupport;
 public final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> {
     protected final SharedMappedResource sharedMappedResource;
     protected final boolean save;
-    private final Long2ObjectHashMap<Long2ObjectHashMap<RefCounts>> bufferMapping = new Long2ObjectHashMap<>();
-    private final AtomicBoolean guard = new AtomicBoolean(false);
+    private final ConcurrentHashMap<MemoryRange, RCObject> bufferMapping = new ConcurrentHashMap<>();
 
     public SharedMappedBuffer(final SharedMappedResource sharedMappedResource) {
         this(sharedMappedResource, true);
@@ -45,188 +45,41 @@ public final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> 
 
     @Override
     public final MappedByteBuffer map(final long position, final long size) {
-        Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
+        final MemoryRange memoryRange = MemoryRange.getInstance(position, size);
+        RCObject rcObject = bufferMapping.get(memoryRange);
 
-        if (positionMap == null) {
-            try {
-                while (!guard.compareAndSet(false, true))
-                    LockSupport.parkNanos(1);
-
-                positionMap = new Long2ObjectHashMap<>();
-
-                MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(position, size);
-
-                RefCounts refCounts = RefCounts.getInstance().initTo(mappedByteBuffer).setSave(save);
-
-                positionMap.put(size, refCounts);
-
-                bufferMapping.put(position, positionMap);
-
-                return mappedByteBuffer;
-            } finally {
-                guard.set(false);
+        if (rcObject == null) {
+            synchronized (this) {
+                final MappedByteBuffer mapping = sharedMappedResource.map(position, size);
+                rcObject = RCObject.getInstance(mapping, () -> {
+                    if (save)
+                        IOUtils.saveAndUnmap(mapping);
+                    else
+                        IOUtils.discardAndUnmap(mapping);
+                });
+                bufferMapping.put(memoryRange, rcObject);
             }
         }
 
-        RefCounts refCounts = positionMap.get(size);
-
-        if (refCounts == null) {
-            try {
-                while (!guard.compareAndSet(false, true))
-                    LockSupport.parkNanos(1);
-
-                MappedByteBuffer mappedByteBuffer = sharedMappedResource.map(position, size);
-
-                refCounts = RefCounts.getInstance().initTo(mappedByteBuffer).setSave(save);
-
-                positionMap.put(size, refCounts);
-
-                return mappedByteBuffer;
-            } finally {
-                guard.set(false);
-            }
-        }
-
-        return refCounts.reference();
+        return (MappedByteBuffer) rcObject.get();
     }
 
     @Override
-    public final boolean unmapIfRCZero(final long position, final long size) {
-        Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
+    public final boolean unmap(final MemoryRange memoryRange) {
+        RCObject rcObject = bufferMapping.get(memoryRange);
 
-        if (positionMap == null)
-            return false;
+        if (rcObject != null) {
+            rcObject.release();
 
-        RefCounts refCounts = positionMap.get(size);
-
-        if (refCounts == null)
-            return false;
-
-        int refs = -1;
-        try {
-            while (!guard.compareAndSet(false, true))
-                LockSupport.parkNanos(1);
-
-            refs = refCounts.dereference();
-        } catch (Throwable t) {
-            return false;
-        } finally {
-            try {
-                if (refs == 0)
-                    positionMap.remove(size);
-            } finally {
-                guard.set(false);
-            }
+            return true;
         }
 
-        return true;
+        return false;
     }
 
-    @Override
-    public final boolean forceUnmap(final long position, final long size) {
-        Long2ObjectHashMap<RefCounts> positionMap = bufferMapping.get(position);
-
-        if (positionMap == null)
-            return false;
-
-        try {
-            while (!guard.compareAndSet(false, true))
-                LockSupport.parkNanos(1);
-
-            RefCounts refCounts = positionMap.remove(size);
-
-            if (refCounts == null)
-                return false;
-
-            MappedByteBuffer mappedByteBuffer = refCounts.release();
-
-            if (save)
-                IOUtils.saveAndUnmap(mappedByteBuffer);
-            else
-                IOUtils.discardAndUnmap(mappedByteBuffer);
-        } catch (Throwable t) {
-            return false;
-        } finally {
-            guard.set(false);
-        }
-
-        return true;
-    }
 
     @Override
     public final void close() throws IOException {
         sharedMappedResource.close();
-    }
-
-    private static final class RefCounts { // Not thread safe!!! Do not use outside. Hence private.
-        public static final int POOL_SIZE = 1000;
-        private static final ArrayDeque<RefCounts> pool = new ArrayDeque<>(POOL_SIZE);
-        private MappedByteBuffer mappedByteBuffer;
-        private int refCount = 0;
-        private boolean save;
-
-        private RefCounts() {
-            pool.addLast(this);
-        }
-
-        public static RefCounts getInstance() {
-            RefCounts obj = pool.removeFirst();
-            return obj == null ? new RefCounts() : obj;
-        }
-
-        public final RefCounts initTo(final MappedByteBuffer mappedByteBuffer) {
-            this.mappedByteBuffer = mappedByteBuffer;
-            refCount = 1;
-
-            return this;
-        }
-
-        public final boolean isSave() {
-            return save;
-        }
-
-        public final RefCounts setSave(final boolean save) {
-            this.save = save;
-
-            return this;
-        }
-
-        public final MappedByteBuffer reference() {
-            ++refCount;
-
-            return mappedByteBuffer;
-        }
-
-        public final int dereference() {
-            int refs = --refCount;
-
-            if (refs == 0) {
-                try {
-                    if (save)
-                        IOUtils.saveAndUnmap(mappedByteBuffer);
-                    else
-                        IOUtils.discardAndUnmap(mappedByteBuffer);
-                } finally {
-                    release();
-                }
-            }
-
-            return refs;
-        }
-
-        public final MappedByteBuffer release() {
-            try {
-                return mappedByteBuffer;
-            } finally {
-                mappedByteBuffer = null;
-                refCount = 0;
-                save = true;
-                returnToPool(this);
-            }
-        }
-
-        protected static void returnToPool(RefCounts refCounts) {
-            pool.addLast(refCounts);
-        }
     }
 }

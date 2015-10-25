@@ -17,6 +17,8 @@
 package com.susico.utils.memory.heap.rc;
 
 import com.susico.utils.memory.pool.PooledObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import sun.misc.Cleaner;
 
 import java.lang.ref.ReferenceQueue;
@@ -36,17 +38,24 @@ public final class RCObject extends PooledObject {
     private RCObject() {
     }
 
-    public static <T> RCObject getInstance(final Supplier<T> supplier, final Runnable releaseAction) {
+    public static <T> RCObject getInstance(final Object value, @NotNull final Runnable releaseAction) {
         RCObject obj = getFromPoolOrSupplierIfAbsent(RCObject.class, RCObject::new);
-
-        Object value = supplier.get();
 
         obj.set(value, releaseAction);
 
         return obj;
     }
 
-    private final void set(final Object value, final Runnable releaseAction) {
+    public static <T> RCObject getInstance(@NotNull final AutoCloseable value) {
+        return getInstance(value, () -> {
+            try {
+                value.close();
+            } catch (Exception e) {
+            }
+        });
+    }
+
+    private final void set(final Object value, @NotNull final Runnable releaseAction) {
         this.rc = 0;
         this.value = new SoftReference<Object>(value, refQ);
         this.releaseAction = releaseAction;
