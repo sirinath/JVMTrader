@@ -77,6 +77,32 @@ public final class ArrayAccess {
     }
 """)
 
+    Class<?>[] indexTypes = [Integer.TYPE, Long.TYPE]
+
+    for (Class<?> indexType : indexTypes) {
+        String indexTypeName = indexType.getSimpleName();
+
+        buffer.append("""
+    public static  boolean inRange(final ${indexTypeName} index, final int length) {
+        return index < length && index >= 0;
+    }
+
+    public static  boolean inRange(final ${indexTypeName} index, final long length) {
+        return index < length && index >= 0;
+    }
+
+    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final long length) {
+        final long indexEnd = index + offset;
+        return indexEnd < length && indexEnd >= 0;
+    }
+
+    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final int length) {
+        final long indexEnd = index + offset;
+        return indexEnd < length && indexEnd >= 0;
+    }
+    """)
+    }
+
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE, Object.class]
 
     for (Class<?> type : types) {
@@ -134,23 +160,16 @@ public final class ArrayAccess {
         return destination;
     }
 """)
-
-        Class<?>[] indexTypes = [Integer.TYPE, Long.TYPE]
-
         for (Class<?> indexType : indexTypes) {
             String indexTypeName = indexType.getSimpleName();
 
             buffer.append("""
-    public static  boolean inRange(final ${indexTypeName} index, final int length) {
-        return index < length && index >= 0;
-    }
-
-    public static  boolean inRange(final ${indexTypeName} index, final long length) {
-        return index < length && index >= 0;
-    }
-
     public static $generic boolean inRange(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         return inRange(index, buffer.length);
+    }
+
+    public static $generic boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
+        return inRange(index, offset, buffer.length);
     }
 
     public static $generic void checkIndex(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
@@ -165,16 +184,6 @@ public final class ArrayAccess {
     public static $generic void checkIndexIfSafeOn(final boolean SAFE, final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
         if (SAFE)
             checkIndex(index, buffer);
-    }
-
-    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final long length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && indexEnd >= 0;
-    }
-
-    public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final int length) {
-        final long indexEnd = index + offset;
-        return indexEnd < length && indexEnd >= 0;
     }
 
     public static $generic void checkIndexWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
