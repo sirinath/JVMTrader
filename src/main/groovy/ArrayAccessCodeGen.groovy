@@ -169,7 +169,7 @@ public final class ArrayAccess {
     }
 
     public static $generic boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {
-        return inRange(index, offset, buffer.length);
+        return inRangeWithOffset(index, offset, buffer.length);
     }
 
     public static $generic void checkIndex(final ${indexTypeName} index, final @NotNull $typeName ... buffer) {
