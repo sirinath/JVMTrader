@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface BiOpFloat {
-    float apply(float x, float y);
+    @Nullable float apply(@NotNull final float x, @NotNull final float y);
 }

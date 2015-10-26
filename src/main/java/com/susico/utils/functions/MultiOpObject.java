@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface MultiOpObject<T> {
-    T apply(T x, T ... values);
+    @Nullable T apply(@NotNull final T x, @NotNull final T ... values);
 }

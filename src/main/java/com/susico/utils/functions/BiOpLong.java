@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface BiOpLong {
-    long apply(long x, long y);
+    @Nullable long apply(@NotNull final long x, @NotNull final long y);
 }

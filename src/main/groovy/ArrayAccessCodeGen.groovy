@@ -169,12 +169,12 @@ public final class ArrayAccess {
 
     public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final long length) {
         final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
+        return indexEnd < length && indexEnd >= 0;
     }
 
     public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final int length) {
         final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
+        return indexEnd < length && indexEnd >= 0;
     }
 
     public static $generic void checkIndexWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final @NotNull $typeName ... buffer) {

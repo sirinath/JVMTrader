@@ -46,6 +46,8 @@ String genClass(boolean mutable, Class<?> type) {
     boolean isBoolean = type.equals(Boolean.TYPE)
     String typeName = type.isPrimitive() ? type.getSimpleName() : (isEnum ? "Enum" : "T")
     String typeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : isEnum ? "Enum" : "Object"
+    String unsafeSuffix = type.isPrimitive() ? upcase1st(type.getSimpleName()) : "Object"
+    String unsafeAPIType = type.isPrimitive() ? type.getSimpleName() : "Object"
     String genericClassSuffix = type.isPrimitive() ? "" : isEnum ? "<T extends Enum<T>>" : "<T>"
     String genericParentClass = type.isPrimitive() ? "" : "<T>"
     String generic = type.isPrimitive() ? "" : "<T>"
@@ -56,6 +58,7 @@ String genClass(boolean mutable, Class<?> type) {
     String boxedTypeStatic = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : isEnum ? "Enum" : "Object"
     String boxedType = type.isPrimitive() ? (type.equals(Integer.TYPE) ? "Integer" : (type.equals(Character.TYPE) ? "Character" : upcase1st(type.getSimpleName()))) : isEnum ? "Enum" : "Object"
     String equalsComparison = type.isPrimitive() ? "((${boxedType}) other)." + type.getSimpleName() + "Value() == value" : "other.equals(value)"
+    String extendsNumber = isObject ? "" : "extends Number"
 
     buffer.append("""
 package com.susico.utils.box.${packageName};
@@ -78,7 +81,7 @@ import org.jetbrains.annotations.*;
  * @author sirinath
  */
 @SuppressWarnings("serial")
-public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Number
+public final class ${classPrefix}${typeSuffix}${genericClassSuffix} ${extendsNumber}
     implements BoxOnce<${classPrefix}${typeSuffix}${genericParentClass}> {
     private static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
@@ -98,17 +101,12 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 
     @Override
     public final ${classPrefix}${typeSuffix}${generic} clone() throws CloneNotSupportedException {
-        return new ${classPrefix}${typeSuffix}${genericClassSuffix}(value);
+        return new ${classPrefix}${typeSuffix}${generic}(value);
     }
 
     @Override
     public final String toString() {
         return String.valueOf(value);
-    }
-
-    @Override
-    public final int hashCode() {
-        return ${boxedTypeStatic}.hashCode(value);
     }
 
     public final @NotNull ${typeName} getValue() {
@@ -120,7 +118,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     }
 
     public final @NotNull $typeName getValueVolatile() {
-        return (${typeName}) UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
+        return (${typeName}) UNSAFE.get${unsafeSuffix}Volatile(this, valueFieldOffset);
     }
     """)
 
@@ -135,7 +133,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
     }
 
     public final void setValueVolatile(final @NotNull $typeName value) {
-        UNSAFE.put${typeSuffix}Volatile(this, valueFieldOffset, value);
+        UNSAFE.put${unsafeSuffix}Volatile(this, valueFieldOffset, value);
     }
 """)
 
@@ -171,13 +169,13 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 
     public final $typeName getAndSetValue(
         final @NotNull $typeName value) {
-        return ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
+        return ($typeName) ${transformBack}(UNSAFE.getAndSet${sameSizeNum}(this,
             valueFieldOffset,
-            ${valTransform}(value)));
+            ${valTransform}(($unsafeAPIType) value)));
     }
         """)
 
-            String[] opTypes = ["BiOp${typeSuffix}", "UnaryOp${typeSuffix}", "MultiOp${typeSuffix}"]
+            String[] opTypes = ["BiOp${typeSuffix}${generic}", "UnaryOp${typeSuffix}${generic}", "MultiOp${typeSuffix}${generic}"]
 
             for (String opType : opTypes) {
                 String valueParam = opType.startsWith("Multi") ?
@@ -197,10 +195,10 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         $typeName current;
 
         do {
-            current = UNSAFE.get${typeSuffix}Volatile(this,
+            current = ($typeName) UNSAFE.get${typeSuffix}Volatile(this,
                 valueFieldOffset);
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, valueFieldOffset,
-            ${valTransform}(current), ${valTransform}(${applyOp})));
+            ${valTransform}(($unsafeAPIType) current), ${valTransform}(($unsafeAPIType) ${applyOp})));
         return current;
     }
 
@@ -209,10 +207,10 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         $typeName newValue;
 
         do {
-            current = UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
+            current = ($typeName) UNSAFE.get${typeSuffix}Volatile(this, valueFieldOffset);
             newValue = ${applyOp};
         } while (!UNSAFE.compareAndSwap${sameSizeNum}(this, valueFieldOffset,
-            ${valTransform}(current), ${valTransform}(newValue)));
+            ${valTransform}(($unsafeAPIType) current), ${valTransform}(($unsafeAPIType) newValue)));
 
         return newValue;
     }
@@ -246,6 +244,14 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
             return ${equalsComparison};
         else
             return false;
+    }""")
+    }
+
+    if (type.isPrimitive()) {
+        buffer.append("""
+    @Override
+    public final int hashCode() {
+        return ${boxedTypeStatic}.hashCode(value);
     }""")
     }
 
@@ -286,6 +292,17 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
 """)
     } else if (isEnum) {
         buffer.append("""
+    @Override
+    public final int compareTo(final @NotNull ${classPrefix}${typeSuffix}${generic} other) {
+        return value.compareTo(other.getValue());
+    }
+
+    public final int compareTo(final @NotNull ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
+        return value.compareTo(other.getValue());
+    }
+""")
+
+        buffer.append("""
     // Enum
 
     @Override
@@ -317,27 +334,32 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} extends Numb
         buffer.append("""
     @Override
     public final int compareTo(final @NotNull ${classPrefix}${typeSuffix}${generic} other) {
-        final @NotNull ${typeName} otherValue = other.getValue;
+        final @NotNull ${typeName} otherValue = other.getValue();
         if (value instanceof Comparable)
-            return value.compareTo(otherValue);
+            return ((Comparable) value).compareTo(otherValue);
         else if (value == otherValue || (value != null && value.equals(otherValue)))
             return 0;
         else if (otherValue instanceof Comparable)
-            return - otherValue.compareTo(value);
+            return - ((Comparable) otherValue).compareTo(value);
         else
-            throw IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
+            throw new IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
     }
 
     public final int compareTo(final @NotNull ${comparativeOtherClassPrefix}${typeSuffix}${generic} other) {
-        final @NotNull ${typeName} otherValue = other.getValue;
+        final @NotNull ${typeName} otherValue = other.getValue();
         if (value instanceof Comparable)
-            return value.compareTo(otherValue);
+            return ((Comparable) value).compareTo(otherValue);
         else if (value == otherValue || (value != null && value.equals(otherValue)))
             return 0;
         else if (otherValue instanceof Comparable)
-            return - otherValue.compareTo(value);
+            return - ((Comparable) otherValue).compareTo(value);
         else
-            throw IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
+            throw new IllegalStateException(value + " cannot be compared with: " + otherValue + " as neither Object impliments Comparable");
+    }
+
+    @Override
+    public final int hashCode() {
+        return value.hashCode();
     }
 """)
     } else {

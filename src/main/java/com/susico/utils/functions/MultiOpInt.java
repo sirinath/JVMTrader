@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface MultiOpInt {
-    int apply(int x, int ... values);
+    @Nullable int apply(@NotNull final int x, @NotNull final int ... values);
 }

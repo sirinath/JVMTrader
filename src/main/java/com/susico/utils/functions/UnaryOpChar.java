@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface UnaryOpChar {
-    char apply(char x);
+    @Nullable char apply(@NotNull final char x);
 }

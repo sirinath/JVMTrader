@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface BiOpObject<T> {
-    T apply(T x, T y);
+    @Nullable T apply(@NotNull final T x, @NotNull final T y);
 }

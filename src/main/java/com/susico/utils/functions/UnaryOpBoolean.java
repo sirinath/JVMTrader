@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface UnaryOpBoolean {
-    boolean apply(boolean x);
+    @Nullable boolean apply(@NotNull final boolean x);
 }

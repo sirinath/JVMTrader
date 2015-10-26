@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface UnaryOpByte {
-    byte apply(byte x);
+    @Nullable byte apply(@NotNull final byte x);
 }

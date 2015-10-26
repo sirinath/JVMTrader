@@ -1,3 +1,5 @@
+import org.jetbrains.annotations.Nullable
+
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
  *
@@ -45,10 +47,12 @@ String genUnaryOp(Class<?> type, String opType) {
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface ${opType}${typeSuffix}${generic} {
-    $typeName apply(${
-        opType.startsWith("UnaryOp") ? "$typeName x" : opType.startsWith("BiOp") ? "$typeName x, $typeName y" : "$typeName x, $typeName ... values"
+    @Nullable $typeName apply(${
+        opType.startsWith("UnaryOp") ? "@NotNull final $typeName x" : opType.startsWith("BiOp") ? "@NotNull final $typeName x, @NotNull final $typeName y" : "@NotNull final $typeName x, @NotNull final $typeName ... values"
     });
 }
 """)

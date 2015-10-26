@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface UnaryOpLong {
-    long apply(long x);
+    @Nullable long apply(@NotNull final long x);
 }

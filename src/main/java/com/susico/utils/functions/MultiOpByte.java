@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface MultiOpByte {
-    byte apply(byte x, byte ... values);
+    @Nullable byte apply(@NotNull final byte x, @NotNull final byte ... values);
 }

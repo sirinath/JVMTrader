@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface MultiOpDouble {
-    double apply(double x, double ... values);
+    @Nullable double apply(@NotNull final double x, @NotNull final double ... values);
 }

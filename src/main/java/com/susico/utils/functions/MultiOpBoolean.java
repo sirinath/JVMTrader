@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface MultiOpBoolean {
-    boolean apply(boolean x, boolean ... values);
+    @Nullable boolean apply(@NotNull final boolean x, @NotNull final boolean ... values);
 }

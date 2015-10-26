@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface UnaryOpObject<T> {
-    T apply(T x);
+    @Nullable T apply(@NotNull final T x);
 }

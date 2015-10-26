@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface BiOpShort {
-    short apply(short x, short y);
+    @Nullable short apply(@NotNull final short x, @NotNull final short y);
 }

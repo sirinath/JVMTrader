@@ -813,12 +813,12 @@ public final class ${mutabilityPrefix}WrappedArrayAccess${typeSuffix}$generic {
 
     public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final long length) {
         final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
+        return indexEnd < length && indexEnd >= 0;
     }
 
     public static  boolean inRangeWithOffset(final ${indexTypeName} index, final ${indexTypeName} offset, final int length) {
         final long indexEnd = index + offset;
-        return indexEnd < length && index >= 0 && indexEnd >= 0;
+        return indexEnd < length && indexEnd >= 0;
     }
 
     public final boolean inRangeWithOffset(final ${indexTypeName} index, final long offset) {

@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface UnaryOpDouble {
-    double apply(double x);
+    @Nullable double apply(@NotNull final double x);
 }

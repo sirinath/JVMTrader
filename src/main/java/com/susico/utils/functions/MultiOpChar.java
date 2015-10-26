@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface MultiOpChar {
-    char apply(char x, char ... values);
+    @Nullable char apply(@NotNull final char x, @NotNull final char ... values);
 }

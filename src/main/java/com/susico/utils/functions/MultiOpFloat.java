@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface MultiOpFloat {
-    float apply(float x, float ... values);
+    @Nullable float apply(@NotNull final float x, @NotNull final float ... values);
 }

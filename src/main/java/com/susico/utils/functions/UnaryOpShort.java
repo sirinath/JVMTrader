@@ -17,7 +17,9 @@
 
 package com.susico.utils.functions;
 
+import org.jetbrains.annotations.*;
+
 @FunctionalInterface
 public interface UnaryOpShort {
-    short apply(short x);
+    @Nullable short apply(@NotNull final short x);
 }
