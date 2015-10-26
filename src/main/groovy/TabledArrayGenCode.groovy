@@ -240,6 +240,9 @@ import com.susico.utils.arrays.tabled.TabledArray;
 
 import com.susico.utils.functions.*;
 
+import org.jetbrains.annotations.*;
+
+
 public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArray {
     protected final $erasedType[] rest;
     protected final int actualLength;
@@ -263,11 +266,11 @@ public abstract class ImmutableTabledArray$typeSuffix$generic extends TabledArra
     }
 
     protected final @NotNull $typeName getFromRest(final int index) {
-        return ($typeName) ARRAY_ACCESS.${generic}get(index - definedAsValues, rest);
+        return ($typeName) ARRAY_ACCESS.${generic}get(index - definedAsValues, ($typeName[]) rest);
     }
 
     protected final @NotNull $typeName getVolatileFromRest(final int index) {
-        return ($typeName) ARRAY_ACCESS.${generic}getVolatile(index - definedAsValues, rest);
+        return ($typeName) ARRAY_ACCESS.${generic}getVolatile(index - definedAsValues, ($typeName[]) rest);
     }
 
     public abstract $typeName get(final int index);
@@ -352,6 +355,8 @@ String tabledArray0000(boolean mutable, Class<?> type) {
 package com.susico.utils.arrays.tabled.array${packageName}.mutable;
 
 import com.susico.utils.functions.*;
+
+import org.jetbrains.annotations.*;
 
 public abstract class MutableTabledArray0000${typeSuffix}${generic} extends MutableTabledArray${typeSuffix}${generic} {
     protected MutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final @NotNull $typeName ... values) {
@@ -473,6 +478,8 @@ package com.susico.utils.arrays.tabled.array${packageName}.immutable;
 
 import com.susico.utils.functions.*;
 
+import org.jetbrains.annotations.*;
+
 public abstract class ImmutableTabledArray0000${typeSuffix}${generic}
     extends ImmutableTabledArray${typeSuffix}${generic} {
     protected ImmutableTabledArray0000${typeSuffix}(final boolean checked, final int length, final @NotNull $typeName ... values) {
@@ -544,6 +551,8 @@ import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
 
 import com.susico.utils.functions.*;
+
+import org.jetbrains.annotations.*;
 
 public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
     ${mutability}TabledArray0000$typeSuffix$generic {
@@ -972,9 +981,12 @@ String tabledArray(boolean mutable, Class<?> type, int start) {
 
 package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerCase()};
 
+import com.susico.utils.UnsafeAccess;
 import com.susico.utils.arrays.access.ArrayAccess;
 
 import com.susico.utils.functions.*;
+
+import org.jetbrains.annotations.*;
 
 public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic extends
     ${mutability}TabledArray${classStart}$typeSuffix$generic {
