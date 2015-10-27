@@ -17,7 +17,8 @@
 package com.susico.utils.io;
 
 import com.susico.utils.UnsafeAccess;
-import uk.co.real_logic.agrona.concurrent.UnsafeBuffer;
+import org.jetbrains.annotations.NotNull;
+import sun.misc.Unsafe;
 
 import java.nio.ByteOrder;
 
@@ -26,8 +27,7 @@ import java.nio.ByteOrder;
  */
 public final class BitUtils {
     public static final long PAGE_SIZE = UnsafeAccess.UNSAFE.pageSize();
-    public static final SafePacker SAFE_PACKER = new SafePacker();
-    public static final BufferPacker BUFFER_PACKER = new BufferPacker();
+    public static final Packer PACKER = new Packer();
 
     public static long roundUpToPageSize(long i) {
         return roundUpTo(i, PAGE_SIZE);
@@ -45,292 +45,282 @@ public final class BitUtils {
         return (i + multiple - 1) & ~(multiple - 1);
     }
 
-    public static final class SafePacker {
-        public static long packToLong(final byte... bytes) {
-            return packToLong(ByteOrder.nativeOrder(), 0, bytes);
-        }
+    public static final class Packer extends ThreadLocal<Packer> {
+        protected long aCharFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "aChar");
 
-        public static long packToLong(final ByteOrder byteOrder, final int position, final byte... bytes) {
-            final int len = bytes.length > position ? bytes.length - position : 0;
+        protected char aChar = 0;
 
-            long id = 0;
+        protected long aShortFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "aShort");
 
-            if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-                switch (len) {
-                    default:
-                    case 8:
-                        id += bytes[position + 8 - 1] << ((1 - 1) * 8);
-                    case 7:
-                        id += bytes[position + 7 - 1] << ((2 - 1) * 8);
-                    case 6:
-                        id += bytes[position + 6 - 1] << ((3 - 1) * 8);
-                    case 5:
-                        id += bytes[position + 5 - 1] << ((4 - 1) * 8);
-                    case 4:
-                        id += bytes[position + 4 - 1] << ((5 - 1) * 8);
-                    case 3:
-                        id += bytes[position + 3 - 1] << ((6 - 1) * 8);
-                    case 2:
-                        id += bytes[position + 2 - 1] << ((7 - 1) * 8);
-                    case 1:
-                        id += bytes[position + 1 - 1] << ((8 - 1) * 8);
-                    case 0:
-                        return id;
-                }
-            } else {
-                switch (len) {
-                    default:
-                    case 8:
-                        id += bytes[position + 8 - 1] << ((8 - 1) * 8);
-                    case 7:
-                        id += bytes[position + 7 - 1] << ((7 - 1) * 8);
-                    case 6:
-                        id += bytes[position + 6 - 1] << ((6 - 1) * 8);
-                    case 5:
-                        id += bytes[position + 5 - 1] << ((5 - 1) * 8);
-                    case 4:
-                        id += bytes[position + 4 - 1] << ((4 - 1) * 8);
-                    case 3:
-                        id += bytes[position + 3 - 1] << ((3 - 1) * 8);
-                    case 2:
-                        id += bytes[position + 2 - 1] << ((2 - 1) * 8);
-                    case 1:
-                        id += bytes[position + 1 - 1] << ((1 - 1) * 8);
-                    case 0:
-                        return id;
-                }
-            }
-        }
+        protected short aShort = 0;
 
-        public static void unpack(final ByteOrder byteOrder, final long value, final byte[] bytes) {
-            unpack(byteOrder, value, 0, bytes);
-        }
+        protected long anIntFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "anInt");
 
-        public static void unpack(final ByteOrder byteOrder, final long value, final int position, final byte[] bytes) {
-            final int len = bytes.length > position ? bytes.length - position : 0;
+        protected int anInt = 0;
 
-            if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-                switch (len) {
-                    default:
-                    case 8:
-                        bytes[position + 8 - 1] = (byte) ((value & 0x00000000000000FFL) >>> ((1 - 1) * 8));
-                    case 7:
-                        bytes[position + 7 - 1] = (byte) ((value & 0x000000000000FF00L) >>> ((2 - 1) * 8));
-                    case 6:
-                        bytes[position + 6 - 1] = (byte) ((value & 0x0000000000FF0000L) >>> ((3 - 1) * 8));
-                    case 5:
-                        bytes[position + 5 - 1] = (byte) ((value & 0x00000000FF000000L) >>> ((4 - 1) * 8));
-                    case 4:
-                        bytes[position + 4 - 1] = (byte) ((value & 0x000000FF00000000L) >>> ((5 - 1) * 8));
-                    case 3:
-                        bytes[position + 3 - 1] = (byte) ((value & 0x0000FF0000000000L) >>> ((6 - 1) * 8));
-                    case 2:
-                        bytes[position + 2 - 1] = (byte) ((value & 0x00FF000000000000L) >>> ((7 - 1) * 8));
-                    case 1:
-                        bytes[position + 1 - 1] = (byte) ((value & 0xFF00000000000000L) >>> ((8 - 1) * 8));
-                    case 0:
-                        return;
-                }
-            } else {
-                switch (len) {
-                    default:
-                    case 8:
-                        bytes[position + 8 - 1] = (byte) ((value & 0xFF00000000000000L) >>> ((8 - 1) * 8));
-                    case 7:
-                        bytes[position + 7 - 1] = (byte) ((value & 0x00FF000000000000L) >>> ((7 - 1) * 8));
-                    case 6:
-                        bytes[position + 6 - 1] = (byte) ((value & 0x0000FF0000000000L) >>> ((6 - 1) * 8));
-                    case 5:
-                        bytes[position + 5 - 1] = (byte) ((value & 0x000000FF00000000L) >>> ((5 - 1) * 8));
-                    case 4:
-                        bytes[position + 4 - 1] = (byte) ((value & 0x00000000FF000000L) >>> ((4 - 1) * 8));
-                    case 3:
-                        bytes[position + 3 - 1] = (byte) ((value & 0x0000000000FF0000L) >>> ((3 - 1) * 8));
-                    case 2:
-                        bytes[position + 2 - 1] = (byte) ((value & 0x000000000000FF00L) >>> ((2 - 1) * 8));
-                    case 1:
-                        bytes[position + 1 - 1] = (byte) ((value & 0x00000000000000FFL) >>> ((1 - 1) * 8));
-                    case 0:
-                        return;
-                }
-            }
-        }
+        protected long aLongFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "aLong");
 
-        public static void unpack(final long value, final int position, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, position, bytes);
-        }
+        protected long aLong = 0;
 
-        public static void unpack(final long value, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, 0, bytes);
-        }
+        protected Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
-        public static int packToInt(final byte... bytes) {
-            return packToInt(ByteOrder.nativeOrder(), 0, bytes);
-        }
-
-        public static int packToInt(final ByteOrder byteOrder, final int position, final byte... bytes) {
-            final int len = bytes.length > position ? bytes.length - position : 0;
-
-            int id = 0;
-
-            if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-                switch (len) {
-                    default:
-                    case 4:
-                        id += bytes[position + 4 - 1] << ((1 - 1) * 8);
-                    case 3:
-                        id += bytes[position + 3 - 1] << ((2 - 1) * 8);
-                    case 2:
-                        id += bytes[position + 2 - 1] << ((3 - 1) * 8);
-                    case 1:
-                        id += bytes[position + 1 - 1] << ((4 - 1) * 8);
-                    case 0:
-                        return id;
-                }
-            } else {
-                switch (len) {
-                    default:
-                    case 4:
-                        id += bytes[position + 4 - 1] << ((4 - 1) * 8);
-                    case 3:
-                        id += bytes[position + 3 - 1] << ((3 - 1) * 8);
-                    case 2:
-                        id += bytes[position + 2 - 1] << ((2 - 1) * 8);
-                    case 1:
-                        id += bytes[position + 1 - 1] << ((1 - 1) * 8);
-                    case 0:
-                        return id;
-                }
-            }
-        }
-
-        public static void unpack(final ByteOrder byteOrder, final int value, final byte[] bytes) {
-            unpack(byteOrder, value, 0, bytes);
-        }
-
-        public static void unpack(final ByteOrder byteOrder, final int value, final int position, final byte[] bytes) {
-            final int len = bytes.length > position ? bytes.length - position : 0;
-
-            if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-                switch (len) {
-                    default:
-                    case 4:
-                        bytes[position + 4 - 1] = (byte) ((value & 0x000000FF) >>> ((1 - 1) * 8));
-                    case 3:
-                        bytes[position + 3 - 1] = (byte) ((value & 0x0000FF00) >>> ((2 - 1) * 8));
-                    case 2:
-                        bytes[position + 2 - 1] = (byte) ((value & 0x00FF0000) >>> ((3 - 1) * 8));
-                    case 1:
-                        bytes[position + 1 - 1] = (byte) ((value & 0xFF000000) >>> ((4 - 1) * 8));
-                    case 0:
-                        return;
-                }
-            } else {
-                switch (len) {
-                    default:
-                    case 4:
-                        bytes[position + 4 - 1] = (byte) ((value & 0xFF000000) >>> ((4 - 1) * 8));
-                    case 3:
-                        bytes[position + 3 - 1] = (byte) ((value & 0x00FF0000) >>> ((3 - 1) * 8));
-                    case 2:
-                        bytes[position + 2 - 1] = (byte) ((value & 0x0000FF00) >>> ((2 - 1) * 8));
-                    case 1:
-                        bytes[position + 1 - 1] = (byte) ((value & 0x000000FF) >>> ((1 - 1) * 8));
-                    case 0:
-                        return;
-                }
-            }
-        }
-
-        public static void unpack(final int value, final int position, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, position, bytes);
-        }
-
-        public static void unpack(final int value, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, 0, bytes);
-        }
-    }
-
-    public static final class BufferPacker extends ThreadLocal<BufferPacker> {
-        public static final int BUFF_LEN = Long.BYTES;
-        protected final byte[] buff = new byte[BUFF_LEN];
-        protected final UnsafeBuffer unsafeBuffer = new UnsafeBuffer(buff);
+        protected Packer() {}
 
         @Override
-        protected BufferPacker initialValue() {
-            return new BufferPacker();
+        protected final Packer initialValue() {
+            return new Packer();
         }
 
-        public final long packToLong(final ByteOrder byteOrder, final int position, final byte... bytes) {
-            final int len = bytes.length > position ? bytes.length - position : 0;
+        public char packChar(@NotNull final byte ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
 
-            unsafeBuffer.putLong(0, 0L);
+            aChar = 0;
 
-            // final int longBuffOffset = byteOrder == ByteOrder.LITTLE_ENDIAN ? 0 : Long.BYTES - len;
-            final int longBuffOffset = 0;
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, this, aCharFieldOffset, len);
 
-            if (len > Long.BYTES)
-                unsafeBuffer.putBytes(longBuffOffset, bytes, position, Long.BYTES);
-            else
-                unsafeBuffer.putBytes(longBuffOffset, bytes, position, len);
-
-            return unsafeBuffer.getLong(longBuffOffset, byteOrder);
+            return aChar;
         }
 
-        public final void unpack(final ByteOrder byteOrder, final long value, final byte[] bytes) {
-            unpack(byteOrder, value, 0, bytes);
+        public void unpackChar(final char value, @NotNull final byte[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
+
+            aChar = value;
+
+            UNSAFE.copyMemory(this, aCharFieldOffset, values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, len);
         }
 
-        public final void unpack(final ByteOrder byteOrder, final long value, final int position, final byte[] bytes) {
-            unsafeBuffer.putLong(0, value, byteOrder);
+        public short packShort(@NotNull final byte ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
 
-            final int len = bytes.length > position ? bytes.length - position : 0;
+            aShort = 0;
 
-            System.arraycopy(buff, 0, bytes, position, len);
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, this, aShortFieldOffset, len);
+
+            return aShort;
         }
 
-        public final void unpack(final long value, final int position, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, position, bytes);
+        public void unpackShort(final short value, @NotNull final byte[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
+
+            aShort = value;
+
+            UNSAFE.copyMemory(this, aShortFieldOffset, values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, len);
         }
 
-        public final void unpack(final long value, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, 0, bytes);
+        public char packChar(@NotNull final boolean ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
+
+            aChar = 0;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, this, aCharFieldOffset, len);
+
+            return aChar;
         }
 
-        public final int packToInt(final ByteOrder byteOrder, final int position, final byte... bytes) {
-            final int len = bytes.length > position ? bytes.length - position : 0;
+        public void unpackChar(final char value, @NotNull final boolean[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
 
-            unsafeBuffer.putLong(0, 0L);
+            aChar = value;
 
-            // final int intBuffOffset = byteOrder == ByteOrder.LITTLE_ENDIAN ? 0 : Integer.BYTES - len;
-            final int intBuffOffset = 0;
-
-            if (len > Integer.BYTES)
-                unsafeBuffer.putBytes(intBuffOffset, bytes, position, Integer.BYTES);
-            else
-                unsafeBuffer.putBytes(intBuffOffset, bytes, position, len);
-
-            return unsafeBuffer.getInt(intBuffOffset, byteOrder);
+            UNSAFE.copyMemory(this, aCharFieldOffset, values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, len);
         }
 
-        public final void unpack(final int value, final int position, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, position, bytes);
+        public short packShort(@NotNull final boolean ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
+
+            aShort = 0;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, this, aShortFieldOffset, len);
+
+            return aShort;
         }
 
-        public final void unpack(final ByteOrder byteOrder, final int value, final int position, final byte[] bytes) {
-            unsafeBuffer.putInt(0, value, byteOrder);
+        public void unpackShort(final short value, @NotNull final boolean[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
 
-            final int len = bytes.length > position ? bytes.length - position : 0;
+            aShort = value;
 
-            System.arraycopy(buff, 0, bytes, position, len);
+            UNSAFE.copyMemory(this, aShortFieldOffset, values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, len);
         }
 
-        public final void unpack(final ByteOrder byteOrder, final int value, final byte[] bytes) {
-            unpack(byteOrder, value, 0, bytes);
+        public long packLong(@NotNull final boolean ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+
+            aLong = 0L;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, this, aLongFieldOffset, len);
+
+            return aLong;
         }
 
-        public final void unpack(final int value, final byte[] bytes) {
-            unpack(ByteOrder.nativeOrder(), value, 0, bytes);
+        public int packInt(@NotNull final boolean ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+
+            anInt = 0;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, this, anIntFieldOffset, len);
+
+            return anInt;
+        }
+
+        public void unpackLong(final long value, @NotNull final boolean[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+
+            aLong = value;
+
+            UNSAFE.copyMemory(this, aLongFieldOffset, values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, len);
+        }
+
+        public void unpackInt(final int value, @NotNull final boolean[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+
+            anInt = value;
+
+            UNSAFE.copyMemory(this, anIntFieldOffset, values, UNSAFE.ARRAY_BOOLEAN_BASE_OFFSET, len);
+        }
+
+        public long packLong(@NotNull final byte ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+
+            aLong = 0L;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, this, aLongFieldOffset, len);
+
+            return aLong;
+        }
+
+        public int packInt(@NotNull final byte ... values) {
+            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+
+            anInt = 0;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, this, anIntFieldOffset, len);
+
+            return anInt;
+        }
+
+        public void unpackLong(final long value, @NotNull final byte[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+
+            aLong = value;
+
+            UNSAFE.copyMemory(this, aLongFieldOffset, values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, len);
+        }
+
+        public void unpackInt(final int value, @NotNull final byte[] values) {
+            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+
+            anInt = value;
+
+            UNSAFE.copyMemory(this, anIntFieldOffset, values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, len);
+        }
+
+        public long packLong(@NotNull final short ... values) {
+            final long len = Math.min(values.length * Short.BYTES, Long.BYTES);
+
+            aLong = 0L;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_SHORT_BASE_OFFSET, this, aLongFieldOffset, len);
+
+            return aLong;
+        }
+
+        public int packInt(@NotNull final short ... values) {
+            final long len = Math.min(values.length * Short.BYTES, Integer.BYTES);
+
+            anInt = 0;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_SHORT_BASE_OFFSET, this, anIntFieldOffset, len);
+
+            return anInt;
+        }
+
+        public void unpackLong(final long value, @NotNull final short[] values) {
+            final long len = Math.min(values.length * Short.BYTES, Long.BYTES);
+
+            aLong = value;
+
+            UNSAFE.copyMemory(this, aLongFieldOffset, values, UNSAFE.ARRAY_SHORT_BASE_OFFSET, len);
+        }
+
+        public void unpackInt(final int value, @NotNull final short[] values) {
+            final long len = Math.min(values.length * Short.BYTES, Integer.BYTES);
+
+            anInt = value;
+
+            UNSAFE.copyMemory(this, anIntFieldOffset, values, UNSAFE.ARRAY_SHORT_BASE_OFFSET, len);
+        }
+
+        public long packLong(@NotNull final char ... values) {
+            final long len = Math.min(values.length * Character.BYTES, Long.BYTES);
+
+            aLong = 0L;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_CHAR_BASE_OFFSET, this, aLongFieldOffset, len);
+
+            return aLong;
+        }
+
+        public int packInt(@NotNull final char ... values) {
+            final long len = Math.min(values.length * Character.BYTES, Integer.BYTES);
+
+            anInt = 0;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_CHAR_BASE_OFFSET, this, anIntFieldOffset, len);
+
+            return anInt;
+        }
+
+        public void unpackLong(final long value, @NotNull final char[] values) {
+            final long len = Math.min(values.length * Character.BYTES, Long.BYTES);
+
+            aLong = value;
+
+            UNSAFE.copyMemory(this, aLongFieldOffset, values, UNSAFE.ARRAY_CHAR_BASE_OFFSET, len);
+        }
+
+        public void unpackInt(final int value, @NotNull final char[] values) {
+            final long len = Math.min(values.length * Character.BYTES, Integer.BYTES);
+
+            anInt = value;
+
+            UNSAFE.copyMemory(this, anIntFieldOffset, values, UNSAFE.ARRAY_CHAR_BASE_OFFSET, len);
+        }
+
+        public long packLong(@NotNull final int ... values) {
+            final long len = Math.min(values.length * Integer.BYTES, Long.BYTES);
+
+            aLong = 0L;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_INT_BASE_OFFSET, this, aLongFieldOffset, len);
+
+            return aLong;
+        }
+
+        public void unpackLong(final long value, @NotNull final int[] values) {
+            final long len = Math.min(values.length * Integer.BYTES, Long.BYTES);
+
+            aLong = value;
+
+            UNSAFE.copyMemory(this, aLongFieldOffset, values, UNSAFE.ARRAY_INT_BASE_OFFSET, len);
+        }
+
+        public long packLong(@NotNull final float ... values) {
+            final long len = Math.min(values.length * Float.BYTES, Long.BYTES);
+
+            aLong = 0L;
+
+            UNSAFE.copyMemory(values, UNSAFE.ARRAY_FLOAT_BASE_OFFSET, this, aLongFieldOffset, len);
+
+            return aLong;
+        }
+
+        public void unpackLong(final long value, @NotNull final float[] values) {
+            final long len = Math.min(values.length * Float.BYTES, Long.BYTES);
+
+            aLong = value;
+
+            UNSAFE.copyMemory(this, aLongFieldOffset, values, UNSAFE.ARRAY_FLOAT_BASE_OFFSET, len);
         }
     }
 }
