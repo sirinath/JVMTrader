@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by sirin_000 on 06/10/2015.
  */
-public final class MemoryRange extends PooledObject {
+public class MemoryRange extends PooledObject {
     protected long address;
     protected long size;
     protected long end;
@@ -30,14 +30,16 @@ public final class MemoryRange extends PooledObject {
     protected MemoryRange() {}
 
     public static MemoryRange getInstance(final long address, final long size) {
-        return getFromPoolOrSupplierIfAbsent(MemoryRange.class, MemoryRange::new);
+        MemoryRange mr = getFromPoolOrSupplierIfAbsent(MemoryRange.class, MemoryRange::new);
+        mr.set(address, size);
+
+        return mr;
     }
 
-    public void set(final long address, final long size) {
+    public final void set(final long address, final long size) {
         this.address = address;
         this.size = size;
         this.end = address + size;
-
     }
 
     public final long getAddress() {
@@ -52,14 +54,22 @@ public final class MemoryRange extends PooledObject {
         return this.size;
     }
 
+    public final boolean inRange(final long address) {
+        return address >= this.address && address < this.end;
+    }
+
+    public final boolean inRange(final long address, final long offset) {
+        return inRange(address + offset);
+    }
+
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         final long tmp = end ^ address;
         return (int)((tmp >>> Integer.SIZE) ^ tmp);
     }
 
     @Override
-    public boolean equals(final @NotNull Object obj) {
+    public final boolean equals(final @NotNull Object obj) {
         return obj instanceof MemoryRange && ((MemoryRange) obj).getAddress() == address && ((MemoryRange) obj).getSize() == size;
     }
 }

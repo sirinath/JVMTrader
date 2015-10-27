@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.susico.utils.memory.offheap;
+package com.susico.utils.memory;
 
 import com.susico.utils.memory.MemoryRange;
 
@@ -24,7 +24,13 @@ import java.io.Closeable;
  * Created by sirin_000 on 06/10/2015.
  */
 public interface SharedBuffer<T> extends Closeable {
-    T map(long position, long size);
+    T map(final MemoryRange memoryRange);
+
+    default T map(final long position, final long size) {
+        final MemoryRange memoryRange = MemoryRange.getInstance(position, size);
+
+        return map(memoryRange);
+    }
 
     boolean unmap(final MemoryRange memoryRange);
 

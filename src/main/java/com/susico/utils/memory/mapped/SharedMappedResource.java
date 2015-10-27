@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.susico.utils.memory.offheap;
+package com.susico.utils.memory.mapped;
+
+import com.susico.utils.memory.MemoryRange;
 
 import java.io.Closeable;
 import java.io.File;
@@ -67,12 +69,16 @@ public final class SharedMappedResource implements Closeable {
         }
     }
 
-    public final MappedByteBuffer map(final long poss, final long size) {
+    public final MappedByteBuffer map(final long position, final long size) {
         try {
-            return fileChannel.map(mapMode, poss, size);
+            return fileChannel.map(mapMode, position, size);
         } catch (IOException e) {
             throw new IllegalStateException("Error during IO operation", e);
         }
+    }
+
+    public final MappedByteBuffer map(final MemoryRange memoryRange) {
+        return map(memoryRange.getAddress(), memoryRange.getSize());
     }
 
     @Override

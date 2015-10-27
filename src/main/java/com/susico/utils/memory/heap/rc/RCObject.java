@@ -32,13 +32,12 @@ public final class RCObject extends PooledObject {
     private final ReferenceQueue<Object> refQ = new ReferenceQueue<>();
     private volatile int rc = 0;
     private volatile SoftReference<Object> value = null;
-    private volatile Runnable releaseAction;
     private Cleaner cleaner;
 
     private RCObject() {
     }
 
-    public static <T> RCObject getInstance(final Object value, @NotNull final Runnable releaseAction) {
+    public static <T> RCObject getInstance(final T value, @NotNull final Runnable releaseAction) {
         RCObject obj = getFromPoolOrSupplierIfAbsent(RCObject.class, RCObject::new);
 
         obj.set(value, releaseAction);
@@ -46,7 +45,11 @@ public final class RCObject extends PooledObject {
         return obj;
     }
 
-    public static <T> RCObject getInstance(@NotNull final AutoCloseable value) {
+    public static <T> RCObject getInstance(final Supplier<T> supplier, @NotNull final Runnable releaseAction) {
+        return getInstance(supplier.get(), releaseAction);
+    }
+
+    public static <T extends AutoCloseable> RCObject getInstance(@NotNull final T value) {
         return getInstance(value, () -> {
             try {
                 value.close();
@@ -55,26 +58,22 @@ public final class RCObject extends PooledObject {
         });
     }
 
+    public static <T extends AutoCloseable> RCObject getInstance(@NotNull final Supplier<T> supplier) {
+        return getInstance(supplier.get());
+    }
+
     private final void set(final Object value, @NotNull final Runnable releaseAction) {
         this.rc = 0;
         this.value = new SoftReference<Object>(value, refQ);
-        this.releaseAction = releaseAction;
 
-        this.cleaner = Cleaner.create(value, () -> clean());
+        this.cleaner = Cleaner.create(value, releaseAction);
     }
 
     public final void clean() {
         runThreadSafe(() -> {
             rc = 0;
 
-            if (releaseAction != null) {
-                try {
-                    releaseAction.run();
-                } catch (Throwable t) {
-                } finally {
-                    releaseAction = null;
-                }
-            }
+            cleaner.clean();
 
             value = null;
         });
@@ -102,14 +101,7 @@ public final class RCObject extends PooledObject {
     public final void close() {
         if (--rc == 0) {
             runThreadSafe(() -> {
-                if (releaseAction != null) {
-                    try {
-                        releaseAction.run();
-                    } catch (Throwable t) {
-                    } finally {
-                        releaseAction = null;
-                    }
-                }
+                cleaner.clean();
 
                 value = null;
 

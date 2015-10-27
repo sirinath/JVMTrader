@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.susico.utils.memory.offheap;
+package com.susico.utils.memory.mapped;
 
 import com.susico.utils.io.IOUtils;
 import com.susico.utils.memory.MemoryRange;
+import com.susico.utils.memory.SharedBuffer;
 import com.susico.utils.memory.heap.rc.RCObject;
-import uk.co.real_logic.agrona.collections.Long2ObjectHashMap;
 
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.LockSupport;
 
 /**
  * Created by sirin_000 on 17/09/2015.
@@ -44,13 +43,12 @@ public final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> 
     }
 
     @Override
-    public final MappedByteBuffer map(final long position, final long size) {
-        final MemoryRange memoryRange = MemoryRange.getInstance(position, size);
+    public final MappedByteBuffer map(final MemoryRange memoryRange) {
         RCObject rcObject = bufferMapping.get(memoryRange);
 
         if (rcObject == null) {
             synchronized (this) {
-                final MappedByteBuffer mapping = sharedMappedResource.map(position, size);
+                final MappedByteBuffer mapping = sharedMappedResource.map(memoryRange);
                 rcObject = RCObject.getInstance(mapping, () -> {
                     if (save)
                         IOUtils.saveAndUnmap(mapping);

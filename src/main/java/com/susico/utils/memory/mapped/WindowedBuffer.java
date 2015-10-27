@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.susico.utils.memory.offheap;
+package com.susico.utils.memory.mapped;
 
 import com.susico.utils.memory.MemoryRange;
+import com.susico.utils.memory.SharedBuffer;
 
 import java.io.IOException;
 
