@@ -64,6 +64,13 @@ public final class BitUtils {
 
         protected Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
+        public static final int BYTE_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Byte.BYTES) - 1;
+        public static final int SHORT_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Short.BYTES) - 1;
+        public static final int CHAR_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Character.BYTES) - 1;
+        public static final int INT_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Integer.BYTES) - 1;
+        public static final int FLOAT_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Float.BYTES) - 1;
+
+
         protected Packer() {}
 
         @Override
@@ -72,7 +79,7 @@ public final class BitUtils {
         }
 
         public char packChar(@NotNull final byte ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Character.BYTES);
 
             aChar = 0;
 
@@ -82,7 +89,7 @@ public final class BitUtils {
         }
 
         public void unpackChar(final char value, @NotNull final byte[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Character.BYTES);
 
             aChar = value;
 
@@ -90,7 +97,7 @@ public final class BitUtils {
         }
 
         public short packShort(@NotNull final byte ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Short.BYTES);
 
             aShort = 0;
 
@@ -100,7 +107,7 @@ public final class BitUtils {
         }
 
         public void unpackShort(final short value, @NotNull final byte[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Short.BYTES);
 
             aShort = value;
 
@@ -108,7 +115,7 @@ public final class BitUtils {
         }
 
         public char packChar(@NotNull final boolean ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Character.BYTES);
 
             aChar = 0;
 
@@ -118,7 +125,7 @@ public final class BitUtils {
         }
 
         public void unpackChar(final char value, @NotNull final boolean[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Character.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Character.BYTES);
 
             aChar = value;
 
@@ -126,7 +133,7 @@ public final class BitUtils {
         }
 
         public short packShort(@NotNull final boolean ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Short.BYTES);
 
             aShort = 0;
 
@@ -136,7 +143,7 @@ public final class BitUtils {
         }
 
         public void unpackShort(final short value, @NotNull final boolean[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Short.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Short.BYTES);
 
             aShort = value;
 
@@ -144,7 +151,7 @@ public final class BitUtils {
         }
 
         public long packLong(@NotNull final boolean ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Long.BYTES);
 
             aLong = 0L;
 
@@ -154,7 +161,7 @@ public final class BitUtils {
         }
 
         public int packInt(@NotNull final boolean ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Integer.BYTES);
 
             anInt = 0;
 
@@ -164,7 +171,7 @@ public final class BitUtils {
         }
 
         public void unpackLong(final long value, @NotNull final boolean[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Long.BYTES);
 
             aLong = value;
 
@@ -172,7 +179,7 @@ public final class BitUtils {
         }
 
         public void unpackInt(final int value, @NotNull final boolean[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Integer.BYTES);
 
             anInt = value;
 
@@ -180,7 +187,7 @@ public final class BitUtils {
         }
 
         public long packLong(@NotNull final byte ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Long.BYTES);
 
             aLong = 0L;
 
@@ -190,7 +197,7 @@ public final class BitUtils {
         }
 
         public int packInt(@NotNull final byte ... values) {
-            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Integer.BYTES);
 
             anInt = 0;
 
@@ -200,7 +207,7 @@ public final class BitUtils {
         }
 
         public void unpackLong(final long value, @NotNull final byte[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Long.BYTES);
 
             aLong = value;
 
@@ -208,7 +215,7 @@ public final class BitUtils {
         }
 
         public void unpackInt(final int value, @NotNull final byte[] values) {
-            final long len = Math.min(values.length * Byte.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << BYTE_SHIFT, Integer.BYTES);
 
             anInt = value;
 
@@ -216,7 +223,7 @@ public final class BitUtils {
         }
 
         public long packLong(@NotNull final short ... values) {
-            final long len = Math.min(values.length * Short.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << SHORT_SHIFT, Long.BYTES);
 
             aLong = 0L;
 
@@ -226,7 +233,7 @@ public final class BitUtils {
         }
 
         public int packInt(@NotNull final short ... values) {
-            final long len = Math.min(values.length * Short.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << SHORT_SHIFT, Integer.BYTES);
 
             anInt = 0;
 
@@ -236,7 +243,7 @@ public final class BitUtils {
         }
 
         public void unpackLong(final long value, @NotNull final short[] values) {
-            final long len = Math.min(values.length * Short.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << SHORT_SHIFT, Long.BYTES);
 
             aLong = value;
 
@@ -244,7 +251,7 @@ public final class BitUtils {
         }
 
         public void unpackInt(final int value, @NotNull final short[] values) {
-            final long len = Math.min(values.length * Short.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << SHORT_SHIFT, Integer.BYTES);
 
             anInt = value;
 
@@ -252,7 +259,7 @@ public final class BitUtils {
         }
 
         public long packLong(@NotNull final char ... values) {
-            final long len = Math.min(values.length * Character.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << CHAR_SHIFT, Long.BYTES);
 
             aLong = 0L;
 
@@ -262,7 +269,7 @@ public final class BitUtils {
         }
 
         public int packInt(@NotNull final char ... values) {
-            final long len = Math.min(values.length * Character.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << CHAR_SHIFT, Integer.BYTES);
 
             anInt = 0;
 
@@ -272,7 +279,7 @@ public final class BitUtils {
         }
 
         public void unpackLong(final long value, @NotNull final char[] values) {
-            final long len = Math.min(values.length * Character.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << CHAR_SHIFT, Long.BYTES);
 
             aLong = value;
 
@@ -280,7 +287,7 @@ public final class BitUtils {
         }
 
         public void unpackInt(final int value, @NotNull final char[] values) {
-            final long len = Math.min(values.length * Character.BYTES, Integer.BYTES);
+            final long len = Math.min(values.length << CHAR_SHIFT, Integer.BYTES);
 
             anInt = value;
 
@@ -288,7 +295,7 @@ public final class BitUtils {
         }
 
         public long packLong(@NotNull final int ... values) {
-            final long len = Math.min(values.length * Integer.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << INT_SHIFT, Long.BYTES);
 
             aLong = 0L;
 
@@ -298,7 +305,7 @@ public final class BitUtils {
         }
 
         public void unpackLong(final long value, @NotNull final int[] values) {
-            final long len = Math.min(values.length * Integer.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << INT_SHIFT, Long.BYTES);
 
             aLong = value;
 
@@ -306,7 +313,7 @@ public final class BitUtils {
         }
 
         public long packLong(@NotNull final float ... values) {
-            final long len = Math.min(values.length * Float.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << FLOAT_SHIFT, Long.BYTES);
 
             aLong = 0L;
 
@@ -316,7 +323,7 @@ public final class BitUtils {
         }
 
         public void unpackLong(final long value, @NotNull final float[] values) {
-            final long len = Math.min(values.length * Float.BYTES, Long.BYTES);
+            final long len = Math.min(values.length << FLOAT_SHIFT, Long.BYTES);
 
             aLong = value;
 
