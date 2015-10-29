@@ -46,9 +46,23 @@ import org.jetbrains.annotations.NotNull;
 import sun.misc.Unsafe;
 
 public final class Packer extends ThreadLocal<Packer> {
-    protected Unsafe UNSAFE = UnsafeAccess.UNSAFE;
+    protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
-    public static final Packer PACKER = new Packer();
+    public static final Packer PACKER = init();
+
+    protected Packer() {}
+
+    protected static Packer init() {
+        final Packer packer = new Packer();
+        packer.set(packer);
+
+        return packer;
+    }
+
+    @Override
+    protected Packer initialValue() {
+        return new Packer();
+    }
 """)
 
     Class<?>[] types = [Boolean.TYPE, Byte.TYPE, Character.TYPE, Short.TYPE, Integer.TYPE, Long.TYPE, Float.TYPE, Double.TYPE]
@@ -72,13 +86,14 @@ public final class Packer extends ThreadLocal<Packer> {
                 "Character" :
                 type.equals(Integer.TYPE) ?
                         "Integer" :
-                        typeName
+                        typeSuffix
         String defaulValue = type.equals(Boolean.TYPE) ?
                 "false" :
                 "0"
+        String byteSize = type.equals(Boolean.TYPE) ? "1" : "${boxTypeName}.BYTES"
 
         buffer.append("""
-    public static final int ${typeSuffixCap}_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(${boxTypeName}.BYTES) - 1;
+    public static final int ${typeSuffixCap}_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(${byteSize}) - 1;
 
     public static final long ARRAY_${typeSuffixCap}_BASE_OFFSET = UNSAFE.ARRAY_${typeSuffixCap}_BASE_OFFSET;
     public static final long ARRAY_${typeSuffixCap}_INDEX_SCALE = UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE > 0 ?
@@ -107,13 +122,12 @@ public final class Packer extends ThreadLocal<Packer> {
             if (sizes[originalType] > sizes[type] || originalType.equals(type))
                 continue
 
-            String originalTypeName = type.getSimpleName()
+            String originalTypeName = originalType.getSimpleName()
             String originalTypeSuffixCap = originalTypeName.toUpperCase()
-
 
             buffer.append("""
     public ${typeName} pack${typeSuffix}(@NotNull final ${originalTypeName} ... values) {
-        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${boxTypeName}.BYTES);
+        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${byteSize});
 
         this.the${typeSuffix} = ${defaulValue};
 
@@ -128,7 +142,7 @@ public final class Packer extends ThreadLocal<Packer> {
     }
 
     public void unpack${typeSuffix}(final ${typeName} value, @NotNull final ${originalTypeName}[] values) {
-        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${boxTypeName}.BYTES);
+        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${byteSize});
 
         this.the${typeSuffix} = value;
 
@@ -145,7 +159,7 @@ public final class Packer extends ThreadLocal<Packer> {
         final long shiftIndex = index << ARRAY_${originalTypeSuffixCap}_INDEX_SHIFT;
         final long len = Math.min(
             values.length << ${originalTypeSuffixCap}_SHIFT - shiftIndex,
-            ${boxTypeName}.BYTES);
+            ${byteSize});
 
         this.the${typeSuffix} = ${defaulValue};
 
@@ -164,7 +178,7 @@ public final class Packer extends ThreadLocal<Packer> {
         final long shiftIndex = index << ARRAY_${originalTypeSuffixCap}_INDEX_SHIFT;
         final long len = Math.min(
             values.length << ${originalTypeSuffixCap}_SHIFT - shiftIndex,
-            ${boxTypeName}.BYTES);
+            ${byteSize});
 
         this.the${typeSuffix} = value;
 
@@ -194,3 +208,5 @@ void genPacker() {
     pw.flush()
     pw.close()
 }
+
+genPacker()
