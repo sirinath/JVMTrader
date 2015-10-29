@@ -21,7 +21,7 @@ String upcase1st(String str) {
     return str.substring(0, 1).toUpperCase() + str.substring(1)
 }
 
-String genPacker() {
+String packer() {
     StringBuilder buffer = new StringBuilder("""
 /*
  * Copyright (c) 2015. Suminda Sirinath Salpitikorala Dharmasena
@@ -65,37 +65,129 @@ public final class Packer extends ThreadLocal<Packer> {
     ]
 
     for (Class<?> type : types) {
+        String typeName = type.getSimpleName()
         String typeSuffix = upcase1st(type.getSimpleName())
         String typeSuffixCap = typeSuffix.toUpperCase()
+        String boxTypeName = type.equals(Character.TYPE) ?
+                "Character" :
+                type.equals(Integer.TYPE) ?
+                        "Integer" :
+                        typeName
+        String defaulValue = type.equals(Boolean.TYPE) ?
+                "false" :
+                "0"
 
         buffer.append("""
-    public static final int CHAR_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Character.BYTES) - 1;
+    public static final int ${typeSuffixCap}_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(${boxTypeName}.BYTES) - 1;
+
+    public static final long ARRAY_${typeSuffixCap}_BASE_OFFSET = UNSAFE.ARRAY_${typeSuffixCap}_BASE_OFFSET;
+    public static final long ARRAY_${typeSuffixCap}_INDEX_SCALE = UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE > 0 ?
+            UNSAFE.ARRAY_${typeSuffixCap}_INDEX_SCALE :
+            ${
+            typeSuffix.equalsIgnoreCase("BOOLEAN") ?
+                    1 :
+                    typeSuffix.equalsIgnoreCase("INT") ?
+                            "Integer.BYTES" :
+                            typeSuffix.equalsIgnoreCase("CHAR") ?
+                                    "Character.BYTES" :
+                                    typeSuffix.equalsIgnoreCase("OBJECT") ?
+                                            "UNSAFE.ADDRESS_SIZE" :
+                                            typeSuffix + ".BYTES"
+        };
+
+    public static final long ARRAY_${typeSuffixCap}_INDEX_SHIFT =
+        Long.SIZE - Long.numberOfLeadingZeros(ARRAY_${typeSuffixCap}_INDEX_SCALE) - 1;
+
+    protected long the${typeSuffix}FieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "the${typeSuffix}");
+
+    protected ${typeName} the${typeSuffix} = ${defaulValue};
 """)
 
-        buffer.append("""
-    protected long theCharFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theChar");
+        for (Class<?> originalType : types) {
+            String originalTypeName = type.getSimpleName()
+            String originalTypeSuffixCap = originalTypeName.toUpperCase()
 
-    protected char theChar = 0;
 
-    public char packChar(@NotNull final byte... values) {
-        final long len = Math.min(values.length << BYTE_SHIFT, Character.BYTES);
+            buffer.append("""
+    public ${typeName} pack${typeSuffix}(@NotNull final ${originalTypeName} ... values) {
+        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${boxTypeName}.BYTES);
 
-        theChar = 0;
+        this.the${typeSuffix} = ${defaulValue};
 
-        UNSAFE.copyMemory(values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, this, theCharFieldOffset, len);
+        UNSAFE.copyMemory(
+            values,
+            ARRAY_${originalTypeSuffixCap}_BASE_OFFSET,
+            this,
+            the${typeSuffix}FieldOffset,
+            len);
 
-        return aChar;
+        return this.the${typeSuffix};
     }
 
-    public void unpackChar(final char value, @NotNull final byte[] values) {
-        final long len = Math.min(values.length << BYTE_SHIFT, Character.BYTES);
+    public void unpack${typeSuffix}(final ${typeName} value, @NotNull final ${originalTypeName}[] values) {
+        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${boxTypeName}.BYTES);
 
-        theChar = value;
+        this.the${typeSuffix} = value;
 
-        UNSAFE.copyMemory(this, theCharFieldOffset, values, UNSAFE.ARRAY_BYTE_BASE_OFFSET, len);
+        UNSAFE.copyMemory(
+            this,
+            the${typeSuffix}FieldOffset,
+            values,
+            ARRAY_${originalTypeSuffixCap}_BASE_OFFSET,
+            len);
+    }
+
+
+    public ${typeName} pack${typeSuffix}(final long index, @NotNull final ${originalTypeName} ... values) {
+        final long shiftIndex = index << ARRAY_${originalTypeSuffixCap}_INDEX_SHIFT;
+        final long len = Math.min(
+            values.length << ${originalTypeSuffixCap}_SHIFT - shiftIndex,
+            ${boxTypeName}.BYTES);
+
+        this.the${typeSuffix} = ${defaulValue};
+
+        UNSAFE.copyMemory(
+            values,
+            ARRAY_${originalTypeSuffixCap}_BASE_OFFSET + shiftIndex,
+            this,
+            the${typeSuffix}FieldOffset,
+            len);
+
+        return this.the${typeSuffix};
+    }
+
+    public void unpack${typeSuffix}(
+        final ${typeName} value, final long index, @NotNull final ${originalTypeName}[] values) {
+        final long shiftIndex = index << ARRAY_${originalTypeSuffixCap}_INDEX_SHIFT;
+        final long len = Math.min(
+            values.length << ${originalTypeSuffixCap}_SHIFT - shiftIndex,
+            ${boxTypeName}.BYTES);
+
+        this.the${typeSuffix} = value;
+
+        UNSAFE.copyMemory(
+            this,
+            the${typeSuffix}FieldOffset,
+            values,
+            ARRAY_${originalTypeSuffixCap}_BASE_OFFSET + shiftIndex,
+            len);
     }
 """)
+        }
     }
 
     return buffer.append("}").toString()
+}
+
+void genPacker() {
+    File p = new File(".\\..\\java\\com\\susico\\utils\\bits\\")
+    p.mkdirs()
+
+    File f = new File(p, "Packer.java")
+    f.createNewFile()
+
+    PrintWriter pw = f.newPrintWriter()
+    pw.print(packer())
+    pw.flush()
+    pw.close()
 }
