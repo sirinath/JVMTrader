@@ -131,6 +131,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.the${typeSuffix} = ${defaulValue};
 
+        if (len <= 0)
+            return this.the${typeSuffix};
+
         UNSAFE.copyMemory(
             values,
             ARRAY_${originalTypeSuffixCap}_BASE_OFFSET,
@@ -143,6 +146,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpack${typeSuffix}(final ${typeName} value, @NotNull final ${originalTypeName}[] values) {
         final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${byteSize});
+
+        if (len <= 0)
+            return;
 
         this.the${typeSuffix} = value;
 
@@ -163,6 +169,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.the${typeSuffix} = ${defaulValue};
 
+        if (len <= 0)
+            return this.the${typeSuffix};
+
         UNSAFE.copyMemory(
             values,
             ARRAY_${originalTypeSuffixCap}_BASE_OFFSET + shiftIndex,
@@ -179,6 +188,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << ${originalTypeSuffixCap}_SHIFT - shiftIndex,
             ${byteSize});
+
+        if (len <= 0)
+            return;
 
         this.the${typeSuffix} = value;
 

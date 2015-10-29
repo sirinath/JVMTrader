@@ -59,6 +59,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theBoolean = false;
 
+        if (len <= 0)
+            return this.theBoolean;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET,
@@ -71,6 +74,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackBoolean(final boolean value, @NotNull final byte[] values) {
         final long len = Math.min(values.length << BYTE_SHIFT, 1);
+
+        if (len <= 0)
+            return;
 
         this.theBoolean = value;
 
@@ -91,6 +97,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theBoolean = false;
 
+        if (len <= 0)
+            return this.theBoolean;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET + shiftIndex,
@@ -107,6 +116,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << BYTE_SHIFT - shiftIndex,
             1);
+
+        if (len <= 0)
+            return;
 
         this.theBoolean = value;
 
@@ -137,6 +149,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theByte = 0;
 
+        if (len <= 0)
+            return this.theByte;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET,
@@ -149,6 +164,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackByte(final byte value, @NotNull final boolean[] values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Byte.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theByte = value;
 
@@ -169,6 +187,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theByte = 0;
 
+        if (len <= 0)
+            return this.theByte;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
@@ -185,6 +206,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << BOOLEAN_SHIFT - shiftIndex,
             Byte.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theByte = value;
 
@@ -215,6 +239,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theChar = 0;
 
+        if (len <= 0)
+            return this.theChar;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET,
@@ -227,6 +254,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackChar(final char value, @NotNull final boolean[] values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Character.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theChar = value;
 
@@ -247,6 +277,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theChar = 0;
 
+        if (len <= 0)
+            return this.theChar;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
@@ -264,6 +297,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BOOLEAN_SHIFT - shiftIndex,
             Character.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theChar = value;
 
         UNSAFE.copyMemory(
@@ -279,6 +315,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theChar = 0;
 
+        if (len <= 0)
+            return this.theChar;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET,
@@ -291,6 +330,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackChar(final char value, @NotNull final byte[] values) {
         final long len = Math.min(values.length << BYTE_SHIFT, Character.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theChar = value;
 
@@ -311,6 +353,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theChar = 0;
 
+        if (len <= 0)
+            return this.theChar;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET + shiftIndex,
@@ -328,6 +373,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BYTE_SHIFT - shiftIndex,
             Character.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theChar = value;
 
         UNSAFE.copyMemory(
@@ -343,6 +391,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theChar = 0;
 
+        if (len <= 0)
+            return this.theChar;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET,
@@ -355,6 +406,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackChar(final char value, @NotNull final short[] values) {
         final long len = Math.min(values.length << SHORT_SHIFT, Character.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theChar = value;
 
@@ -375,6 +429,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theChar = 0;
 
+        if (len <= 0)
+            return this.theChar;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET + shiftIndex,
@@ -391,6 +448,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << SHORT_SHIFT - shiftIndex,
             Character.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theChar = value;
 
@@ -421,6 +481,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theShort = 0;
 
+        if (len <= 0)
+            return this.theShort;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET,
@@ -433,6 +496,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackShort(final short value, @NotNull final boolean[] values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Short.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theShort = value;
 
@@ -453,6 +519,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theShort = 0;
 
+        if (len <= 0)
+            return this.theShort;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
@@ -470,6 +539,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BOOLEAN_SHIFT - shiftIndex,
             Short.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theShort = value;
 
         UNSAFE.copyMemory(
@@ -485,6 +557,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theShort = 0;
 
+        if (len <= 0)
+            return this.theShort;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET,
@@ -497,6 +572,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackShort(final short value, @NotNull final byte[] values) {
         final long len = Math.min(values.length << BYTE_SHIFT, Short.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theShort = value;
 
@@ -517,6 +595,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theShort = 0;
 
+        if (len <= 0)
+            return this.theShort;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET + shiftIndex,
@@ -534,6 +615,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BYTE_SHIFT - shiftIndex,
             Short.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theShort = value;
 
         UNSAFE.copyMemory(
@@ -549,6 +633,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theShort = 0;
 
+        if (len <= 0)
+            return this.theShort;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET,
@@ -561,6 +648,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackShort(final short value, @NotNull final char[] values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Short.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theShort = value;
 
@@ -581,6 +671,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theShort = 0;
 
+        if (len <= 0)
+            return this.theShort;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
@@ -597,6 +690,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << CHAR_SHIFT - shiftIndex,
             Short.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theShort = value;
 
@@ -627,6 +723,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET,
@@ -639,6 +738,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackInt(final int value, @NotNull final boolean[] values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Integer.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theInt = value;
 
@@ -659,6 +761,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
@@ -676,6 +781,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BOOLEAN_SHIFT - shiftIndex,
             Integer.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theInt = value;
 
         UNSAFE.copyMemory(
@@ -691,6 +799,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET,
@@ -703,6 +814,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackInt(final int value, @NotNull final byte[] values) {
         final long len = Math.min(values.length << BYTE_SHIFT, Integer.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theInt = value;
 
@@ -723,6 +837,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET + shiftIndex,
@@ -740,6 +857,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BYTE_SHIFT - shiftIndex,
             Integer.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theInt = value;
 
         UNSAFE.copyMemory(
@@ -755,6 +875,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET,
@@ -767,6 +890,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackInt(final int value, @NotNull final char[] values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Integer.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theInt = value;
 
@@ -787,6 +913,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
@@ -804,6 +933,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << CHAR_SHIFT - shiftIndex,
             Integer.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theInt = value;
 
         UNSAFE.copyMemory(
@@ -819,6 +951,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET,
@@ -831,6 +966,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackInt(final int value, @NotNull final short[] values) {
         final long len = Math.min(values.length << SHORT_SHIFT, Integer.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theInt = value;
 
@@ -851,6 +989,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET + shiftIndex,
@@ -868,6 +1009,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << SHORT_SHIFT - shiftIndex,
             Integer.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theInt = value;
 
         UNSAFE.copyMemory(
@@ -883,6 +1027,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_FLOAT_BASE_OFFSET,
@@ -895,6 +1042,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackInt(final int value, @NotNull final float[] values) {
         final long len = Math.min(values.length << FLOAT_SHIFT, Integer.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theInt = value;
 
@@ -915,6 +1065,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theInt = 0;
 
+        if (len <= 0)
+            return this.theInt;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_FLOAT_BASE_OFFSET + shiftIndex,
@@ -931,6 +1084,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << FLOAT_SHIFT - shiftIndex,
             Integer.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theInt = value;
 
@@ -961,6 +1117,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET,
@@ -973,6 +1132,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackLong(final long value, @NotNull final boolean[] values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -993,6 +1155,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
@@ -1010,6 +1175,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BOOLEAN_SHIFT - shiftIndex,
             Long.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theLong = value;
 
         UNSAFE.copyMemory(
@@ -1025,6 +1193,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET,
@@ -1037,6 +1208,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackLong(final long value, @NotNull final byte[] values) {
         final long len = Math.min(values.length << BYTE_SHIFT, Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -1057,6 +1231,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET + shiftIndex,
@@ -1074,6 +1251,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BYTE_SHIFT - shiftIndex,
             Long.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theLong = value;
 
         UNSAFE.copyMemory(
@@ -1089,6 +1269,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET,
@@ -1101,6 +1284,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackLong(final long value, @NotNull final char[] values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -1121,6 +1307,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
@@ -1138,6 +1327,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << CHAR_SHIFT - shiftIndex,
             Long.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theLong = value;
 
         UNSAFE.copyMemory(
@@ -1153,6 +1345,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET,
@@ -1165,6 +1360,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackLong(final long value, @NotNull final short[] values) {
         final long len = Math.min(values.length << SHORT_SHIFT, Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -1185,6 +1383,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET + shiftIndex,
@@ -1202,6 +1403,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << SHORT_SHIFT - shiftIndex,
             Long.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theLong = value;
 
         UNSAFE.copyMemory(
@@ -1217,6 +1421,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_INT_BASE_OFFSET,
@@ -1229,6 +1436,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackLong(final long value, @NotNull final int[] values) {
         final long len = Math.min(values.length << INT_SHIFT, Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -1249,6 +1459,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_INT_BASE_OFFSET + shiftIndex,
@@ -1266,6 +1479,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << INT_SHIFT - shiftIndex,
             Long.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theLong = value;
 
         UNSAFE.copyMemory(
@@ -1281,6 +1497,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_FLOAT_BASE_OFFSET,
@@ -1293,6 +1512,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackLong(final long value, @NotNull final float[] values) {
         final long len = Math.min(values.length << FLOAT_SHIFT, Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -1313,6 +1535,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_FLOAT_BASE_OFFSET + shiftIndex,
@@ -1330,6 +1555,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << FLOAT_SHIFT - shiftIndex,
             Long.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theLong = value;
 
         UNSAFE.copyMemory(
@@ -1345,6 +1573,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_DOUBLE_BASE_OFFSET,
@@ -1357,6 +1588,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackLong(final long value, @NotNull final double[] values) {
         final long len = Math.min(values.length << DOUBLE_SHIFT, Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -1377,6 +1611,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theLong = 0;
 
+        if (len <= 0)
+            return this.theLong;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_DOUBLE_BASE_OFFSET + shiftIndex,
@@ -1393,6 +1630,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << DOUBLE_SHIFT - shiftIndex,
             Long.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theLong = value;
 
@@ -1423,6 +1663,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET,
@@ -1435,6 +1678,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackFloat(final float value, @NotNull final boolean[] values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Float.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theFloat = value;
 
@@ -1455,6 +1701,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
@@ -1472,6 +1721,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BOOLEAN_SHIFT - shiftIndex,
             Float.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theFloat = value;
 
         UNSAFE.copyMemory(
@@ -1487,6 +1739,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET,
@@ -1499,6 +1754,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackFloat(final float value, @NotNull final byte[] values) {
         final long len = Math.min(values.length << BYTE_SHIFT, Float.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theFloat = value;
 
@@ -1519,6 +1777,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET + shiftIndex,
@@ -1536,6 +1797,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BYTE_SHIFT - shiftIndex,
             Float.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theFloat = value;
 
         UNSAFE.copyMemory(
@@ -1551,6 +1815,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET,
@@ -1563,6 +1830,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackFloat(final float value, @NotNull final char[] values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Float.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theFloat = value;
 
@@ -1583,6 +1853,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
@@ -1600,6 +1873,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << CHAR_SHIFT - shiftIndex,
             Float.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theFloat = value;
 
         UNSAFE.copyMemory(
@@ -1615,6 +1891,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET,
@@ -1627,6 +1906,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackFloat(final float value, @NotNull final short[] values) {
         final long len = Math.min(values.length << SHORT_SHIFT, Float.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theFloat = value;
 
@@ -1647,6 +1929,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET + shiftIndex,
@@ -1664,6 +1949,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << SHORT_SHIFT - shiftIndex,
             Float.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theFloat = value;
 
         UNSAFE.copyMemory(
@@ -1679,6 +1967,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_INT_BASE_OFFSET,
@@ -1691,6 +1982,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackFloat(final float value, @NotNull final int[] values) {
         final long len = Math.min(values.length << INT_SHIFT, Float.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theFloat = value;
 
@@ -1711,6 +2005,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theFloat = 0;
 
+        if (len <= 0)
+            return this.theFloat;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_INT_BASE_OFFSET + shiftIndex,
@@ -1727,6 +2024,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << INT_SHIFT - shiftIndex,
             Float.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theFloat = value;
 
@@ -1757,6 +2057,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET,
@@ -1769,6 +2072,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackDouble(final double value, @NotNull final boolean[] values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
@@ -1789,6 +2095,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
@@ -1806,6 +2115,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BOOLEAN_SHIFT - shiftIndex,
             Double.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theDouble = value;
 
         UNSAFE.copyMemory(
@@ -1821,6 +2133,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET,
@@ -1833,6 +2148,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackDouble(final double value, @NotNull final byte[] values) {
         final long len = Math.min(values.length << BYTE_SHIFT, Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
@@ -1853,6 +2171,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_BYTE_BASE_OFFSET + shiftIndex,
@@ -1870,6 +2191,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << BYTE_SHIFT - shiftIndex,
             Double.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theDouble = value;
 
         UNSAFE.copyMemory(
@@ -1885,6 +2209,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET,
@@ -1897,6 +2224,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackDouble(final double value, @NotNull final char[] values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
@@ -1917,6 +2247,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
@@ -1934,6 +2267,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << CHAR_SHIFT - shiftIndex,
             Double.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theDouble = value;
 
         UNSAFE.copyMemory(
@@ -1949,6 +2285,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET,
@@ -1961,6 +2300,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackDouble(final double value, @NotNull final short[] values) {
         final long len = Math.min(values.length << SHORT_SHIFT, Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
@@ -1981,6 +2323,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_SHORT_BASE_OFFSET + shiftIndex,
@@ -1998,6 +2343,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << SHORT_SHIFT - shiftIndex,
             Double.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theDouble = value;
 
         UNSAFE.copyMemory(
@@ -2013,6 +2361,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_INT_BASE_OFFSET,
@@ -2025,6 +2376,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackDouble(final double value, @NotNull final int[] values) {
         final long len = Math.min(values.length << INT_SHIFT, Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
@@ -2045,6 +2399,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_INT_BASE_OFFSET + shiftIndex,
@@ -2062,6 +2419,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << INT_SHIFT - shiftIndex,
             Double.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theDouble = value;
 
         UNSAFE.copyMemory(
@@ -2077,6 +2437,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_LONG_BASE_OFFSET,
@@ -2089,6 +2452,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackDouble(final double value, @NotNull final long[] values) {
         final long len = Math.min(values.length << LONG_SHIFT, Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
@@ -2109,6 +2475,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_LONG_BASE_OFFSET + shiftIndex,
@@ -2126,6 +2495,9 @@ public final class Packer extends ThreadLocal<Packer> {
             values.length << LONG_SHIFT - shiftIndex,
             Double.BYTES);
 
+        if (len <= 0)
+            return;
+
         this.theDouble = value;
 
         UNSAFE.copyMemory(
@@ -2141,6 +2513,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_FLOAT_BASE_OFFSET,
@@ -2153,6 +2528,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
     public void unpackDouble(final double value, @NotNull final float[] values) {
         final long len = Math.min(values.length << FLOAT_SHIFT, Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
@@ -2173,6 +2551,9 @@ public final class Packer extends ThreadLocal<Packer> {
 
         this.theDouble = 0;
 
+        if (len <= 0)
+            return this.theDouble;
+
         UNSAFE.copyMemory(
             values,
             ARRAY_FLOAT_BASE_OFFSET + shiftIndex,
@@ -2189,6 +2570,9 @@ public final class Packer extends ThreadLocal<Packer> {
         final long len = Math.min(
             values.length << FLOAT_SHIFT - shiftIndex,
             Double.BYTES);
+
+        if (len <= 0)
+            return;
 
         this.theDouble = value;
 
