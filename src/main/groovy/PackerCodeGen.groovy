@@ -104,6 +104,9 @@ public final class Packer extends ThreadLocal<Packer> {
 """)
 
         for (Class<?> originalType : types) {
+            if (sizes[originalType] > sizes[type] || originalType.equals(type))
+                continue
+
             String originalTypeName = type.getSimpleName()
             String originalTypeSuffixCap = originalTypeName.toUpperCase()
 
