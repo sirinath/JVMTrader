@@ -123,7 +123,7 @@ public final class Packer extends ThreadLocal<Packer> {
             String originalTypeSuffixCap = originalTypeName.toUpperCase()
 
             buffer.append("""
-    public booelan copy(
+    public boolean copy(
         final long length,
         final long destinationIndex, @NotNull final ${typeName}[] destination,
         final long sourceIndex, @NotNull final ${originalTypeName} ... source) {
@@ -148,7 +148,7 @@ public final class Packer extends ThreadLocal<Packer> {
             destination,
             ARRAY_${typeSuffixCap}_BASE_OFFSET + byteDestinationIndex,
             bytesToCopy
-        )
+        );
 
         return true;
     }
@@ -156,10 +156,10 @@ public final class Packer extends ThreadLocal<Packer> {
 
             if (sizes[originalType] > sizes[type] || originalType.equals(type))
                 continue
-            ${originalTypeSuffixCap}_SHIFT
+
             buffer.append("""
     public ${typeName} pack${typeSuffix}(@NotNull final ${originalTypeName} ... values) {
-        final long len = Math.min(values.length << , ${byteSize});
+        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${byteSize});
 
         this.the${typeSuffix} = ${defaulValue};
 

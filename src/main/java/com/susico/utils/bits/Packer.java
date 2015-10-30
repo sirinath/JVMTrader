@@ -54,6 +54,66 @@ public final class Packer extends ThreadLocal<Packer> {
 
     protected boolean theBoolean = false;
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public boolean packBoolean(@NotNull final byte ... values) {
         final long len = Math.min(values.length << BYTE_SHIFT, 1);
 
@@ -130,6 +190,186 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final boolean[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BOOLEAN_SHIFT;
+        final long byteDestinationLength = destination.length << BOOLEAN_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public static final int BYTE_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Byte.BYTES) - 1;
 
     public static final long ARRAY_BYTE_BASE_OFFSET = UNSAFE.ARRAY_BYTE_BASE_OFFSET;
@@ -143,6 +383,36 @@ public final class Packer extends ThreadLocal<Packer> {
     protected long theByteFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theByte");
 
     protected byte theByte = 0;
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
 
     public byte packByte(@NotNull final boolean ... values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Byte.BYTES);
@@ -220,6 +490,216 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final byte[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << BYTE_SHIFT;
+        final long byteDestinationLength = destination.length << BYTE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_BYTE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public static final int CHAR_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Character.BYTES) - 1;
 
     public static final long ARRAY_CHAR_BASE_OFFSET = UNSAFE.ARRAY_CHAR_BASE_OFFSET;
@@ -233,6 +713,36 @@ public final class Packer extends ThreadLocal<Packer> {
     protected long theCharFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theChar");
 
     protected char theChar = 0;
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
 
     public char packChar(@NotNull final boolean ... values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Character.BYTES);
@@ -308,6 +818,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public char packChar(@NotNull final byte ... values) {
@@ -386,6 +926,66 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public char packChar(@NotNull final short ... values) {
         final long len = Math.min(values.length << SHORT_SHIFT, Character.BYTES);
 
@@ -462,6 +1062,126 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final char[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << CHAR_SHIFT;
+        final long byteDestinationLength = destination.length << CHAR_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_CHAR_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public static final int SHORT_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Short.BYTES) - 1;
 
     public static final long ARRAY_SHORT_BASE_OFFSET = UNSAFE.ARRAY_SHORT_BASE_OFFSET;
@@ -475,6 +1195,36 @@ public final class Packer extends ThreadLocal<Packer> {
     protected long theShortFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theShort");
 
     protected short theShort = 0;
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
 
     public short packShort(@NotNull final boolean ... values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Short.BYTES);
@@ -550,6 +1300,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public short packShort(@NotNull final byte ... values) {
@@ -628,6 +1408,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public short packShort(@NotNull final char ... values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Short.BYTES);
 
@@ -704,6 +1514,156 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final short[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << SHORT_SHIFT;
+        final long byteDestinationLength = destination.length << SHORT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_SHORT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public static final int INT_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Integer.BYTES) - 1;
 
     public static final long ARRAY_INT_BASE_OFFSET = UNSAFE.ARRAY_INT_BASE_OFFSET;
@@ -717,6 +1677,36 @@ public final class Packer extends ThreadLocal<Packer> {
     protected long theIntFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theInt");
 
     protected int theInt = 0;
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
 
     public int packInt(@NotNull final boolean ... values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Integer.BYTES);
@@ -792,6 +1782,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public int packInt(@NotNull final byte ... values) {
@@ -870,6 +1890,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public int packInt(@NotNull final char ... values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Integer.BYTES);
 
@@ -944,6 +1994,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public int packInt(@NotNull final short ... values) {
@@ -1022,6 +2102,96 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public int packInt(@NotNull final float ... values) {
         final long len = Math.min(values.length << FLOAT_SHIFT, Integer.BYTES);
 
@@ -1098,6 +2268,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final int[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << INT_SHIFT;
+        final long byteDestinationLength = destination.length << INT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_INT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public static final int LONG_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Long.BYTES) - 1;
 
     public static final long ARRAY_LONG_BASE_OFFSET = UNSAFE.ARRAY_LONG_BASE_OFFSET;
@@ -1111,6 +2311,36 @@ public final class Packer extends ThreadLocal<Packer> {
     protected long theLongFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theLong");
 
     protected long theLong = 0;
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
 
     public long packLong(@NotNull final boolean ... values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Long.BYTES);
@@ -1186,6 +2416,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public long packLong(@NotNull final byte ... values) {
@@ -1264,6 +2524,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public long packLong(@NotNull final char ... values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Long.BYTES);
 
@@ -1338,6 +2628,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public long packLong(@NotNull final short ... values) {
@@ -1416,6 +2736,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public long packLong(@NotNull final int ... values) {
         final long len = Math.min(values.length << INT_SHIFT, Long.BYTES);
 
@@ -1492,6 +2842,66 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public long packLong(@NotNull final float ... values) {
         final long len = Math.min(values.length << FLOAT_SHIFT, Long.BYTES);
 
@@ -1566,6 +2976,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_FLOAT_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final long[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << LONG_SHIFT;
+        final long byteDestinationLength = destination.length << LONG_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_LONG_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public long packLong(@NotNull final double ... values) {
@@ -1658,6 +3098,36 @@ public final class Packer extends ThreadLocal<Packer> {
 
     protected float theFloat = 0;
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public float packFloat(@NotNull final boolean ... values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Float.BYTES);
 
@@ -1732,6 +3202,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public float packFloat(@NotNull final byte ... values) {
@@ -1810,6 +3310,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public float packFloat(@NotNull final char ... values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Float.BYTES);
 
@@ -1884,6 +3414,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public float packFloat(@NotNull final short ... values) {
@@ -1962,6 +3522,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public float packFloat(@NotNull final int ... values) {
         final long len = Math.min(values.length << INT_SHIFT, Float.BYTES);
 
@@ -2038,6 +3628,96 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final float[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << FLOAT_SHIFT;
+        final long byteDestinationLength = destination.length << FLOAT_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_FLOAT_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public static final int DOUBLE_SHIFT = Integer.SIZE - Integer.numberOfLeadingZeros(Double.BYTES) - 1;
 
     public static final long ARRAY_DOUBLE_BASE_OFFSET = UNSAFE.ARRAY_DOUBLE_BASE_OFFSET;
@@ -2051,6 +3731,36 @@ public final class Packer extends ThreadLocal<Packer> {
     protected long theDoubleFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theDouble");
 
     protected double theDouble = 0;
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final boolean ... source) {
+
+        final long bytesToCopy = length << ARRAY_BOOLEAN_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BOOLEAN_SHIFT;
+        final long byteSourceLength = source.length << BOOLEAN_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BOOLEAN_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
 
     public double packDouble(@NotNull final boolean ... values) {
         final long len = Math.min(values.length << BOOLEAN_SHIFT, Double.BYTES);
@@ -2126,6 +3836,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_BOOLEAN_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final byte ... source) {
+
+        final long bytesToCopy = length << ARRAY_BYTE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << BYTE_SHIFT;
+        final long byteSourceLength = source.length << BYTE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_BYTE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public double packDouble(@NotNull final byte ... values) {
@@ -2204,6 +3944,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final char ... source) {
+
+        final long bytesToCopy = length << ARRAY_CHAR_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << CHAR_SHIFT;
+        final long byteSourceLength = source.length << CHAR_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_CHAR_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public double packDouble(@NotNull final char ... values) {
         final long len = Math.min(values.length << CHAR_SHIFT, Double.BYTES);
 
@@ -2278,6 +4048,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_CHAR_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final short ... source) {
+
+        final long bytesToCopy = length << ARRAY_SHORT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << SHORT_SHIFT;
+        final long byteSourceLength = source.length << SHORT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_SHORT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public double packDouble(@NotNull final short ... values) {
@@ -2356,6 +4156,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final int ... source) {
+
+        final long bytesToCopy = length << ARRAY_INT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << INT_SHIFT;
+        final long byteSourceLength = source.length << INT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_INT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public double packDouble(@NotNull final int ... values) {
         final long len = Math.min(values.length << INT_SHIFT, Double.BYTES);
 
@@ -2430,6 +4260,36 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_INT_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final long ... source) {
+
+        final long bytesToCopy = length << ARRAY_LONG_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << LONG_SHIFT;
+        final long byteSourceLength = source.length << LONG_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_LONG_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 
     public double packDouble(@NotNull final long ... values) {
@@ -2508,6 +4368,36 @@ public final class Packer extends ThreadLocal<Packer> {
             len);
     }
 
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final float ... source) {
+
+        final long bytesToCopy = length << ARRAY_FLOAT_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << FLOAT_SHIFT;
+        final long byteSourceLength = source.length << FLOAT_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_FLOAT_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
+    }
+
     public double packDouble(@NotNull final float ... values) {
         final long len = Math.min(values.length << FLOAT_SHIFT, Double.BYTES);
 
@@ -2582,5 +4472,35 @@ public final class Packer extends ThreadLocal<Packer> {
             values,
             ARRAY_FLOAT_BASE_OFFSET + shiftIndex,
             len);
+    }
+
+    public boolean copy(
+        final long length,
+        final long destinationIndex, @NotNull final double[] destination,
+        final long sourceIndex, @NotNull final double ... source) {
+
+        final long bytesToCopy = length << ARRAY_DOUBLE_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << DOUBLE_SHIFT;
+        final long byteDestinationLength = destination.length << DOUBLE_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << DOUBLE_SHIFT;
+        final long byteSourceLength = source.length << DOUBLE_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_DOUBLE_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_DOUBLE_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        );
+
+        return true;
     }
 }
