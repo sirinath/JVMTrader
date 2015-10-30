@@ -119,15 +119,47 @@ public final class Packer extends ThreadLocal<Packer> {
 """)
 
         for (Class<?> originalType : types) {
-            if (sizes[originalType] > sizes[type] || originalType.equals(type))
-                continue
-
             String originalTypeName = originalType.getSimpleName()
             String originalTypeSuffixCap = originalTypeName.toUpperCase()
 
             buffer.append("""
+    public booelan copy(
+        final long length,
+        final long destinationIndex, @NotNull final ${typeName}[] destination,
+        final long sourceIndex, @NotNull final ${originalTypeName} ... source) {
+
+        final long bytesToCopy = length << ARRAY_${originalTypeSuffixCap}_INDEX_SHIFT;
+
+        final long byteDestinationIndex = destinationIndex << ${typeSuffixCap}_SHIFT;
+        final long byteDestinationLength = destination.length << ${typeSuffixCap}_SHIFT;
+
+        if (byteDestinationIndex + bytesToCopy > byteDestinationLength)
+            return false;
+
+        final long byteSourceIndex = sourceIndex << ${originalTypeSuffixCap}_SHIFT;
+        final long byteSourceLength = source.length << ${originalTypeSuffixCap}_SHIFT;
+
+        if (byteSourceIndex + bytesToCopy > byteSourceLength)
+            return false;
+
+        UNSAFE.copyMemory(
+            source,
+            ARRAY_${originalTypeSuffixCap}_BASE_OFFSET + byteSourceIndex,
+            destination,
+            ARRAY_${typeSuffixCap}_BASE_OFFSET + byteDestinationIndex,
+            bytesToCopy
+        )
+
+        return true;
+    }
+""")
+
+            if (sizes[originalType] > sizes[type] || originalType.equals(type))
+                continue
+            ${originalTypeSuffixCap}_SHIFT
+            buffer.append("""
     public ${typeName} pack${typeSuffix}(@NotNull final ${originalTypeName} ... values) {
-        final long len = Math.min(values.length << ${originalTypeSuffixCap}_SHIFT, ${byteSize});
+        final long len = Math.min(values.length << , ${byteSize});
 
         this.the${typeSuffix} = ${defaulValue};
 
