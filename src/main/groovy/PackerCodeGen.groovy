@@ -44,6 +44,7 @@ package com.susico.utils.bits;
 import com.susico.utils.UnsafeAccess;
 import org.jetbrains.annotations.NotNull;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 public final class Packer extends ThreadLocal<Packer> {
     protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
@@ -113,9 +114,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_${typeSuffixCap}_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_${typeSuffixCap}_INDEX_SCALE) - 1;
 
-    protected long the${typeSuffix}FieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "the${typeSuffix}");
+    protected static final long the${typeSuffix}FieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "the${typeSuffix}");
 
-    protected ${typeName} the${typeSuffix} = ${defaulValue};
+    @Contended protected ${typeName} the${typeSuffix} = ${defaulValue};
 """)
 
         for (Class<?> originalType : types) {

@@ -20,6 +20,8 @@ package com.susico.utils.arrays.tabled.arraylong.mutable;
 import com.susico.utils.UnsafeAccess;
 import com.susico.utils.arrays.access.ArrayAccess;
 
+import sun.misc.Contended;
+
 import com.susico.utils.functions.*;
 
 import org.jetbrains.annotations.*;
@@ -30,42 +32,42 @@ public abstract class MutableTabledArray0016Long extends
     protected final static long value0008FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0008");
 
-    protected long value0008;
+    @Contended protected long value0008;
 
     protected final static long value0009FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0009");
 
-    protected long value0009;
+    @Contended protected long value0009;
 
     protected final static long value0010FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0010");
 
-    protected long value0010;
+    @Contended protected long value0010;
 
     protected final static long value0011FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0011");
 
-    protected long value0011;
+    @Contended protected long value0011;
 
     protected final static long value0012FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0012");
 
-    protected long value0012;
+    @Contended protected long value0012;
 
     protected final static long value0013FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0013");
 
-    protected long value0013;
+    @Contended protected long value0013;
 
     protected final static long value0014FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0014");
 
-    protected long value0014;
+    @Contended protected long value0014;
 
     protected final static long value0015FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0016Long.class, "value0015");
 
-    protected long value0015;
+    @Contended protected long value0015;
 
         
     public final @NotNull long getValue0008() {

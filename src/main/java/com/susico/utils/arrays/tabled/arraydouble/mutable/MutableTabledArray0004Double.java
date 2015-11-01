@@ -20,6 +20,8 @@ package com.susico.utils.arrays.tabled.arraydouble.mutable;
 import com.susico.utils.UnsafeAccess;
 import com.susico.utils.arrays.access.ArrayAccess;
 
+import sun.misc.Contended;
+
 import com.susico.utils.functions.*;
 
 import org.jetbrains.annotations.*;
@@ -30,12 +32,12 @@ public abstract class MutableTabledArray0004Double extends
     protected final static long value0002FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0004Double.class, "value0002");
 
-    protected double value0002;
+    @Contended protected double value0002;
 
     protected final static long value0003FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0004Double.class, "value0003");
 
-    protected double value0003;
+    @Contended protected double value0003;
 
         
     public final @NotNull double getValue0002() {

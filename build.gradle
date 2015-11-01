@@ -30,7 +30,7 @@ repositories {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.5'
-    compile 'uk.co.real-logic:Agrona:0.4.2'
+    compile 'uk.co.real-logic:Agrona:0.4.5'
     compile 'com.googlecode.cqengine:cqengine:2.0.3'
     compile 'com.googlecode.concurrent-trees:concurrent-trees:2.4.0'
     compile 'it.unimi.dsi:fastutil:7.0.7'

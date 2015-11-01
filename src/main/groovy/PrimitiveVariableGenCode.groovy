@@ -67,6 +67,7 @@ import java.util.Objects;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 import com.susico.utils.functions.*;
 import com.susico.utils.box.*;
@@ -90,7 +91,7 @@ public final class ${classPrefix}${typeSuffix}${genericClassSuffix} ${extendsNum
     /**
      * Value
      */
-    private ${finalValue} ${typeName} value;
+    @Contended private ${finalValue} ${typeName} value;
 
     /**
      * @param i Parameter

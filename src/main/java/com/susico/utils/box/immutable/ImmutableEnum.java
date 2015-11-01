@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 import com.susico.utils.functions.*;
 import com.susico.utils.box.*;
@@ -45,7 +46,7 @@ public final class ImmutableEnum<T extends Enum<T>> extends Number
     /**
      * Value
      */
-    private final Enum value;
+    @Contended private final Enum value;
 
     /**
      * @param i Parameter

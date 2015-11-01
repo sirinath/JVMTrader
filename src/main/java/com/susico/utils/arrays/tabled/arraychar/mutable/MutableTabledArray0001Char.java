@@ -21,6 +21,7 @@ import com.susico.utils.arrays.access.ArrayAccess;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 import com.susico.utils.functions.*;
 
@@ -32,7 +33,7 @@ public abstract class MutableTabledArray0001Char extends
     protected final static long value0000FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0001Char.class, "value0000");
 
-    protected char value0000;
+    @Contended protected char value0000;
 
     public final @NotNull char getValue0000() {
         return value0000;

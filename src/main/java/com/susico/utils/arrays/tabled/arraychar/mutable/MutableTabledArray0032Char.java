@@ -20,6 +20,8 @@ package com.susico.utils.arrays.tabled.arraychar.mutable;
 import com.susico.utils.UnsafeAccess;
 import com.susico.utils.arrays.access.ArrayAccess;
 
+import sun.misc.Contended;
+
 import com.susico.utils.functions.*;
 
 import org.jetbrains.annotations.*;
@@ -30,82 +32,82 @@ public abstract class MutableTabledArray0032Char extends
     protected final static long value0016FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0016");
 
-    protected char value0016;
+    @Contended protected char value0016;
 
     protected final static long value0017FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0017");
 
-    protected char value0017;
+    @Contended protected char value0017;
 
     protected final static long value0018FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0018");
 
-    protected char value0018;
+    @Contended protected char value0018;
 
     protected final static long value0019FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0019");
 
-    protected char value0019;
+    @Contended protected char value0019;
 
     protected final static long value0020FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0020");
 
-    protected char value0020;
+    @Contended protected char value0020;
 
     protected final static long value0021FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0021");
 
-    protected char value0021;
+    @Contended protected char value0021;
 
     protected final static long value0022FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0022");
 
-    protected char value0022;
+    @Contended protected char value0022;
 
     protected final static long value0023FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0023");
 
-    protected char value0023;
+    @Contended protected char value0023;
 
     protected final static long value0024FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0024");
 
-    protected char value0024;
+    @Contended protected char value0024;
 
     protected final static long value0025FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0025");
 
-    protected char value0025;
+    @Contended protected char value0025;
 
     protected final static long value0026FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0026");
 
-    protected char value0026;
+    @Contended protected char value0026;
 
     protected final static long value0027FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0027");
 
-    protected char value0027;
+    @Contended protected char value0027;
 
     protected final static long value0028FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0028");
 
-    protected char value0028;
+    @Contended protected char value0028;
 
     protected final static long value0029FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0029");
 
-    protected char value0029;
+    @Contended protected char value0029;
 
     protected final static long value0030FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0030");
 
-    protected char value0030;
+    @Contended protected char value0030;
 
     protected final static long value0031FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0032Char.class, "value0031");
 
-    protected char value0031;
+    @Contended protected char value0031;
 
         
     public final @NotNull char getValue0016() {

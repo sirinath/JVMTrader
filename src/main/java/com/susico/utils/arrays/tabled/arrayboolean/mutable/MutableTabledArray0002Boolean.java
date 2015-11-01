@@ -20,6 +20,8 @@ package com.susico.utils.arrays.tabled.arrayboolean.mutable;
 import com.susico.utils.UnsafeAccess;
 import com.susico.utils.arrays.access.ArrayAccess;
 
+import sun.misc.Contended;
+
 import com.susico.utils.functions.*;
 
 import org.jetbrains.annotations.*;
@@ -30,7 +32,7 @@ public abstract class MutableTabledArray0002Boolean extends
     protected final static long value0001FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0002Boolean.class, "value0001");
 
-    protected boolean value0001;
+    @Contended protected boolean value0001;
 
         
     public final @NotNull boolean getValue0001() {

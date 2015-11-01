@@ -549,6 +549,7 @@ import com.susico.utils.arrays.access.ArrayAccess;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 import com.susico.utils.functions.*;
 
@@ -566,7 +567,7 @@ public abstract class ${mutability}TabledArray0001$typeSuffix$generic extends
 
         if (mutable) {
             tmp.append("""
-    protected $typeName value0000;
+    @Contended protected $typeName value0000;
 """)
         } else {
             tmp.append("""
@@ -984,6 +985,8 @@ package com.susico.utils.arrays.tabled.array${packageName}.${mutability.toLowerC
 import com.susico.utils.UnsafeAccess;
 import com.susico.utils.arrays.access.ArrayAccess;
 
+import sun.misc.Contended;
+
 import com.susico.utils.functions.*;
 
 import org.jetbrains.annotations.*;
@@ -1002,7 +1005,7 @@ public abstract class ${mutability}TabledArray${classEnding}$typeSuffix$generic 
 
             if (mutable) {
                 tmp.append("""
-    protected $typeName value${formatI};
+    @Contended protected $typeName value${formatI};
 """)
             } else {
                 tmp.append("""

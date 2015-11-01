@@ -20,6 +20,8 @@ package com.susico.utils.arrays.tabled.arrayint.mutable;
 import com.susico.utils.UnsafeAccess;
 import com.susico.utils.arrays.access.ArrayAccess;
 
+import sun.misc.Contended;
+
 import com.susico.utils.functions.*;
 
 import org.jetbrains.annotations.*;
@@ -30,7 +32,7 @@ public abstract class MutableTabledArray0002Int extends
     protected final static long value0001FieldOffset = UnsafeAccess.getFieldOffset(
         MutableTabledArray0002Int.class, "value0001");
 
-    protected int value0001;
+    @Contended protected int value0001;
 
         
     public final @NotNull int getValue0001() {

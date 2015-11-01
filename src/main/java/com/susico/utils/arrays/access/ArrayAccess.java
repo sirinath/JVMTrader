@@ -19,6 +19,7 @@ package com.susico.utils.arrays.access;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 import com.susico.utils.functions.*;
 
@@ -28,7 +29,7 @@ public final class ArrayAccess {
     public static final ArrayAccess CHECKED = new ArrayAccess(true);
     public static final ArrayAccess UNCHECKED = new ArrayAccess(false);
 
-    protected final boolean SAFE;
+    @Contended protected final boolean SAFE;
 
     protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 

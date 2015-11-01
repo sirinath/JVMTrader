@@ -20,6 +20,7 @@ package com.susico.utils.bits;
 import com.susico.utils.UnsafeAccess;
 import org.jetbrains.annotations.NotNull;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 public final class Packer extends ThreadLocal<Packer> {
     protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
@@ -50,9 +51,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_BOOLEAN_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_BOOLEAN_INDEX_SCALE) - 1;
 
-    protected long theBooleanFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theBoolean");
+    protected static final long theBooleanFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theBoolean");
 
-    protected boolean theBoolean = false;
+    @Contended protected boolean theBoolean = false;
 
     public boolean copy(
         final long length,
@@ -380,9 +381,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_BYTE_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_BYTE_INDEX_SCALE) - 1;
 
-    protected long theByteFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theByte");
+    protected static final long theByteFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theByte");
 
-    protected byte theByte = 0;
+    @Contended protected byte theByte = 0;
 
     public boolean copy(
         final long length,
@@ -710,9 +711,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_CHAR_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_CHAR_INDEX_SCALE) - 1;
 
-    protected long theCharFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theChar");
+    protected static final long theCharFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theChar");
 
-    protected char theChar = 0;
+    @Contended protected char theChar = 0;
 
     public boolean copy(
         final long length,
@@ -1192,9 +1193,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_SHORT_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_SHORT_INDEX_SCALE) - 1;
 
-    protected long theShortFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theShort");
+    protected static final long theShortFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theShort");
 
-    protected short theShort = 0;
+    @Contended protected short theShort = 0;
 
     public boolean copy(
         final long length,
@@ -1674,9 +1675,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_INT_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_INT_INDEX_SCALE) - 1;
 
-    protected long theIntFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theInt");
+    protected static final long theIntFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theInt");
 
-    protected int theInt = 0;
+    @Contended protected int theInt = 0;
 
     public boolean copy(
         final long length,
@@ -2308,9 +2309,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_LONG_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_LONG_INDEX_SCALE) - 1;
 
-    protected long theLongFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theLong");
+    protected static final long theLongFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theLong");
 
-    protected long theLong = 0;
+    @Contended protected long theLong = 0;
 
     public boolean copy(
         final long length,
@@ -3094,9 +3095,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_FLOAT_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_FLOAT_INDEX_SCALE) - 1;
 
-    protected long theFloatFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theFloat");
+    protected static final long theFloatFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theFloat");
 
-    protected float theFloat = 0;
+    @Contended protected float theFloat = 0;
 
     public boolean copy(
         final long length,
@@ -3728,9 +3729,9 @@ public final class Packer extends ThreadLocal<Packer> {
     public static final long ARRAY_DOUBLE_INDEX_SHIFT =
         Long.SIZE - Long.numberOfLeadingZeros(ARRAY_DOUBLE_INDEX_SCALE) - 1;
 
-    protected long theDoubleFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theDouble");
+    protected static final long theDoubleFieldOffset = UnsafeAccess.getFieldOffset(Packer.class, "theDouble");
 
-    protected double theDouble = 0;
+    @Contended protected double theDouble = 0;
 
     public boolean copy(
         final long length,

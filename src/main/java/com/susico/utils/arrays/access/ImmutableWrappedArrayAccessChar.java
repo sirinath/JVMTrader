@@ -19,6 +19,7 @@ package com.susico.utils.arrays.access;
 
 import com.susico.utils.UnsafeAccess;
 import sun.misc.Unsafe;
+import sun.misc.Contended;
 
 import com.susico.utils.functions.*;
 
@@ -29,11 +30,11 @@ import java.util.concurrent.locks.LockSupport;
 public final class ImmutableWrappedArrayAccessChar {
     protected static final Unsafe UNSAFE = UnsafeAccess.UNSAFE;
 
-    protected final boolean SAFE;
-    protected final char[] buffer;
-    protected volatile long index = 0;
-    protected volatile long offset = 0;
-    protected volatile long inc = 1;
+    @Contended protected final boolean SAFE;
+    @Contended protected final char[] buffer;
+    @Contended protected volatile long index = 0;
+    @Contended protected volatile long offset = 0;
+    @Contended protected volatile long inc = 1;
 
     protected static final long indexFieldOffset =
         UnsafeAccess.getFieldOffset(ImmutableWrappedArrayAccessChar.class, "index");
