@@ -40,23 +40,43 @@ public final class Quote extends PooledObject {
     }
 
     protected final void set(final long marketMaker, final long instrument, @NotNull final Side side, final double price, final long size) {
+        this.setMarketMaker(marketMaker);
+        this.setInstrument(instrument);
+        this.setSide(side);
+        this.setPrice(price);
+        this.setSize(size);
+    }
+
+    protected final void setMarketMaker(long marketMaker) {
         this.marketMaker = marketMaker;
-        this.instrument = instrument;
-        this.side = side;
-        this.price = price;
-        this.size = size;
     }
 
     public final long getMarketMaker() {
         return this.marketMaker;
     }
 
+    protected final void setInstrument(long instrument) {
+        this.instrument = instrument;
+    }
+
     public final long getInstrument() {
         return this.instrument;
     }
 
+    protected final void setSide(Side side) {
+        this.side = side;
+    }
+
     public final Side getSide() {
         return this.side;
+    }
+
+    protected final void setPrice(double price) {
+        this.price = price;
+    }
+
+    protected final void setSize(long size) {
+        this.size = size;
     }
 
     public final double getPrice() {
@@ -70,11 +90,11 @@ public final class Quote extends PooledObject {
     @Override
     public final boolean equals(@NotNull Object obj) {
         Quote o = (Quote) obj;
-        return marketMaker == o.marketMaker &&
-                instrument == o.instrument &&
-                side.equals(o.side) &&
-                price == o.price &&
-                size == o.size;
+        return marketMaker == o.getMarketMaker() &&
+                instrument == o.getInstrument() &&
+                side.equals(o.getSide()) &&
+                price == o.getPrice() &&
+                size == o.getSize();
     }
 
     @Override

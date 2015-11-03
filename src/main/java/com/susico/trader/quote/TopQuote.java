@@ -39,18 +39,34 @@ public final class TopQuote extends PooledObject {
     }
 
     protected final void set(final long instrument, @NotNull final Side side, final double price, final long size) {
+        this.setInstrument(instrument);
+        this.setSide(side);
+        this.setPrice(price);
+        this.setSize(size);
+    }
+
+    protected final void setInstrument(long instrument) {
         this.instrument = instrument;
-        this.side = side;
-        this.price = price;
-        this.size = size;
     }
 
     public final long getInstrument() {
         return this.instrument;
     }
 
+    protected final void setSide(Side side) {
+        this.side = side;
+    }
+
     public final Side getSide() {
         return this.side;
+    }
+
+    protected final void setPrice(double price) {
+        this.price = price;
+    }
+
+    protected final void setSize(long size) {
+        this.size = size;
     }
 
     public final double getPrice() {
@@ -64,10 +80,10 @@ public final class TopQuote extends PooledObject {
     @Override
     public final boolean equals(@NotNull Object obj) {
         Quote o = (Quote) obj;
-        return instrument == o.instrument &&
-                side.equals(o.side) &&
-                price == o.price &&
-                size == o.size;
+        return instrument == o.getInstrument() &&
+                side.equals(o.getSide()) &&
+                price == o.getPrice() &&
+                size == o.getSize();
     }
 
     @Override
