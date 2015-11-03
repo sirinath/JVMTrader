@@ -16,73 +16,15 @@
 
 package com.susico.jvmtrader.book;
 
-import java.util.AbstractList;
-import java.util.Comparator;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import org.jctools.queues.SpscArrayQueue;
 
+public class OrderBookSegment {
+    public final int SIZE;
 
-public class OrderBookSegment extends AbstractList<BookEntry> {
-    @Override
-    public void add(int index, BookEntry element) {
-        set(index, element);
-    }
+    protected final SpscArrayQueue<BookEntry> segment;
 
-    @Override
-    public BookEntry set(int index, BookEntry element) {
-    }
-
-    @Override
-    public BookEntry remove(int index) {
-    }
-
-    @Override
-    public BookEntry get(final int index) {
-        return null;
-    }
-
-    @Override
-    public void forEach(final Consumer action) {
-
-    }
-
-    @Override
-    public Spliterator spliterator() {
-        return Spliterators.spliterator(iterator(), size(), Spliterator.CONCURRENT);
-    }
-
-    @Override
-    public Stream stream() {
-        return StreamSupport.stream(spliterator(), false);
-    }
-
-    @Override
-    public Stream parallelStream() {
-        return StreamSupport.stream(spliterator(), true);
-    }
-
-    @Override
-    public int size() {
-        return 0;
-    }
-
-    @Override
-    public boolean removeIf(final Predicate filter) {
-        return false;
-    }
-
-    @Override
-    public void replaceAll(final UnaryOperator operator) {
-
-    }
-
-    @Override
-    public void sort(final Comparator c) {
-
+    public OrderBookSegment(final int SIZE) {
+        this.SIZE = SIZE;
+        this.segment = new SpscArrayQueue<>(SIZE);
     }
 }

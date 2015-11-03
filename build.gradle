@@ -35,6 +35,7 @@ dependencies {
     compile 'com.googlecode.concurrent-trees:concurrent-trees:2.4.0'
     compile 'com.googlecode.concurrent-locks:concurrent-locks:1.0.0'
     compile 'it.unimi.dsi:fastutil:7.0.7'
+    compile 'org.jctools:jctools-core:1.1'
     compile 'org.jetbrains:annotations:13.0'
 }
 
