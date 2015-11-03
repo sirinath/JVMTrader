@@ -20,6 +20,7 @@ import com.susico.utils.io.IOUtils;
 import com.susico.utils.memory.MemoryRange;
 import com.susico.utils.memory.SharedBuffer;
 import com.susico.utils.memory.heap.rc.RCObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
@@ -43,7 +44,7 @@ public final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> 
     }
 
     @Override
-    public final MappedByteBuffer map(final MemoryRange memoryRange) {
+    public final MappedByteBuffer map(@NotNull final MemoryRange memoryRange) {
         RCObject rcObject = bufferMapping.get(memoryRange);
 
         if (rcObject == null) {
@@ -57,14 +58,18 @@ public final class SharedMappedBuffer implements SharedBuffer<MappedByteBuffer> 
                 });
                 bufferMapping.put(memoryRange, rcObject);
             }
+        } else {
+            memoryRange.close();
         }
 
         return (MappedByteBuffer) rcObject.get();
     }
 
     @Override
-    public final boolean unmap(final MemoryRange memoryRange) {
+    public final boolean unmap(@NotNull final MemoryRange memoryRange) {
         RCObject rcObject = bufferMapping.get(memoryRange);
+
+        memoryRange.close();
 
         if (rcObject != null) {
             rcObject.release();

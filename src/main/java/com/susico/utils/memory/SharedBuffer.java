@@ -17,6 +17,7 @@
 package com.susico.utils.memory;
 
 import com.susico.utils.memory.MemoryRange;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
 
@@ -24,7 +25,7 @@ import java.io.Closeable;
  * Created by sirin_000 on 06/10/2015.
  */
 public interface SharedBuffer<T> extends Closeable {
-    T map(final MemoryRange memoryRange);
+    T map(@NotNull final MemoryRange memoryRange);
 
     default T map(final long position, final long size) {
         final MemoryRange memoryRange = MemoryRange.getInstance(position, size);
@@ -32,7 +33,7 @@ public interface SharedBuffer<T> extends Closeable {
         return map(memoryRange);
     }
 
-    boolean unmap(final MemoryRange memoryRange);
+    boolean unmap(@NotNull final MemoryRange memoryRange);
 
     default boolean unmap(final long position, final long size) {
         final MemoryRange memoryRange = MemoryRange.getInstance(position, size);
