@@ -17,11 +17,8 @@
 package com.susico.jvmtrader.book;
 
 /**
- * Created by sirin_000 on 12/09/2015.
+ * Created by sirin_000 on 03/11/2015.
  */
-public class OrderBook {
-    public static final long MAX_ENTRIES = 16;
-
-    protected OrderBook() {
-    }
+public enum Side {
+    BID, ASK
 }
