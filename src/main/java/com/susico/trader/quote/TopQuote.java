@@ -17,7 +17,10 @@
 package com.susico.trader.quote;
 
 import com.susico.utils.memory.pool.PooledObject;
+import org.jetbrains.annotations.NotNull;
 import org.jvirtanen.parity.top.Side;
+
+import java.util.Objects;
 
 public final class TopQuote extends PooledObject {
     protected long instrument = 0;
@@ -27,7 +30,7 @@ public final class TopQuote extends PooledObject {
 
     protected TopQuote() {}
 
-    public static TopQuote getInstance(final long instrument, final Side side, final double price, final long size) {
+    public static TopQuote getInstance(final long instrument, @NotNull final Side side, final double price, final long size) {
         TopQuote tq = getFromPoolOrSupplierIfAbsent(TopQuote.class, TopQuote::new);
 
         tq.set(instrument, side, price, size);
@@ -35,7 +38,7 @@ public final class TopQuote extends PooledObject {
         return tq;
     }
 
-    protected final void set(final long instrument, final Side side, final double price, final long size) {
+    protected final void set(final long instrument, @NotNull final Side side, final double price, final long size) {
         this.instrument = instrument;
         this.side = side;
         this.price = price;
@@ -56,5 +59,19 @@ public final class TopQuote extends PooledObject {
 
     public final long getSize() {
         return this.size;
+    }
+
+    @Override
+    public final boolean equals(@NotNull Object obj) {
+        Quote o = (Quote) obj;
+        return instrument == o.instrument &&
+                side.equals(o.side) &&
+                price == o.price &&
+                size == o.size;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(instrument ^ Double.doubleToRawLongBits(price) ^ size ^ side.hashCode());
     }
 }

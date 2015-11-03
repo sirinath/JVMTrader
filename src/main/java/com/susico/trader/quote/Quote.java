@@ -17,7 +17,10 @@
 package com.susico.trader.quote;
 
 import com.susico.utils.memory.pool.PooledObject;
+import org.jetbrains.annotations.NotNull;
 import org.jvirtanen.parity.top.Side;
+
+import java.util.Objects;
 
 public final class Quote extends PooledObject {
     protected long marketMaker = 0;
@@ -28,7 +31,7 @@ public final class Quote extends PooledObject {
 
     protected Quote() {}
 
-    public static Quote getInstance(final long marketMaker, final long instrument, final Side side, final double price, final long size) {
+    public static Quote getInstance(final long marketMaker, final long instrument, @NotNull final Side side, final double price, final long size) {
         Quote tq = getFromPoolOrSupplierIfAbsent(Quote.class, Quote::new);
 
         tq.set(marketMaker, instrument, side, price, size);
@@ -36,7 +39,7 @@ public final class Quote extends PooledObject {
         return tq;
     }
 
-    protected final void set(final long marketMaker, final long instrument, final Side side, final double price, final long size) {
+    protected final void set(final long marketMaker, final long instrument, @NotNull final Side side, final double price, final long size) {
         this.marketMaker = marketMaker;
         this.instrument = instrument;
         this.side = side;
@@ -62,5 +65,20 @@ public final class Quote extends PooledObject {
 
     public final long getSize() {
         return this.size;
+    }
+
+    @Override
+    public final boolean equals(@NotNull Object obj) {
+        Quote o = (Quote) obj;
+        return marketMaker == o.marketMaker &&
+                instrument == o.instrument &&
+                side.equals(o.side) &&
+                price == o.price &&
+                size == o.size;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(marketMaker ^ instrument ^ Double.doubleToRawLongBits(price) ^ size ^ side.hashCode());
     }
 }
