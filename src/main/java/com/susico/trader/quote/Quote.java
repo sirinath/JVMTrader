@@ -19,27 +19,33 @@ package com.susico.trader.quote;
 import com.susico.utils.memory.pool.PooledObject;
 import org.jvirtanen.parity.top.Side;
 
-public final class TopQuote extends PooledObject {
+public final class Quote extends PooledObject {
+    protected long marketMaker = 0;
     protected long instrument = 0;
     protected Side side = null;
     protected double price = Double.NaN;
     protected long size = 0;
 
-    protected TopQuote() {}
+    protected Quote() {}
 
-    public static TopQuote getInstance(final long instrument, final Side side, final double price, final long size) {
-        TopQuote tq = getFromPoolOrSupplierIfAbsent(TopQuote.class, TopQuote::new);
+    public static Quote getInstance(final long marketMaker, final long instrument, final Side side, final double price, final long size) {
+        Quote tq = getFromPoolOrSupplierIfAbsent(Quote.class, Quote::new);
 
-        tq.set(instrument, side, price, size);
+        tq.set(marketMaker, instrument, side, price, size);
 
         return tq;
     }
 
-    protected final void set(final long instrument, final Side side, final double price, final long size) {
+    protected final void set(final long marketMaker, final long instrument, final Side side, final double price, final long size) {
+        this.marketMaker = marketMaker;
         this.instrument = instrument;
         this.side = side;
         this.price = price;
         this.size = size;
+    }
+
+    public final long getMarketMaker() {
+        return this.marketMaker;
     }
 
     public final long getInstrument() {
